@@ -28,8 +28,9 @@ public class FaceIndex {
 
     public FaceIndex()
     {
+        System.out.println("Create FaceIndex");
         if(SnapUtils.isTeaVM)
-            ROOT = "http://localhost";
+            ROOT = "http://localhost:8080/Images";
     }
 
     /**

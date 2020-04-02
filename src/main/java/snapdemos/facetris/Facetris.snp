@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ColView FillWidth="true">
+  <RowView Padding="5" >
+    <LineBorder color="#000000" width="2" />
+    <Label Name="TitleLabel" Align="CENTER" text="Gamma Facetris">
+      <font name="Arial Bold" size="36" />
+    </Label>
+  </RowView>
+  <RowView GrowHeight="true" FillHeight="true">
+    <ColView GrowWidth="true" FillWidth="true">
+      <Box Padding="8">
+        <View Name="PlayView" PrefWidth="800" PrefHeight="800" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.PlayView" />
+      </Box>
+      <RowView Padding="8" Spacing="8">
+        <font name="Arial Bold" size="24" />
+        <Label text="Enter Name:" />
+        <TextField Name="NameText" PrefHeight="40" GrowWidth="true" />
+      </RowView>
+    </ColView>
+    <ColView PrefWidth="200" Padding="8,8,8,0" FillWidth="true">
+      <ColView GrowHeight="true" FillWidth="true">
+        <Label Name="TitleLabel" PrefHeight="25" Align="CENTER" text="Coming Soon">
+          <font name="Arial Bold" size="20" />
+        </Label>
+        <ScrollView GrowHeight="true">
+          <ColView Name="ComingSoonView" Padding="8" Spacing="8" >
+            <fill color="#FFFFFF" />
+          </ColView>
+        </ScrollView>
+      </ColView>
+      <ColView GrowHeight="true" FillWidth="true">
+        <Label Name="TitleLabel" PrefHeight="25" Align="CENTER" text="Familiar Faces">
+          <font name="Arial Bold" size="20" />
+        </Label>
+        <ScrollView GrowHeight="true">
+          <ColView Name="FamiliarFacesView" Padding="8" Spacing="8">
+            <fill color="#FFFFFF" />
+          </ColView>
+        </ScrollView>
+      </ColView>
+      <Label PrefHeight="60" />
+    </ColView>
+  </RowView>
+</ColView>

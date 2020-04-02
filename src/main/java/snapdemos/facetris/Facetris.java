@@ -11,21 +11,18 @@ public class Facetris extends ViewOwner {
     private PlayView  _playView;
 
     /**
-     * Create UI.
+     * Initialize UI.
      */
-    @Override
-    protected View createUI()
-    {
-        _playView = new PlayView();
-        _playView.setPrefSize(1000,1000);
-        return _playView;
-    }
-
     @Override
     protected void initUI()
     {
+        _playView = getView("PlayView", PlayView.class);
+        setFirstFocus("NameText");
     }
 
+    /**
+     * Called when UI is showing.
+     */
     @Override
     protected void showingChanged()
     {
