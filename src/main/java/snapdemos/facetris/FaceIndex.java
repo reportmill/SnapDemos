@@ -1,10 +1,7 @@
 package snapdemos.facetris;
 import snap.util.SnapUtils;
 import snap.web.WebURL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * The Face Index.
@@ -12,13 +9,19 @@ import java.util.Random;
 public class FaceIndex {
 
     // The FaceInfos
-    private FaceInfo  _finfos[];
+    private Face  _finfos[];
 
     // The FaceInfo pool
-    private List<FaceInfo> _facePool;
+    private List<Face>  _facePool;
+
+    // A queue of the next 5 faces
+    private Queue<Face>  _faceQueue;
+
+    // The names
+    private String  _names[];
 
     // Random
-    private Random _random = new Random();
+    private Random  _random = new Random();
 
     // The root
     public static String ROOT = "/Users/jeff/Gamma/Images";
@@ -28,7 +31,6 @@ public class FaceIndex {
 
     public FaceIndex()
     {
-        System.out.println("Create FaceIndex");
         if(SnapUtils.isTeaVM)
             ROOT = "http://localhost:8080/Images";
     }
@@ -36,30 +38,68 @@ public class FaceIndex {
     /**
      * Returns the next face.
      */
-    public FaceInfo getNextFace()
+    private Face getNextFace()
     {
-        List <FaceInfo> facePool = getFacePool();
+        List <Face> facePool = getFacePool();
+        if (facePool.size()==0) return null;
         int index = _random.nextInt(facePool.size());
-        FaceInfo face = facePool.remove(index);
+        return facePool.remove(index);
+    }
+
+    /**
+     * Returns the next face.
+     */
+    public Face getNextFaceFromQueue()
+    {
+        // Add new face to queue
+        addFaceToQueue();
+
+        // Return face from front
+        Queue<Face> faceQueue = getNextQueue();
+        Face face = faceQueue.poll();
         return face;
     }
 
     /**
      * Returns the faceInfo pool.
      */
-    private List<FaceInfo> getFacePool()
+    private List<Face> getFacePool()
     {
         if (_facePool!=null) return _facePool;
-        FaceInfo finfos[] = getFaceInfos();
-        List <FaceInfo> facePool = new ArrayList<>(finfos.length);
+        Face finfos[] = getFaceInfos();
+        List <Face> facePool = new ArrayList<>(finfos.length);
         Collections.addAll(facePool, finfos);
         return _facePool = facePool;
     }
 
     /**
+     * Returns the next queue.
+     */
+    public Queue<Face> getNextQueue()
+    {
+        if (_faceQueue!=null) return _faceQueue;
+        _faceQueue = new ArrayDeque<>();
+        for (int i=0; i<4; i++) addFaceToQueue();
+        return _faceQueue;
+    }
+
+    /**
+     * Adds a new face to queue.
+     */
+    private void addFaceToQueue()
+    {
+        Queue<Face> faceQueue = _faceQueue!=null ? _faceQueue : getNextQueue();
+        Face face = getNextFace();
+        if (face!=null) {
+            faceQueue.add(face);
+            face.getView();
+        }
+    }
+
+    /**
      * Returns the array of FaceInfo.
      */
-    public FaceInfo[] getFaceInfos()
+    public Face[] getFaceInfos()
     {
         // If already set, just return
         if (_finfos!=null) return _finfos;
@@ -69,18 +109,42 @@ public class FaceIndex {
         String entries[] = index.split("\n");
 
         // Iterate over entries and add to list
-        List<FaceInfo> finfos = new ArrayList<>();
+        List<Face> finfos = new ArrayList<>();
         for (String entry : entries)
         {
             String fname = entry.trim();
             if (fname.length()>0) {
-                FaceInfo finfo = new FaceInfo();
-                finfo.fname = fname;
-                finfo.name = fname.replace(".jpg", "").replace(".JPG","");
+                Face finfo = new Face(fname);
                 finfos.add(finfo);
             }
         }
-        return _finfos = finfos.toArray(new FaceInfo[0]);
+        return _finfos = finfos.toArray(new Face[0]);
+    }
+
+    /**
+     * Returns the names.
+     */
+    public String[] getNames()
+    {
+        if (_names!=null) return _names;
+        Face faces[] = getFaceInfos();
+        List<String> names = new ArrayList<>(faces.length);
+        for (Face face : faces)
+            names.add(face.getName());
+        return _names = names.toArray(new String[0]);
+    }
+
+    /**
+     * Returns a name for prefix.
+     */
+    public String getNameForPrefix(String aPrefix)
+    {
+        String prefix = aPrefix.toLowerCase();
+        String names[] = getNames();
+        for (String name : names)
+            if (name.toLowerCase().startsWith(prefix))
+                return name;
+        return null;
     }
 
     /**

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ColView FillWidth="true">
-  <RowView Padding="5" >
+  <RowView Padding="5" Align="CENTER" >
     <LineBorder color="#000000" width="2" />
     <Label Name="TitleLabel" Align="CENTER" text="Gamma Facetris">
-      <font name="Arial Bold" size="36" />
+      <font name="Arial Bold" size="40" />
     </Label>
+    <CheckBox Name="CheatCheckBox" Text="Cheat" Padding="8" LeanX="RIGHT" />
   </RowView>
   <RowView GrowHeight="true" FillHeight="true">
     <ColView GrowWidth="true" FillWidth="true">
-      <Box Padding="8">
-        <View Name="PlayView" PrefWidth="800" PrefHeight="800" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.PlayView" />
+      <Box Padding="8" GrowHeight="true">
+        <View Name="PlayView" PrefWidth="800" PrefHeight="700" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.PlayView" />
       </Box>
       <RowView Padding="8" Spacing="8">
         <font name="Arial Bold" size="24" />
@@ -22,8 +23,8 @@
         <Label Name="TitleLabel" PrefHeight="25" Align="CENTER" text="Coming Soon">
           <font name="Arial Bold" size="20" />
         </Label>
-        <ScrollView GrowHeight="true">
-          <ColView Name="ComingSoonView" Padding="8" Spacing="8" >
+        <ScrollView PrefHeight="200" GrowHeight="true" ShowVBar="false">
+          <ColView Name="ComingSoonView" Padding="8" Spacing="8" Align="TOP_CENTER" >
             <fill color="#FFFFFF" />
           </ColView>
         </ScrollView>
@@ -32,13 +33,17 @@
         <Label Name="TitleLabel" PrefHeight="25" Align="CENTER" text="Familiar Faces">
           <font name="Arial Bold" size="20" />
         </Label>
-        <ScrollView GrowHeight="true">
-          <ColView Name="FamiliarFacesView" Padding="8" Spacing="8">
+        <ScrollView PrefHeight="200" GrowHeight="true">
+          <ColView Name="FamiliarFacesView" Padding="8" Spacing="8" Align="TOP_CENTER">
             <fill color="#FFFFFF" />
           </ColView>
         </ScrollView>
       </ColView>
-      <Label PrefHeight="60" />
+      <Box PrefHeight="60" Align="Center">
+        <Button Name="PlayButton" Text="Play" PrefWidth="80" PrefHeight="30">
+          <font name="Arial Bold" size="24"/>
+        </Button>
+      </Box>
     </ColView>
   </RowView>
 </ColView>
