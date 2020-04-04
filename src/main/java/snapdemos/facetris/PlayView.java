@@ -39,7 +39,7 @@ public class PlayView extends ParentView {
         setBorder(Color.BLACK, BORDER_SIZE);
         setBorder(getBorder().copyFor(Border.PaintAbove_Prop, true));
         _timer = new ViewTimer(25, t -> animFrame());
-        _newFaceTimer = new ViewTimer(3000, t -> addFace());
+        _newFaceTimer = new ViewTimer(3500, t -> addFace());
         setClipToBounds(true);
     }
 

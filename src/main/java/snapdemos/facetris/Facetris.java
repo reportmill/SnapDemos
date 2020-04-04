@@ -1,5 +1,6 @@
 package snapdemos.facetris;
 import snap.gfx.Color;
+import snap.gfx.Effect;
 import snap.gfx.Image;
 import snap.gfx.ShadowEffect;
 import snap.view.*;
@@ -20,6 +21,9 @@ public class Facetris extends ViewOwner {
 
     // Whether to cheat
     public static boolean  _cheat;
+
+    //
+    private Effect SHADOW = new ShadowEffect();
 
     /**
      * Returns the player.
@@ -43,7 +47,7 @@ public class Facetris extends ViewOwner {
         // Configure TitleLabel
         Label title = getView("TitleLabel", Label.class);
         title.setTextFill(Color.WHITE);
-        title.setEffect(new ShadowEffect());
+        title.setEffect(SHADOW);
     }
 
     @Override
@@ -74,6 +78,7 @@ public class Facetris extends ViewOwner {
         List<View> children = new ArrayList<>(Arrays.asList(comingSoonView.getChildren()));
         while (children.size()>0 && comingFaces[0].getMiniView() != children.get(0)) {
             View view = children.remove(0);
+            view.setEffect(null);
             view.getAnim(500).setPrefHeight(0).setOnFinish(() -> comingSoonView.removeChild(view)).play();
         }
 
@@ -104,7 +109,7 @@ public class Facetris extends ViewOwner {
             familiarView.addChild(view, 0);
             double height = face.getImage().getHeight()/2;
             view.setPrefHeight(0);
-            view.getAnimCleared(500).setPrefHeight(height).play();
+            view.getAnimCleared(500).setPrefHeight(height).setOnFinish(() -> view.setEffect(SHADOW)).play();
         }
     }
 

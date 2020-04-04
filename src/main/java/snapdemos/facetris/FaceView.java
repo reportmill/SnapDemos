@@ -1,8 +1,6 @@
 package snapdemos.facetris;
 import snap.geom.Pos;
-import snap.gfx.Color;
-import snap.gfx.Font;
-import snap.gfx.Image;
+import snap.gfx.*;
 import snap.view.*;
 
 /**
@@ -32,9 +30,14 @@ public class FaceView extends StackView {
     {
         _face = aFace;
 
+        setPadding(10,10,10,10);
+        setFill(Color.WHITE);
+        setBorder(new Color(.98), 1);
+        setEffect(new ShadowEffect());
+
         Image img = aFace.getImage();
         _imageView = new ImageView(img);
-        _imageView.setBorder(Color.DARKGRAY, 1);
+        _imageView.setBorder(new Color(.9), 1);
         addChild(_imageView);
 
         setShowName(Facetris._cheat);
@@ -42,7 +45,7 @@ public class FaceView extends StackView {
         // If not loaded, set to resize when loaded
         if (!img.isLoaded())
             img.addLoadListener(() -> imageDidLoad());
-        else setSize(getPrefSize());
+        else imageDidLoad();
     }
 
     /**
@@ -113,6 +116,9 @@ public class FaceView extends StackView {
      */
     private void imageDidLoad()
     {
+        double w = Math.round(_imageView.getPrefWidth()*.8);
+        double h = Math.round(_imageView.getPrefHeight()*.8);
+        _imageView.setPrefSize(w, h);
         setSize(getPrefSize());
     }
 }
