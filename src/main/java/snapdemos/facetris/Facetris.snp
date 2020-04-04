@@ -8,8 +8,8 @@
     <CheckBox Name="CheatCheckBox" Text="Cheat" Padding="8" LeanX="RIGHT" />
   </RowView>
   <RowView GrowHeight="true" FillHeight="true">
-    <ColView GrowWidth="true" FillWidth="true">
-      <Box Padding="8" GrowHeight="true">
+    <ColView GrowWidth="true" GrowHeight="true" FillWidth="true">
+      <Box Padding="8" GrowHeight="true" FillHeight="true">
         <View Name="PlayView" PrefWidth="800" PrefHeight="700" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.PlayView" />
       </Box>
       <RowView Padding="8" Spacing="8">
@@ -21,7 +21,7 @@
     <ColView PrefWidth="200" Padding="8,8,8,0" FillWidth="true">
       <ColView GrowHeight="true" FillWidth="true">
         <Label Name="TitleLabel" PrefHeight="25" Align="CENTER" text="Coming Soon">
-          <font name="Arial Bold" size="20" />
+          <font name="Arial Bold" size="18" />
         </Label>
         <ScrollView PrefHeight="200" GrowHeight="true" ShowVBar="false">
           <ColView Name="ComingSoonView" Padding="8" Spacing="8" Align="TOP_CENTER" >
@@ -30,10 +30,10 @@
         </ScrollView>
       </ColView>
       <ColView GrowHeight="true" FillWidth="true">
-        <Label Name="TitleLabel" PrefHeight="25" Align="CENTER" text="Familiar Faces">
-          <font name="Arial Bold" size="20" />
+        <Label Name="FamFacesLabel" PrefHeight="25" Align="CENTER" text="Familiar Faces">
+          <font name="Arial Bold" size="18" />
         </Label>
-        <ScrollView PrefHeight="200" GrowHeight="true">
+        <ScrollView PrefHeight="200" GrowHeight="true" BarSize="10">
           <ColView Name="FamiliarFacesView" Padding="8" Spacing="8" Align="TOP_CENTER">
             <fill color="#FFFFFF" />
           </ColView>

@@ -1,5 +1,6 @@
 package snapdemos.facetris;
 import snap.gfx.Image;
+import snap.gfx.ShadowEffect;
 import snap.view.ImageView;
 import snap.web.WebURL;
 
@@ -142,6 +143,7 @@ public class Face {
         // Create image and image view
         Image img = getImage();
         ImageView iview = new ImageView(img);
+        iview.setEffect(new ShadowEffect());
 
         // If not loaded, set to resize when loaded
         if (!img.isLoaded())

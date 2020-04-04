@@ -89,13 +89,13 @@ public class FaceView extends StackView {
 
         if (aValue) {
             _nameLabel1 = new Label(_face.getName());
-            _nameLabel1.setFont(Font.Arial11.getBold());
+            _nameLabel1.setFont(Font.Arial12.getBold());
             _nameLabel1.setLean(Pos.BOTTOM_CENTER);
             _nameLabel1.setPadding(2, 2, 10, 2);
             addChild(_nameLabel1);
 
             _nameLabel2 = new Label(_face.getName());
-            _nameLabel2.setFont(Font.Arial11.getBold());
+            _nameLabel2.setFont(Font.Arial12.getBold());
             _nameLabel2.setTextFill(Color.WHITE);
             _nameLabel2.setLean(Pos.BOTTOM_CENTER);
             _nameLabel2.setPadding(2, 4, 11, 2);

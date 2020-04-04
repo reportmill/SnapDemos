@@ -1,4 +1,5 @@
 package snapdemos.facetris;
+import snap.gfx.GFXEnv;
 import snap.util.SnapUtils;
 import snap.web.WebURL;
 import java.util.*;
@@ -32,7 +33,7 @@ public class FaceIndex {
     public FaceIndex()
     {
         if(SnapUtils.isTeaVM)
-            ROOT = "http://localhost:8080/Images";
+            ROOT = GFXEnv.getEnv().getClassRoot() + "/Images";
     }
 
     /**
@@ -152,7 +153,7 @@ public class FaceIndex {
      */
     public String getIndexText()
     {
-        String urls = ROOT + "/Index.txt";
+        String urls = ROOT + "/index.txt";
         WebURL url = WebURL.getURL(urls);
         String text = url.getText();
         return text;

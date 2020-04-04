@@ -49,6 +49,10 @@ public class Facetris extends ViewOwner {
     @Override
     protected void resetUI()
     {
+        // Reset UI
+        setViewValue("FamFacesLabel", "Familiar Faces: " + getPlayer().getWonFaces().size());
+
+        // Reset image views
         resetComingSoonView();
         resetFamiliarFacesView();
     }
