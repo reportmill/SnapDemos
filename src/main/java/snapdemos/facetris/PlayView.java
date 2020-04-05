@@ -1,10 +1,14 @@
 package snapdemos.facetris;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
 import snap.geom.Rect;
 import snap.gfx.Border;
 import snap.gfx.Color;
 import snap.view.ParentView;
 import snap.view.View;
 import snap.view.ViewTimer;
+import snap.view.ViewUtils;
+
 import java.util.Random;
 
 /**
@@ -29,6 +33,9 @@ public class PlayView extends ParentView {
 
     // The Random
     private Random  _random = new Random();
+
+    // The PhysicsRunner
+    PhysicsRunner          _physRunner;
 
     /**
      * Creates PlayView.
@@ -64,8 +71,18 @@ public class PlayView extends ParentView {
         removeChildren();
 
         // Start timers
-        _timer.start();
+        //_timer.start();
         _newFaceTimer.start(0);
+
+        if (_physRunner!=null)
+            _physRunner.setRunning(false);
+
+        ParentView worldView = this;
+        _physRunner = new PhysicsRunner(worldView);
+        _physRunner.setViewToWorldMeters(getHeight()/5);
+        _physRunner.addWalls();
+        _physRunner.addPhysForViews();
+        _physRunner.setRunning(true);
     }
 
     /**
@@ -75,6 +92,8 @@ public class PlayView extends ParentView {
     {
         _timer.stop();
         _newFaceTimer.stop();
+
+        ((Facetris)getOwner()).gameOver();
     }
 
     /**
@@ -82,7 +101,11 @@ public class PlayView extends ParentView {
      */
     public void stopNewFaces()
     {
+        if (!_newFaceTimer.isRunning()) return;
+
         _newFaceTimer.stop();
+
+        ViewUtils.runDelayed(() -> stop(), 2500, true);
     }
 
     /**
@@ -97,14 +120,19 @@ public class PlayView extends ParentView {
         View view = face.getView();
         addChild(view);
 
+        view.setRotate(10 - _random.nextInt(20));
+
         // Set location
         double pw = getWidth();
         double vw = view.getWidth();
         double vh = view.getHeight();
         int xRange = (int)(pw - vw);
-        int x = _random.nextInt(xRange);
+        int x = 10 + _random.nextInt(xRange - 20);
         view.setXY(x, -vh);
         getOwner().resetLater();
+
+        if (_physRunner!=null)
+            _physRunner.addPhysForView(view);
     }
 
     /**
@@ -149,6 +177,9 @@ public class PlayView extends ParentView {
         View view = aFace.getView();
         removeChild(view);
         view.setOpacity(1);
+
+        if (_physRunner!=null)
+            _physRunner.removePhysForView(view);
     }
 
     /**
@@ -158,6 +189,12 @@ public class PlayView extends ParentView {
     {
         _player.addLostFace(aFace);
         getOwner().resetLater();
+
+        Body body = (Body)aFace.getView().getPhysics().getNative();
+        body.setGravityScale(2.5f);
+
+        if (_player.getLostFaces().size() >= 3)
+            stopNewFaces();
     }
 
     /**
@@ -169,9 +206,6 @@ public class PlayView extends ParentView {
             handleFaceLose(aFace);
 
         _faces.removeFallFace(aFace);
-
-        if (_player.getLostFaces().size()>=3)
-            stopNewFaces();
     }
 
     /**

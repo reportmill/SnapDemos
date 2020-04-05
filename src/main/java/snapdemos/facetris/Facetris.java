@@ -19,6 +19,9 @@ public class Facetris extends ViewOwner {
     // The TextField
     private TextField  _nameText;
 
+    // StartPane
+    private StartPane _startPane = new StartPane(this);
+
     // Whether to cheat
     public static boolean  _cheat;
 
@@ -144,8 +147,8 @@ public class Facetris extends ViewOwner {
             Face face = FaceIndex.get().getNextQueue().peek();
             Image img = face.getImage();
             if (img.isLoaded())
-                playGame();
-            else img.addLoadListener(() -> playGame());
+                runLater(() -> showStartPane());
+            else img.addLoadListener(() -> runLater(() -> showStartPane()));
         }
     }
 
@@ -155,6 +158,17 @@ public class Facetris extends ViewOwner {
     void playGame()
     {
         _playView.play();
+        requestFocus("NameText");
+    }
+
+    void showStartPane()
+    {
+        _startPane.show();
+    }
+
+    void gameOver()
+    {
+        showStartPane();
     }
 
     /**
@@ -162,9 +176,13 @@ public class Facetris extends ViewOwner {
      */
     void handleGuess(ViewEvent anEvent)
     {
-        boolean success = _playView.handleGuessFace(anEvent.getStringValue());
-        if (success)
-            _nameText.setText("");
+        if (_startPane.isShowing()) {
+            _startPane.handlePlayButton();
+            return;
+        }
+
+        _playView.handleGuessFace(anEvent.getStringValue());
+        _nameText.setText("");
     }
 
     /**

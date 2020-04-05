@@ -49,6 +49,11 @@ public class FaceView extends StackView {
     }
 
     /**
+     * Returns the face.
+     */
+    public Face getFace()  { return _face; }
+
+    /**
      * Returns whether face is lost.
      */
     public boolean isLost()
