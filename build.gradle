@@ -17,13 +17,21 @@ plugins {
 sourceSets.main.resources.srcDirs = ['src/main/java']
 
 repositories {
+
     // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
+
+    // Jitpack makes builds from GitHub repos
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compile project(':SnapKit')
+
+    // If Local SnapKit project, use that, otherwise use latest SnapKit GitHub repo
+    if (findProject(':SnapKit') != null) { println 'Using local SnapKit project'
+        compile project(':SnapKit') }
+    else { println 'Using latest SnapKit GitHub repo'
+        implementation 'com.github.reportmill:SnapKit:master-SNAPSHOT'  }
 
     compile group: 'org.jbox2d', name: 'jbox2d-library', version: '2.2.1.1'
 
