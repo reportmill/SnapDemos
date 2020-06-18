@@ -17,46 +17,46 @@ public class StackView extends ChildView {
     /**
      * Returns the preferred width.
      */
-    protected double getPrefWidthImpl(double aH){ return getPrefWidth(this, null, aH); }
+    protected double getPrefWidthImpl(double aH){ return getPrefWidth(this, aH); }
 
     /**
      * Returns the preferred height.
      */
-    protected double getPrefHeightImpl(double aW)  { return getPrefHeight(this, null, aW); }
+    protected double getPrefHeightImpl(double aW)  { return getPrefHeight(this, aW); }
 
     /**
      * Layout children.
      */
-    protected void layoutImpl()  { layout(this, null, null); }
+    protected void layoutImpl()  { layout(this); }
 
     /**
      * Returns preferred width of given parent with given children.
      */
-    public static final double getPrefWidth(ParentView aPar, View theChildren[], double aH)
+    public static double getPrefWidth(ParentView aPar, double aH)
     {
-        return ColView.getPrefWidth(aPar, null, aH);
+        return ColView.getPrefWidth(aPar, aH);
     }
 
     /**
      * Returns preferred height of given parent with given children.
      */
-    public static final double getPrefHeight(ParentView aPar, View theChildren[], double aW)
+    public static double getPrefHeight(ParentView aPar, double aW)
     {
-        return RowView.getPrefHeight(aPar, null, aW);
+        return RowView.getPrefHeight(aPar, aW);
     }
 
     /**
      * Performs layout for given parent with given children.
      */
-    public static void layout(ParentView aPar, View theChilds[], Insets theIns)
+    public static void layout(ParentView aPar)
     {
         // Get children (just return if empty)
-        View children[] = theChilds!=null? theChilds : aPar.getChildrenManaged(); if(children.length==0) return;
+        View children[] = aPar.getChildrenManaged(); if (children.length==0) return;
 
         // Get parent bounds for insets
-        Insets ins = theIns!=null? theIns : aPar.getInsetsAll();
-        double px = ins.left, pw = aPar.getWidth() - ins.getWidth(); if(pw<0) pw = 0; //if(pw<=0) return;
-        double py = ins.top, ph = aPar.getHeight() - ins.getHeight(); if(ph<0) ph = 0; //if(ph<=0) return;
+        Insets ins = aPar.getInsetsAll();
+        double px = ins.left, pw = aPar.getWidth() - ins.getWidth(); if(pw<0) pw = 0;
+        double py = ins.top, ph = aPar.getHeight() - ins.getHeight(); if(ph<0) ph = 0;
 
         // Get child bounds
         Rect cbnds[] = new Rect[children.length];
