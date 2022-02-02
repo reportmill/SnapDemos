@@ -41,3 +41,9 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'snapdemos.tetris.TetrisPane'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'snapdemos.tetris.TetrisPane'
+    }
+}
