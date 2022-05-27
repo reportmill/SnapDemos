@@ -328,7 +328,7 @@ public class PhysicsRunner {
     /**
      * Convert View coord to Box2D.
      */
-    public Vec2 viewToBox(double aX, double aY)  { return getVec(getViewToBox().transform(aX, aY)); }
+    public Vec2 viewToBox(double aX, double aY)  { return getVec(getViewToBox().transformXY(aX, aY)); }
 
     /**
      * Convert Box2D coord to View.
@@ -338,7 +338,7 @@ public class PhysicsRunner {
     /**
      * Convert Box2D coord to View.
      */
-    public Point boxToView(double aX, double aY)  { return getBoxToView().transform(aX, aY); }
+    public Point boxToView(double aX, double aY)  { return getBoxToView().transformXY(aX, aY); }
 
     /**
      * Returns transform from View coords to Box coords.

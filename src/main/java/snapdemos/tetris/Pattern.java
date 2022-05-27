@@ -73,9 +73,9 @@ public Pattern getRotateRight()
     int f2[] = new int[fill.length];
     double mx = colCount, my = rowCount;
     Transform xfm = new Transform(mx/2, my/2); xfm.rotate(-90); xfm.translate(-mx/2, -my/2);
-    Point or = xfm.transform(colCount, 0); xfm.preTranslate(-or.x, -or.y);
+    Point or = xfm.transformXY(colCount, 0); xfm.preTranslate(-or.x, -or.y);
     for(int i=0;i<fill.length;i+=2) {
-        Point p = xfm.transform(fill[i] + .5, fill[i+1] + .5);
+        Point p = xfm.transformXY(fill[i] + .5, fill[i+1] + .5);
         f2[i] = (int)Math.round(p.x - .5);
         f2[i+1] = (int)Math.round(p.y - .5);
     }
