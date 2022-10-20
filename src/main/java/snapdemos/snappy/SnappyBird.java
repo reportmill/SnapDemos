@@ -1,11 +1,10 @@
 package snapdemos.snappy;
 import java.util.Random;
-
 import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextDoc;
 import snap.view.*;
-import snap.viewx.CodeView;
+import snap.viewx.CodeDoc;
 import snap.viewx.Explode;
 import snap.web.WebURL;
 
@@ -51,15 +50,14 @@ public class SnappyBird extends ViewOwner {
         _flappy.setBounds(180, 180, 60, 45);
         _view.addChild(_flappy);
 
-        // Return main view
-        //return _view;
+        // Create CodeView
+        TextArea codeView = new TextArea();
+        codeView.setFill(Color.WHITE);
+        codeView.setEditable(true);
 
-        // Create Code text
+        // Create CodeDoc and set in TextView
         WebURL javaURL = WebURL.getURL(getClass(), "SnappyBird.jav");
-        TextDoc javaTextDoc = TextDoc.newFromSource(javaURL);
-
-        // Create code view
-        CodeView codeView = new CodeView();
+        TextDoc javaTextDoc = CodeDoc.newFromSource(javaURL);
         codeView.setTextDoc(javaTextDoc);
 
         // Create TabView
@@ -192,11 +190,8 @@ public class SnappyBird extends ViewOwner {
      */
     public static void main(String args[])
     {
-        SnappyBird sbird = new SnappyBird();
-        sbird.getUI().setGrowWidth(true);
-        sbird.setWindowVisible(true);
+        SnappyBird snappyBird = new SnappyBird();
+        snappyBird.getUI().setGrowWidth(true);
+        snappyBird.setWindowVisible(true);
     }
-
-//static { snaptea.TV.set(); }
-
 }
