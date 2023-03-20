@@ -139,17 +139,13 @@ public class Facetris extends ViewOwner {
      * Called when UI is showing.
      */
     @Override
-    protected void showingChanged()
+    protected void initShowing()
     {
-        super.showingChanged();
-
-        if (isShowing()) {
-            Face face = FaceIndex.get().getNextQueue().peek();
-            Image img = face.getImage();
-            if (img.isLoaded())
-                runLater(() -> showStartPane());
-            else img.addLoadListener(() -> runLater(() -> showStartPane()));
-        }
+        Face face = FaceIndex.get().getNextQueue().peek();
+        Image img = face.getImage();
+        if (img.isLoaded())
+            runLater(() -> showStartPane());
+        else img.addLoadListener(() -> runLater(() -> showStartPane()));
     }
 
     /**
