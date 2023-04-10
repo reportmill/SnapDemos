@@ -136,7 +136,7 @@ public class PhysicsBuilder {
 
         // Create Box2D PolygonShape and return
         int pc = aPoly.getPointCount();
-        Vec2 vecs[] = new Vec2[pc]; for (int i=0;i<pc;i++) vecs[i] = viewToBox(aPoly.getX(i), aPoly.getY(i));
+        Vec2 vecs[] = new Vec2[pc]; for (int i=0;i<pc;i++) vecs[i] = viewToBox(aPoly.getPointX(i), aPoly.getPointY(i));
         PolygonShape pshape = new PolygonShape();
         pshape.set(vecs, vecs.length);
         return pshape;
