@@ -110,7 +110,7 @@ public class PhysicsBuilder {
         Shape shape = aShape.copyFor(new Transform(-bnds.width/2, -bnds.height/2));
 
         // Get convex Polygons for shape
-        Polygon convexPolys[] = Polygon.getConvexPolys(shape, 8);
+        Polygon convexPolys[] = Polygon.getConvexPolygonsWithMaxSideCount(shape, 8);
         List<org.jbox2d.collision.shapes.Shape> pshapes = new ArrayList();
 
         // Iterate over polygons
@@ -132,7 +132,7 @@ public class PhysicsBuilder {
     public org.jbox2d.collision.shapes.Shape createShape(Polygon aPoly)
     {
         // If invalid, just return null
-        if (!aPoly.isSimple() || !aPoly.isConvex() || aPoly.getPointCount()>8) return null;
+        if (aPoly.isSelfIntersecting() || !aPoly.isConvex() || aPoly.getPointCount()>8) return null;
 
         // Create Box2D PolygonShape and return
         int pc = aPoly.getPointCount();
