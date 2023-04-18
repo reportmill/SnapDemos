@@ -15,7 +15,10 @@ public class Puzzle {
     private int _rowCount = 4;
 
     // The pieces
-    private PuzzlePiece[][] _pieces;
+    private PuzzlePiece[] _pieces;
+
+    // The pieces
+    private PuzzlePiece[][] _pieceColumns;
 
     /**
      * Constructor.
@@ -38,10 +41,15 @@ public class Puzzle {
     /**
      * Returns the pieces.
      */
-    public PuzzlePiece[][] getPieces()
+    public PuzzlePiece[] getPieces()  { getPieceColumns(); return _pieces; }
+
+    /**
+     * Returns the pieces in columns.
+     */
+    public PuzzlePiece[][] getPieceColumns()
     {
         // If already set, just return
-        if (_pieces != null) return _pieces;
+        if (_pieceColumns != null) return _pieceColumns;
 
         // Get random numbers
         Random random = new Random(1000);
@@ -52,19 +60,28 @@ public class Puzzle {
         // Create
         int colCount = getColCount();
         int rowCount = getRowCount();
-        PuzzlePiece[][] pieces = new PuzzlePiece[colCount][rowCount];
+        PuzzlePiece[] pieces = new PuzzlePiece[colCount * rowCount];
+        PuzzlePiece[][] pieceColumns = new PuzzlePiece[colCount][rowCount];
+
+        // Iterate over cols and rows to create pieces
         for (int i = 0; i < colCount; i++) {
             for (int j = 0; j < rowCount; j++) {
+
+                // Create piece for col/row
                 PuzzlePiece piece = new PuzzlePiece(this, i, j);
                 int randomNumberIndex = random.nextInt(numbers.size());
                 int randomNumber = numbers.remove(randomNumberIndex);
                 piece.setNumber(randomNumber);
-                pieces[i][j] = piece;
+
+                // Add to arrays
+                pieces[i * colCount + j] = piece;
+                pieceColumns[i][j] = piece;
             }
         }
 
         // Set, return
-        return _pieces = pieces;
+        _pieces = pieces;
+        return _pieceColumns = pieceColumns;
     }
 
     /**
@@ -72,7 +89,7 @@ public class Puzzle {
      */
     public PuzzlePiece getPieceForColAndRow(int colIndex, int rowIndex)
     {
-        PuzzlePiece[][] pieces = getPieces();
+        PuzzlePiece[][] pieces = getPieceColumns();
         return pieces[colIndex][rowIndex];
     }
 }

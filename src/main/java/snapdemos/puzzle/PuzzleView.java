@@ -6,9 +6,12 @@ import snap.gfx.Color;
 import snap.gfx.Font;
 import snap.gfx.Painter;
 import snap.view.*;
+import snap.viewx.Explode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * This class draws the puzzle board and handles user interaction.
@@ -70,6 +73,13 @@ public class PuzzleView extends RowView {
         int rowCount = getRowCount();
         _pieceViews = new PuzzlePieceView[colCount][rowCount];
 
+        // Get pieces
+        PuzzlePiece[] allPieces = _puzzle.getPieces();
+        List<PuzzlePiece> shuffledPieces = new ArrayList<>();
+        Collections.addAll(shuffledPieces, allPieces);
+        Collections.shuffle(shuffledPieces);
+        Random random = new Random(1000);
+
         for (int i = 0; i < colCount; i++) {
 
             // Create/add column
@@ -80,7 +90,17 @@ public class PuzzleView extends RowView {
 
             // Create/add piece views
             for (int j = 0; j < rowCount; j++) {
-                PuzzlePiece puzzlePiece = _puzzle.getPieceForColAndRow(i, j);
+
+                // Get random puzzle piece
+                int puzzlePieceIndex = random.nextInt(shuffledPieces.size());
+                PuzzlePiece puzzlePiece = shuffledPieces.get(puzzlePieceIndex);
+                while (i == puzzlePiece.getColIndex() && j == puzzlePiece.getRowIndex() && shuffledPieces.size() > 1) {
+                    puzzlePieceIndex = random.nextInt(shuffledPieces.size());
+                    puzzlePiece = shuffledPieces.get(puzzlePieceIndex);
+                }
+                shuffledPieces.remove(puzzlePiece);
+
+                // Create View
                 PuzzlePieceView puzzlePieceView = new PuzzlePieceView(this, puzzlePiece);
                 _pieceViews[i][j] = puzzlePieceView;
                 puzzleCol.addChild(puzzlePieceView);
@@ -171,6 +191,7 @@ public class PuzzleView extends RowView {
         // Swap Views
         ParentView parent1 = pieceView1.getParent();
         int index1 = pieceView1.indexInParent();
+        ViewUtils.removeChild(parent1, pieceView1);
         ViewUtils.replaceView(pieceView2, pieceView1);
         ViewUtils.addChild(parent1, pieceView2, index1);
 
@@ -199,5 +220,12 @@ public class PuzzleView extends RowView {
     {
         pieceView1.setSelected(false);
         _selPieceViews.clear();
+
+        PuzzlePieceView[][] pieceViews = getPieceViews();
+        for (PuzzlePieceView[] pieceViewCol : pieceViews)
+            for (PuzzlePieceView pieceView : pieceViewCol)
+                if (!pieceView.isSolved())
+                    return;
+        new Explode(this, 30, 30, null).playAndRestore();
     }
 }

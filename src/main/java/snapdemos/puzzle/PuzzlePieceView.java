@@ -1,9 +1,6 @@
 package snapdemos.puzzle;
 import snap.geom.Pos;
-import snap.gfx.Border;
-import snap.gfx.Color;
-import snap.gfx.Effect;
-import snap.gfx.ShadowEffect;
+import snap.gfx.*;
 import snap.view.*;
 
 /**
@@ -40,6 +37,12 @@ public class PuzzlePieceView extends BoxView {
     private static int BORDER_RADIUS = 5;
     private static Effect DEFAULT_EFFECT = new ShadowEffect(12, Color.GRAY, 5, 5);
 
+    // Images
+    public static final Image UP_ARROW = Image.get(PuzzlePiece.class, "UpArrow.png");
+    public static final Image DOWN_ARROW = Image.get(PuzzlePiece.class, "DownArrow.png");
+    public static final Image LEFT_ARROW = Image.get(PuzzlePiece.class, "LeftArrow.png");
+    public static final Image RIGHT_ARROW = Image.get(PuzzlePiece.class, "RightArrow.png");
+
     /**
      * Constructor.
      */
@@ -52,6 +55,7 @@ public class PuzzlePieceView extends BoxView {
         setEffect(DEFAULT_EFFECT);
         setGrowWidth(true);
         setGrowHeight(true);
+        setAlign(Pos.CENTER);
 
         enableEvents(MouseEvents);
 
@@ -63,9 +67,7 @@ public class PuzzlePieceView extends BoxView {
         String labelText = String.valueOf(puzzlePiece.getNumber());
         _label = new Label(labelText);
         _label.setAlign(Pos.CENTER);
-        addChild(_label);
-        setFillWidth(true);
-        setFillHeight(true);
+        setContent(_label);
     }
 
     /**
@@ -180,6 +182,48 @@ public class PuzzlePieceView extends BoxView {
     public void repaint(double aX, double aY, double aW, double aH)
     {
         super.repaint(aX - 20, aY - 20, aW + 40, aH + 40);
+    }
+
+    /**
+     * Returns whether is solved.
+     */
+    public boolean isSolved()
+    {
+        boolean colMatches = getParent().indexInParent() == _puzzlePiece.getColIndex();
+        return colMatches && indexInParent() == _puzzlePiece.getRowIndex();
+    }
+
+    /**
+     * Override to paint col/row matching arrows.
+     */
+    @Override
+    protected void paintFront(Painter aPntr)
+    {
+        boolean colMatches = getParent().indexInParent() == _puzzlePiece.getColIndex();
+        boolean rowMatches = indexInParent() == _puzzlePiece.getRowIndex();
+        if (colMatches && rowMatches) {
+            aPntr.fillWithPaint(getBoundsLocal(), Color.LIGHTBLUE);
+            return;
+        }
+
+        aPntr.setOpacity(.5);
+        double IMAGE_WIDTH = 20;
+
+        if (colMatches) {
+            double imageX = _label.getMidX() - IMAGE_WIDTH / 2;
+            double imageY = _label.getY() - IMAGE_WIDTH;
+            aPntr.drawImage(UP_ARROW, imageX, imageY, IMAGE_WIDTH, IMAGE_WIDTH);
+            double imageY2 = _label.getMaxY();
+            aPntr.drawImage(DOWN_ARROW, imageX, imageY2, IMAGE_WIDTH, IMAGE_WIDTH);
+        }
+        else if (rowMatches) {
+            double imageX = _label.getX() - IMAGE_WIDTH;
+            double imageY = _label.getMidY() - IMAGE_WIDTH / 2;
+            aPntr.drawImage(LEFT_ARROW, imageX, imageY, IMAGE_WIDTH, IMAGE_WIDTH);
+            double imageX2 = _label.getMaxX();
+            aPntr.drawImage(RIGHT_ARROW, imageX2, imageY, IMAGE_WIDTH, IMAGE_WIDTH);
+        }
+        aPntr.setOpacity(1);
     }
 
     /**
