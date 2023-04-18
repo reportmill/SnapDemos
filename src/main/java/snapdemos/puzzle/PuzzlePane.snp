@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ColView Padding="10">
-  <RowView Padding="0,4,0,4" Spacing="4" GrowWidth="true">
+<ColView Padding="10" FillWidth="true">
+  <RowView Padding="0,4,0,4" Spacing="4">
     <Label Text="Goal  " />
     <Label Name="GoalText" Text="10">
       <Font Name="Arial" Size="24" />
     </Label>
     <Button PrefWidth="36" PrefHeight="36" Padding="2" LeanX="RIGHT" ToolTip="Information" image="Info.png" ShowArea="false" />
   </RowView>
-  <RowView Padding="0,80,0,30" Spacing="4" GrowWidth="true">
+  <RowView Padding="0,80,0,30" Spacing="4">
     <Label Text="Score  " />
     <Label Name="ScoreText" Text="0">
       <Font Name="Arial" Size="30" />
     </Label>
     <Label LeanX="CENTER" Text="Tap a square to select it" />
   </RowView>
-  <RowView Padding="4" Spacing="4" GrowWidth="true">
+  <RowView Padding="4" Spacing="4">
     <Button Name="RestartButton" PrefWidth="80" PrefHeight="24" Text="Restart" />
     <Button Name="NewPuzzleButton" PrefWidth="80" PrefHeight="24" LeanX="RIGHT" Text="New Puzzle" />
   </RowView>
