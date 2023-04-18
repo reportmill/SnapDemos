@@ -1,13 +1,10 @@
 package snapdemos.puzzle;
 import snap.geom.Insets;
 import snap.geom.Point;
-import snap.gfx.Border;
-import snap.gfx.Color;
 import snap.gfx.Font;
 import snap.gfx.Painter;
 import snap.view.*;
 import snap.viewx.Explode;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +14,9 @@ import java.util.Random;
  * This class draws the puzzle board and handles user interaction.
  */
 public class PuzzleView extends RowView {
+
+    // The PuzzlePane
+    private PuzzlePane _puzzlePane;
 
     // The puzzle
     private Puzzle _puzzle;
@@ -30,17 +30,15 @@ public class PuzzleView extends RowView {
     // Constants
     private static Font DEFAULT_FONT = Font.getFont("Arial", 32);
     private static int DEFAULT_SPACING = 10;
-    private static Border DEFAULT_BORDER = Border.createLineBorder(Color.LIGHTGRAY, 1);
     private static Insets DEFAULT_PADDING = new Insets(16);
 
     /**
      * Constructor.
      */
-    public PuzzleView()
+    public PuzzleView(PuzzlePane puzzlePane)
     {
         super();
-        setFill(Color.WHITE);
-        setBorder(DEFAULT_BORDER);
+        _puzzlePane = puzzlePane;
         setSpacing(DEFAULT_SPACING);
         setFont(DEFAULT_FONT);
         setPadding(DEFAULT_PADDING);
@@ -50,6 +48,16 @@ public class PuzzleView extends RowView {
         // Get events
         enableEvents(MouseEvents);
 
+        // Reset Puzzle
+        resetPuzzle();
+    }
+
+    /**
+     * Reset.
+     */
+    public void resetPuzzle()
+    {
+        removeChildren();
         _puzzle = new Puzzle();
         createPieceViews();
     }
@@ -218,14 +226,28 @@ public class PuzzleView extends RowView {
      */
     private void exchangeSelPieceViewsAnimFinished(PuzzlePieceView pieceView1)
     {
+        // Clear PieceView1.Selected and SelPieceViews
         pieceView1.setSelected(false);
         _selPieceViews.clear();
 
+        // Bump PuzzlePane.Score by one
+        _puzzlePane.setScore(_puzzlePane.getScore() + 1);
+
+        // If Solved, run Explode
+        if (isSolved())
+            new Explode(this, 30, 30, null).playAndRestore();
+    }
+
+    /**
+     * Returns whether puzzle is solved.
+     */
+    public boolean isSolved()
+    {
         PuzzlePieceView[][] pieceViews = getPieceViews();
         for (PuzzlePieceView[] pieceViewCol : pieceViews)
             for (PuzzlePieceView pieceView : pieceViewCol)
                 if (!pieceView.isSolved())
-                    return;
-        new Explode(this, 30, 30, null).playAndRestore();
+                    return false;
+        return true;
     }
 }

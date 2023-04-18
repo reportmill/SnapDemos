@@ -5,17 +5,20 @@
     <Label Name="GoalText" Text="10">
       <Font Name="Arial" Size="24" />
     </Label>
-    <Button PrefWidth="36" PrefHeight="36" Padding="2" LeanX="RIGHT" ToolTip="Information" image="Info.png" ShowArea="false" />
+    <Button Name="InfoButton" PrefWidth="36" PrefHeight="36" Padding="2" LeanX="RIGHT" ToolTip="Information" image="Info.png" ShowArea="false" />
   </RowView>
   <RowView Padding="0,80,0,30" Spacing="4">
     <Label Text="Score  " />
     <Label Name="ScoreText" Text="0">
       <Font Name="Arial" Size="30" />
     </Label>
+  </RowView>
+  <RowView>
     <Label LeanX="CENTER" Text="Tap a square to select it" />
   </RowView>
+  <BoxView Name="PuzzleViewBox" GrowHeight="true" FillWidth="true" FillHeight="true" />
   <RowView Padding="4" Spacing="4">
-    <Button Name="RestartButton" PrefWidth="80" PrefHeight="24" Text="Restart" />
-    <Button Name="NewPuzzleButton" PrefWidth="80" PrefHeight="24" LeanX="RIGHT" Text="New Puzzle" />
+    <Button Name="RestartButton" PrefWidth="100" PrefHeight="30" Text="Restart" />
+    <Button Name="NewPuzzleButton" PrefWidth="100" PrefHeight="30" LeanX="RIGHT" Text="New Puzzle" />
   </RowView>
 </ColView>
