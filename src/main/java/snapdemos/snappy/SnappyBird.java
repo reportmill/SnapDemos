@@ -29,8 +29,8 @@ public class SnappyBird extends ViewOwner {
     double GRAVITY = 75;
 
     // The image for the pipe
-    Image FLAPPY_IMAGE = Image.get(getClass(), "Snappy.png");
-    Image PIPE_IMAGE = Image.get(getClass(), "SnappyPipe.png");
+    Image FLAPPY_IMAGE = Image.getImageForClassResource(getClass(), "Snappy.png");
+    Image PIPE_IMAGE = Image.getImageForClassResource(getClass(), "SnappyPipe.png");
 
     /**
      * Create UI.

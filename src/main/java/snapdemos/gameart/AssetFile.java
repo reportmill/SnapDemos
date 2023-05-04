@@ -56,7 +56,7 @@ public class AssetFile {
     {
         String filePath = "/png/" + aName + " (" + aFrame + ").png";
         WebFile file = _sourceSite.getFileForPath(filePath);
-        Image image = Image.get(file);
+        Image image = Image.getImageForSource(file);
         return image;
     }
 }

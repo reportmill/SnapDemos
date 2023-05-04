@@ -38,10 +38,10 @@ public class PuzzlePieceView extends BoxView {
     private static Effect DEFAULT_EFFECT = new ShadowEffect(12, Color.GRAY, 5, 5);
 
     // Images
-    public static final Image UP_ARROW = Image.get(PuzzlePiece.class, "UpArrow.png");
-    public static final Image DOWN_ARROW = Image.get(PuzzlePiece.class, "DownArrow.png");
-    public static final Image LEFT_ARROW = Image.get(PuzzlePiece.class, "LeftArrow.png");
-    public static final Image RIGHT_ARROW = Image.get(PuzzlePiece.class, "RightArrow.png");
+    public static final Image UP_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "UpArrow.png");
+    public static final Image DOWN_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "DownArrow.png");
+    public static final Image LEFT_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "LeftArrow.png");
+    public static final Image RIGHT_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "RightArrow.png");
 
     /**
      * Constructor.

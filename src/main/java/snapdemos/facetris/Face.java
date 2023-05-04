@@ -115,7 +115,7 @@ public class Face {
         if (_image!=null) return _image;
         String urls = FaceIndex.ROOT + '/' + _fname;
         WebURL url = WebURL.getURL(urls);
-        Image img = Image.get(url);
+        Image img = Image.getImageForSource(url);
         return _image = img;
     }
 

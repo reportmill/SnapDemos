@@ -17,13 +17,13 @@ public class Gem extends ImageView {
     static int TILE_SIZE = PlayView.TILE_SIZE;
     
     // The gems
-    static Image BLUE_GEM = Image.get(Gem.class, "pkg.images/BlueGem.png");
-    static Image GREEN_GEM = Image.get(Gem.class, "pkg.images/GreenGem.png");
-    static Image ORANGE_GEM = Image.get(Gem.class, "pkg.images/OrangeGem.png");
-    static Image PURPLE_GEM = Image.get(Gem.class, "pkg.images/PurpleGem.png");
-    static Image RED_GEM = Image.get(Gem.class, "pkg.images/RedGem.png");
-    static Image WHITE_GEM = Image.get(Gem.class, "pkg.images/WhiteGem.png");
-    static Image YELLOW_GEM = Image.get(Gem.class, "pkg.images/YellowGem.png");
+    static Image BLUE_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/BlueGem.png");
+    static Image GREEN_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/GreenGem.png");
+    static Image ORANGE_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/OrangeGem.png");
+    static Image PURPLE_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/PurpleGem.png");
+    static Image RED_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/RedGem.png");
+    static Image WHITE_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/WhiteGem.png");
+    static Image YELLOW_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/YellowGem.png");
     static Image ALL[] = new Image[] { BLUE_GEM, GREEN_GEM, ORANGE_GEM, PURPLE_GEM, RED_GEM, WHITE_GEM, YELLOW_GEM };
 
 /**

@@ -122,7 +122,7 @@ public class PuzzlePane extends ViewOwner {
             return;
         }
 
-        Image infoImage = Image.get(getClass(), "InfoGraphic.png");
+        Image infoImage = Image.getImageForClassResource(getClass(), "InfoGraphic.png");
         _infoView = new ImageView(infoImage);
         _infoView.setFill(Color.WHITE);
         _infoView.setBorder(Color.BLACK, 1);

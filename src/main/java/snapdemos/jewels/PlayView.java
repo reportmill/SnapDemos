@@ -27,7 +27,7 @@ public class PlayView extends ParentView {
 public PlayView()
 {
     // Set background texture
-    Image img = Image.get(PlayView.class, "pkg.images/Cloth.jpg");
+    Image img = Image.getImageForClassResource(PlayView.class, "pkg.images/Cloth.jpg");
     img.addLoadListener(() -> setFill(new ImagePaint(img, BORDER_SIZE, BORDER_SIZE, 64, 64, false)));
     
     // Set PlayView fill, border, PrefSize
