@@ -232,7 +232,7 @@ public void swapGems(Gem aGem1, Gem aGem2, boolean isSwapBack)
     
     // If original swap, register for swap done
     if(!isSwapBack)
-        aGem2.getAnim(0).setOnFinish(a -> swapDone(aGem1, aGem2));
+        aGem2.getAnim(0).setOnFinish(() -> swapDone(aGem1, aGem2));
 }
 
 /**

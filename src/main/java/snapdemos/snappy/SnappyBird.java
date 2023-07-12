@@ -127,7 +127,10 @@ public class SnappyBird extends ViewOwner {
 
         // Reset pipe location
         aPipe.setX(_view.getPrefWidth());
-        aPipe.getAnim(4000).setX(-aPipe.getWidth()).setOnFinish(a -> getEnv().runLater(() -> resetPipe(aPipe))).play();
+        ViewAnim anim = aPipe.getAnim(4000);
+        anim.setX(-aPipe.getWidth());
+        anim.setOnFinish(() -> getEnv().runLater(() -> resetPipe(aPipe)));
+        anim.play();
     }
 
     /**
