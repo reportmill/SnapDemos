@@ -58,7 +58,7 @@ public class SnappyBird extends ViewOwner {
         // Create CodeDoc and set in TextView
         WebURL javaURL = WebURL.getURL(getClass(), "SnappyBird.jav");
         TextDoc javaTextDoc = CodeDoc.newFromSource(javaURL);
-        codeView.setTextDoc(javaTextDoc);
+        codeView.setSourceText(javaTextDoc);
 
         // Create TabView
         TabView tabView = new TabView();
