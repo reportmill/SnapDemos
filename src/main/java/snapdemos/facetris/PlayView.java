@@ -105,7 +105,7 @@ public class PlayView extends ParentView {
 
         _newFaceTimer.stop();
 
-        ViewUtils.runDelayed(() -> stop(), 2500, true);
+        ViewUtils.runDelayed(() -> stop(), 2500);
     }
 
     /**

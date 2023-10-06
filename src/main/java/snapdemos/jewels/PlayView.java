@@ -258,7 +258,7 @@ void swapDone(Gem aGem1, Gem aGem2)
  */
 void checkAndClearAllMatchesLater(int aDelay)
 {
-    ViewUtils.runDelayed(() -> checkAndClearMatches(), aDelay, true);
+    ViewUtils.runDelayed(() -> checkAndClearMatches(), aDelay);
 }
 
 /**

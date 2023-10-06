@@ -168,7 +168,7 @@ public class PhysicsRunner {
 
         // Set timer to call timerFired 25 times a second
         if(_runner==null)
-            ViewEnv.getEnv().runIntervals(_runner = () -> timerFired(), INTERVAL_MILLIS, true, true);
+            ViewEnv.getEnv().runIntervals(_runner = () -> timerFired(), INTERVAL_MILLIS);
         else {
             ViewEnv.getEnv().stopIntervals(_runner); _runner = null; }
     }
