@@ -33,7 +33,7 @@ dependencies {
 }
 
 // Define the main class for the application
-mainClassName = 'snapdemos.tetris.TetrisPane'
+mainClassName = 'snapdemos.arcade.ArcadeApp'
 
 jar {
     manifest {
@@ -48,7 +48,7 @@ task buildFullJar(type: Jar) {
     archiveBaseName = 'SnapDemosAll'
     manifest {
         attributes(
-                'Main-Class': 'snapdemos.asteroids.Space',
+                'Main-Class': 'snapdemos.arcade.ArcadeApp',
                 'Application-Name': 'SnapDemos',
         )
     }

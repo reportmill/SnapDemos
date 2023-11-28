@@ -11,98 +11,114 @@ import snap.view.*;
 public class StackRow extends View {
 
     // The array of filled tiles
-    Pattern           _cols[] = new Pattern[GRID_WIDTH];
+    private Pattern[] _cols = new Pattern[GRID_WIDTH];
     
     // The array of tile rects
-    Rect              _tileRects[];
+    private Rect[] _tileRects;
     
     // The row number
-    int               _rowNum;
+    protected int _rowNum;
     
     // Constants
-    static int TILE_SIZE = Block.TILE_SIZE;
-    static int GRID_WIDTH = PlayView.GRID_WIDTH;
+    private static int TILE_SIZE = Block.TILE_SIZE;
+    private static int GRID_WIDTH = PlayView.GRID_WIDTH;
 
-/**
- * Creates a StackRow.
- */
-public StackRow()
-{
-    setSize(PlayView.GRID_WIDTH*TILE_SIZE, TILE_SIZE);
-    setEffect(Block.BLOCK_EFFECT);
-}
-
-/**
- * Returns the number of tiles.
- */
-public Rect[] getTileRectsInParent()
-{
-    if(_tileRects!=null) return _tileRects;
-    
-    List <Rect> rects = new ArrayList();
-    int tc = 0; for(int i=0;i<_cols.length;i++) { Pattern col = _cols[i]; if(col==null) continue;
-        double x = i*TILE_SIZE;
-        Rect rect = new Rect(getX() + x, getY(), TILE_SIZE, TILE_SIZE);
-        rects.add(rect);
+    /**
+     * Constructor.
+     */
+    public StackRow()
+    {
+        super();
+        double rowW = PlayView.GRID_WIDTH * TILE_SIZE;
+        double rowH = TILE_SIZE;
+        setSize(rowW, rowH);
+        setEffect(Block.BLOCK_EFFECT);
     }
-    return _tileRects = rects.toArray(new Rect[rects.size()]);
-}
 
-/**
- * Returns whether block intersects row.
- */
-public boolean intersectsBlock(Block aBlock)
-{
-    // If block above row, return false
-    if(MathUtils.lt(aBlock.getMaxY(), getY())) return false;
-    
-    // Iterate over block tiles and see if any intersect row tiles
-    for(int i=0;i<aBlock.getTileCount();i++) { Rect brect = aBlock.getTileRectInParent(i);
-        Rect brect2 = brect.getInsetRect(2, .2);
-        for(Rect rrect : getTileRectsInParent())
-            if(rrect.intersects(brect2))
-                return true;
+    /**
+     * Returns the row tile rects in parent coords.
+     */
+    public Rect[] getTileRectsInParent()
+    {
+        if(_tileRects != null) return _tileRects;
+
+        List <Rect> tileRects = new ArrayList<>();
+        for(int i = 0; i < _cols.length; i++) {
+            Pattern col = _cols[i];
+            if(col == null)
+                continue;
+            double tileX = i * TILE_SIZE;
+            Rect rect = new Rect(getX() + tileX, getY(), TILE_SIZE, TILE_SIZE);
+            tileRects.add(rect);
+        }
+
+        // Return array
+        return _tileRects = tileRects.toArray(new Rect[0]);
     }
-    
-    // Return false sice no block tiles hit row tiles
-    return false;
-}
 
-/**
- * Adds block tiles.
- */
-public void addBlockTiles(Block aBlock)
-{
-    for(int i=0;i<aBlock.getTileCount();i++) { Rect rect = aBlock.getTileRectInParent(i);
-        double x = rect.getMidX() - getX();
-        if(!contains(x, rect.getMidY() - getY())) continue;
-        int ind = (int)Math.floor(x/TILE_SIZE);
-        _cols[ind] = aBlock._pattern;
+    /**
+     * Returns whether block intersects row.
+     */
+    public boolean intersectsBlock(Block aBlock)
+    {
+        // If block above row, return false
+        if(MathUtils.lt(aBlock.getMaxY(), getY()))
+            return false;
+
+        // Iterate over block tiles and see if any intersect row tiles
+        for(int i = 0; i < aBlock.getTileCount(); i++) {
+            Rect blockTileRect = aBlock.getTileRectInParent(i);
+            Rect blockTileRect2 = blockTileRect.getInsetRect(2, .2);
+            Rect[] rowTileRectsInParentCoords = getTileRectsInParent();
+            for(Rect rowTileRect : rowTileRectsInParentCoords)
+                if(rowTileRect.intersects(blockTileRect2))
+                    return true;
+        }
+
+        // Return false since no block tiles hit row tiles
+        return false;
     }
-    
-    // Repaint & reset TileRects
-    repaint(); _tileRects = null;
-}
 
-/**
- * Returns whether row is full.
- */
-public boolean isFull()
-{
-    for(Pattern c : _cols) if(c==null) return false;
-    return true;
-}
+    /**
+     * Adds block tiles.
+     */
+    public void addBlockTiles(Block aBlock)
+    {
+        for(int i = 0; i < aBlock.getTileCount(); i++) {
+            Rect tileBounds = aBlock.getTileRectInParent(i);
+            double tileX = tileBounds.getMidX() - getX();
+            if(!contains(tileX, tileBounds.getMidY() - getY()))
+                continue;
+            int colIndex = (int) Math.floor(tileX / TILE_SIZE);
+            _cols[colIndex] = aBlock._pattern;
+        }
 
-/**
- * Paint block pattern.
- */
-protected void paintFront(Painter aPntr)
-{
-    for(int i=0;i<_cols.length;i++) {
-        Pattern pat = _cols[i]; if(pat==null) continue;
-        double x = i*TILE_SIZE;
-        aPntr.drawImage(pat.image, x, 0);
+        // Repaint & reset TileRects
+        repaint(); _tileRects = null;
     }
-}
 
+    /**
+     * Returns whether row is full.
+     */
+    public boolean isFull()
+    {
+        for (Pattern col : _cols)
+            if (col == null)
+                return false;
+        return true;
+    }
+
+    /**
+     * Paint block pattern.
+     */
+    protected void paintFront(Painter aPntr)
+    {
+        for (int i = 0; i < _cols.length; i++) {
+            Pattern pat = _cols[i];
+            if (pat == null)
+                continue;
+            double tileX = i * TILE_SIZE;
+            pat.paintTile(aPntr, tileX, 0);
+        }
+    }
 }

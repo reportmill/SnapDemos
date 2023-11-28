@@ -1,4 +1,4 @@
-package snapdemos.snappy;
+package snapdemos.snappybird;
 import java.util.Random;
 import snap.geom.*;
 import snap.gfx.*;

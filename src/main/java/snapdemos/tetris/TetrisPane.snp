@@ -4,10 +4,11 @@
     <color value="#ffffff" />
   </ColView>
   <ColView MinWidth="200" Padding="4" GrowHeight="true" Spacing="4">
-    <Label LeanX="CENTER" text="Snaptris">
-      <font name="Arial" size="50" />
+    <Label Name="SnaptrisLabel" Margin="0,0,20,0" LeanX="CENTER" text="Snaptris">
+      <ShadowEffect Color="#00" Radius="8" DX="3" DY="3" />
+      <font name="Arial Bold" size="50" />
     </Label>
-    <BoxView Name="NextBlockBox" PrefWidth="100" PrefHeight="100" Padding="4" GrowHeight="true" LeanX="CENTER" Spacing="4">
+    <BoxView Name="NextBlockBox" PrefWidth="160" PrefHeight="100" Padding="4" GrowHeight="true" LeanX="CENTER" Spacing="4">
       <BevelBorder />
     </BoxView>
     <RowView MinWidth="0" Padding="9" GrowWidth="true" Spacing="4">
