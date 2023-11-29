@@ -34,6 +34,12 @@ public class ArcadeApp extends ViewOwner {
             getWindow().hide();
         }
 
+        // Handle SnaptrisButton
+        if (anEvent.equals("SnaptrisButton")) {
+            TetrisPane.main(new String[0]);
+            getWindow().hide();
+        }
+
         // Handle SnappyBirdButton
         if (anEvent.equals("SnappyBirdButton")) {
             SnappyBird.main(new String[0]);
@@ -43,12 +49,6 @@ public class ArcadeApp extends ViewOwner {
         // Handle JewelsButton
         if (anEvent.equals("JewelsButton")) {
             snapdemos.jewels.AppPane.main(new String[0]);
-            getWindow().hide();
-        }
-
-        // Handle SnaptrisButton
-        if (anEvent.equals("SnaptrisButton")) {
-            TetrisPane.main(new String[0]);
             getWindow().hide();
         }
     }

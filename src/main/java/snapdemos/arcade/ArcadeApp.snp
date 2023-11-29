@@ -14,13 +14,13 @@
     </ColView>
     <ColView PrefWidth="200" Spacing="4" Align="TOP_CENTER">
       <Font Name="Arial" Size="25" />
-      <Button Name="SnappyBirdButton" Image="pkg.images/SnappyBird.jpg" />
-      <Label Text="SnappyBird" />
+      <Button Name="SnaptrisButton" Image="pkg.images/Snaptris.jpg" />
+      <Label Text="Snaptris" />
     </ColView>
     <ColView PrefWidth="200" Spacing="4" Align="TOP_CENTER">
       <Font Name="Arial" Size="25" />
-      <Button Name="SnaptrisButton" Image="pkg.images/Snaptris.jpg" />
-      <Label Text="Snaptris" />
+      <Button Name="SnappyBirdButton" Image="pkg.images/SnappyBird.jpg" />
+      <Label Text="SnappyBird" />
     </ColView>
     <ColView PrefWidth="200" Spacing="4" Align="TOP_CENTER">
       <Font Name="Arial" Size="25" />
