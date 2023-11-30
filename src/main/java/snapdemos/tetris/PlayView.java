@@ -129,7 +129,7 @@ public class PlayView extends ParentView {
         // Update block position
         int dy = 3;
         if (_dropFast)
-            dy += 16;
+            dy += 15;
         _block.setY(_block.getY() + dy);
 
         // If block stopped,
