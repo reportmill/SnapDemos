@@ -68,7 +68,7 @@ public class StackRow extends View {
         // Iterate over block tiles and see if any intersect row tiles
         for(int i = 0; i < aBlock.getTileCount(); i++) {
             Rect blockTileRect = aBlock.getTileRectInParent(i);
-            Rect blockTileRect2 = blockTileRect.getInsetRect(2, .2);
+            Rect blockTileRect2 = blockTileRect.getInsetRect(2, 2);
             Rect[] rowTileRectsInParentCoords = getTileRectsInParent();
             for(Rect rowTileRect : rowTileRectsInParentCoords)
                 if(rowTileRect.intersects(blockTileRect2))

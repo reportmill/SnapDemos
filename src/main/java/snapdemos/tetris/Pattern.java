@@ -86,22 +86,36 @@ public class Pattern {
      */
     public Pattern getRotateRight()
     {
-        int[] fillArray2 = new int[fill.length];
-        double mx = colCount;
-        double my = rowCount;
-        Transform xfm = new Transform(mx / 2, my / 2);
-        xfm.rotate(-90);
-        xfm.translate(-mx / 2, -my / 2);
+        int[] rotatedFillArray = getRotatedFillArray();
+        return new Pattern(colCount, rowCount, color, rotatedFillArray);
+    }
 
-        Point or = xfm.transformXY(colCount, 0);
-        xfm.preTranslate(-or.x, -or.y);
+    /**
+     * Returns the fill array rotated by 90 degrees counterclockwise.
+     */
+    private int[] getRotatedFillArray()
+    {
+        // Get rotation about pattern center
+        double midX = colCount / 2d;
+        double midY = rowCount / 2d;
+        Transform rotateTransform = new Transform(midX, midY);
+        rotateTransform.rotate(-90);
+        rotateTransform.translate(-midX, -midY);
 
+        // Translate from old upper right point to origin
+        Point upperRightCorner = rotateTransform.transformXY(colCount, 0);
+        rotateTransform.preTranslate(-upperRightCorner.x, -upperRightCorner.y);
+
+        // Get rotated fill array
+        int[] rotatedFillArray = new int[fill.length];
         for (int i = 0; i < fill.length; i += 2) {
-            Point p = xfm.transformXY(fill[i] + .5, fill[i+1] + .5);
-            fillArray2[i] = (int) Math.round(p.x - .5);
-            fillArray2[i + 1] = (int) Math.round(p.y - .5);
+            Point p = rotateTransform.transformXY(fill[i] + .5, fill[i+1] + .5);
+            rotatedFillArray[i] = (int) Math.round(p.x - .5);
+            rotatedFillArray[i + 1] = (int) Math.round(p.y - .5);
         }
-        return new Pattern(colCount, rowCount, color, fillArray2);
+
+        // Return
+        return rotatedFillArray;
     }
 
     /**
