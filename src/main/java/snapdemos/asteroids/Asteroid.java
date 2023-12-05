@@ -63,7 +63,7 @@ public class Asteroid extends GameActor
         // If size is different than image, get new image size
         Image image = AsteroidImage;
         if (size != AsteroidImage.getWidth() && AsteroidImage.isLoaded())
-            image = AsteroidImage.cloneForSizeAndScale(size, size, 1);
+            image = AsteroidImage.cloneForSize(size, size);
         setImage(image);
     }
 
