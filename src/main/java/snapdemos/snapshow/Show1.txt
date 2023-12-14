@@ -1,0 +1,139 @@
+Java in the Browser
+
+	A long and winding road
+
+		Applets (1995)
+
+		Proprietary Transpilers (2006 - 2009)
+
+		Remote Desktops (2012 - 2017)
+
+		Modern Transpilers (2016 - present)
+
+		Real JVM in the Browser (Today!)
+
+History - Applets
+
+	Java Applets 1995
+
+		Didn't have ubiquitous support in browsers (install + version problems)
+
+		Struggled with Swing's "Write Once, Debug Everywhere" issues
+
+			"Platform Look and Feel" - the most amazing feature that browsers didn't want
+
+		Struggled with security concerns and performance problems
+
+	HTML5 (~2010)
+
+		New set of browser features reduced the demand for Java
+
+	Steve Jobs "Thoughts on Flash", April 2010
+
+		Probably helped end Java Applets as well
+
+		App plugins are slow, power hungry, and insecure
+
+		The real concern?: Competes with app store and native apps
+
+History - Proprietary Transpilers
+
+	GWT (May 2006)
+
+	Vaadin (May 2009)
+
+	Drawbacks
+
+		Non-standard UI library
+
+		No official desktop support
+
+History - Remote Desktop
+
+	WebSwing (2012?) (https://www.webswing.org)
+
+	JPro (2017?) (https://www.jpro.one)
+
+		Run headless on server
+
+		Transmit graphics to client
+
+		Sends user input to server
+
+	Drawbacks
+
+		Require significant configuration and server infrastructure
+
+		Slow
+
+		Limited opportunity for native platform integration (copy/paste, drag/drop)
+
+History - Modern Transpilers
+
+	ASM.js (~2012) (http://asmjs.org)
+
+		A strict subset of JS for compilers
+
+	JSweet (~2016) (https://www.jsweet.org)
+
+		Java source to TypeScript to JavaScript
+
+		No Swing, incomplete JRE, no class loaders
+
+	TeaVM (~2015)
+
+		Java bytecode to JavaScript
+
+		No Swing, incomplete JRE, no class loaders
+
+	CheerpJ (2016)
+
+		Java bytecode to JavaScript
+
+		Full JRE, heavy download (70mb+), no class loaders
+
+WebAssembly - Standard Browser VM
+
+	A binary instruction format for stack based VM
+
+	Based on feature set of ASM.js
+
+	MVP released 2017
+
+	Drawbacks
+
+		No GC
+
+		Poor Web API integration
+
+		Slow to add thread support
+
+CheerpJ 3: Finally - Real JVM in the browser!
+
+	The first port of full OpenJDK JVM to the browser
+
+	JIT not AOT
+
+	Core running in ASM.js and WASM
+
+	Full support for OpenJDK JRE, Swing, ClassLoaders, etc.
+
+	Initial download ~20mb
+
+Next Steps: Need new Java UI toolkit
+
+	Swing lacks modern features, carries AWT baggage, and has stagnated
+
+	JavaFX is heavy and unconventional
+
+	Neither works natively with browser APIs
+
+SnapKit: New Modern Java UI toolkit
+
+	Uses native graphics in browser and desktop (Canvas, WebGL, etc.)
+
+	Native integration in browser (clipboard, image loading, drag and drop, etc.)
+
+	Smaller runtime in browser by using native code
+
+	Modern features (image effects, animation, transforms, vector graphics)

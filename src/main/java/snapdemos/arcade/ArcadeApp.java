@@ -51,6 +51,12 @@ public class ArcadeApp extends ViewOwner {
             snapdemos.jewels.AppPane.main(new String[0]);
             getWindow().hide();
         }
+
+        // Handle SnapShowButton
+        if (anEvent.equals("SnapShowButton")) {
+            snapdemos.snapshow.SlidePane.main(new String[0]);
+            getWindow().hide();
+        }
     }
 
     /**

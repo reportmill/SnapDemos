@@ -28,4 +28,8 @@
       <Label Text="Jewels" />
     </ColView>
   </RowView>
+  <RowView Margin="20" GrowWidth="true">
+    <Font Name="Arial" Size="20" />
+    <Button Name="SnapShowButton" Text="Snap Show" PrefWidth="150" PrefHeight="30" />
+  </RowView>
 </ColView>
