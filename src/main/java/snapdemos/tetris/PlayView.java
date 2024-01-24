@@ -16,17 +16,17 @@ public class PlayView extends ParentView {
     // The next block
     private Block _nextBlock;
     
-    // The timer
-    private ViewTimer _timer = new ViewTimer(20, t -> timerFired());
-    
-    // The list of rows
-    private List<StackRow> _rows = new ArrayList<>();
+    // The list of stack rows
+    private List<StackRow> _stackRows = new ArrayList<>();
     
     // Whether user has requested block to drop faster
     private boolean _dropFast;
     
     // Whether game is over
     private boolean _gameOver;
+
+    // The Run to be called for each frame during game loop
+    private Runnable _timerFiredRun;
     
     // The size of the field
     private static int TILE_SIZE = Block.TILE_SIZE;
@@ -63,12 +63,12 @@ public class PlayView extends ParentView {
     public void startGame()
     {
         // Reset state
-        _rows.clear();
+        _stackRows.clear();
         removeChildren();
         _gameOver = false;
 
         // Start timer, add piece
-        _timer.start();
+        setTimerRunning(true);
         addPiece();
         requestFocus();
         getRootView().repaint();
@@ -79,9 +79,32 @@ public class PlayView extends ParentView {
      */
     public void pauseGame()
     {
-        if (_timer.isRunning())
-            _timer.pause();
-        else _timer.start();
+        setTimerRunning(!isTimerRunning());
+    }
+
+    /**
+     * Returns whether timer is running.
+     */
+    private boolean isTimerRunning()  { return _timerFiredRun != null; }
+
+    /**
+     * Sets whether timer is running.
+     */
+    private void setTimerRunning(boolean aValue)
+    {
+        if (aValue == isTimerRunning()) return;
+
+        // Start timer
+        if (_timerFiredRun == null) {
+            _timerFiredRun = this::timerFired;
+            getEnv().runIntervals(_timerFiredRun, 20);
+        }
+
+        // Stop timer
+        else {
+            getEnv().stopIntervals(_timerFiredRun);
+            _timerFiredRun = null;
+        }
     }
 
     /**
@@ -144,8 +167,8 @@ public class PlayView extends ParentView {
     {
         double blockMaxY = _block.getMaxY();
 
-        for (int i = _rows.size() - 1; i >= 0; i--) {
-            StackRow row = _rows.get(i);
+        for (int i = _stackRows.size() - 1; i >= 0; i--) {
+            StackRow row = _stackRows.get(i);
             if (MathUtils.lt(blockMaxY, row.getY()))
                 return false;
             if (row.intersectsBlock(_block))
@@ -181,7 +204,7 @@ public class PlayView extends ParentView {
      */
     void addRows()
     {
-        while (_rows.size() == 0 || _block.getY() + TILE_SIZE / 2 < getTopRow().getY()) {
+        while (_stackRows.size() == 0 || _block.getY() + TILE_SIZE / 2 < getTopRow().getY()) {
             addRow();
             if (_gameOver)
                 return;
@@ -194,7 +217,7 @@ public class PlayView extends ParentView {
     void addRow()
     {
         // If all rows full, it's GameOver
-        if (_rows.size() >= GRID_HEIGHT - 1) {
+        if (_stackRows.size() >= GRID_HEIGHT - 1) {
             gameOver();
             return;
         }
@@ -205,8 +228,8 @@ public class PlayView extends ParentView {
         double rowY = topRow != null ? topRow.getY() : (getHeight() - BORDER_WIDTH);
         rowY -= TILE_SIZE;
         newRow.setXY(BORDER_WIDTH, rowY);
-        newRow._rowNum = _rows.size();
-        _rows.add(newRow); addChild(newRow);
+        newRow._rowNum = _stackRows.size();
+        _stackRows.add(newRow); addChild(newRow);
     }
 
     /**
@@ -215,14 +238,14 @@ public class PlayView extends ParentView {
     void removeRow(StackRow aRow)
     {
         // Cache row index, explode row and remove from Rows list
-        int rowIndex = _rows.indexOf(aRow);
+        int rowIndex = _stackRows.indexOf(aRow);
         snapdemos.shared.Explode.explode(aRow, null, 20, 5, 0);
-        _rows.remove(aRow);
+        _stackRows.remove(aRow);
         removeChild(aRow);
 
         // Iterate over rows above and configure to move down
-        for (int i = rowIndex; i < _rows.size(); i++) {
-            StackRow row = _rows.get(i);
+        for (int i = rowIndex; i < _stackRows.size(); i++) {
+            StackRow row = _stackRows.get(i);
             row.setY(getHeight() - (i + 1) * TILE_SIZE);
             row.setTransY(row.getTransY() - TILE_SIZE);
             row.getAnimCleared(500).setTransY(0).play();
@@ -250,8 +273,8 @@ public class PlayView extends ParentView {
         removeChild(_block);
 
         // Remove full rows
-        for (int i = _rows.size() - 1; i >= 0; i--) {
-            StackRow row = _rows.get(i);
+        for (int i = _stackRows.size() - 1; i >= 0; i--) {
+            StackRow row = _stackRows.get(i);
             if (row.isFull())
                 removeRow(row);
         }
@@ -262,7 +285,7 @@ public class PlayView extends ParentView {
      */
     StackRow getTopRow()
     {
-        return _rows.size() > 0 ? _rows.get(_rows.size() - 1) : null;
+        return _stackRows.size() > 0 ? _stackRows.get(_stackRows.size() - 1) : null;
     }
 
     /**
@@ -270,7 +293,7 @@ public class PlayView extends ParentView {
      */
     StackRow getRowForY(double aY)
     {
-        for (StackRow row : _rows)
+        for (StackRow row : _stackRows)
             if (row.contains(row.getWidth() / 2, aY - row.getY()))
                 return row;
         return null;
@@ -282,14 +305,17 @@ public class PlayView extends ParentView {
     void gameOver()
     {
         _gameOver = true;
-        _timer.stop();
-        for (int i = 0; i < _rows.size(); i++) {
-            StackRow row = _rows.get(_rows.size() - i - 1);
+        setTimerRunning(false);
+
+        // Explode rows
+        for (int i = 0; i < _stackRows.size(); i++) {
+            StackRow row = _stackRows.get(_stackRows.size() - i - 1);
             snapdemos.shared.Explode.explode(row, null, 20, 5, i * 150);
         }
 
         addBlockToRows();
 
+        // Create 'Game Over' label and animate
         Label label = new Label("Game Over");
         label.setFont(new Font("Arial Bold", 36));
         label.setTextFill(Color.MAGENTA);
@@ -299,7 +325,7 @@ public class PlayView extends ParentView {
         addChild(label);
         label.setManaged(false);
         label.setLean(Pos.CENTER);
-        int time = _rows.size() * 150;
+        int time = _stackRows.size() * 150;
         label.getAnim(time).getAnim(time + 1200).setScale(1).setOpacity(1).setRotate(360).play();
     }
 

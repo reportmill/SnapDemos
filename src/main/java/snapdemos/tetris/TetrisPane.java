@@ -1,5 +1,6 @@
 package snapdemos.tetris;
 import snap.gfx.Color;
+import snap.util.SnapUtils;
 import snap.view.*;
 
 /**
@@ -14,19 +15,30 @@ public class TetrisPane extends ViewOwner {
     private BoxView _nextBlockBox;
 
     /**
+     * Constructor.
+     */
+    public TetrisPane()
+    {
+        super();
+    }
+
+    /**
      * Create UI.
      */
     protected View createUI()
     {
         // Do normal version
-        RowView mainRowView = (RowView)super.createUI(); //new RowView(); mainRowView.setPadding(20,20,20,20);
+        RowView mainRowView = (RowView) super.createUI();
 
         // Swap out placeholder with PlayView
         _playView = new PlayView();
         ViewUtils.replaceView(mainRowView.getChild(0), _playView);
 
-        // Return MainRowView
-        return mainRowView;
+        // Create ScaleBox to work with small window sizes
+        ScaleBox scaleBox = new ScaleBox(mainRowView, true, true);
+
+        // Return
+        return scaleBox;
     }
 
     /**
@@ -34,18 +46,22 @@ public class TetrisPane extends ViewOwner {
      */
     protected void initUI()
     {
-        getView("SnaptrisLabel", Label.class).setTextFill(Color.WHITE);
+        getView("TitleLabel", Label.class).setTextFill(Color.WHITE);
 
         // Get/configure NextBlockBox
         _nextBlockBox = getView("NextBlockBox", BoxView.class);
-        _nextBlockBox.setFillWidth(true);
-        _nextBlockBox.setFillHeight(true);
-        _nextBlockBox.setContent(new BoxView());
-        _nextBlockBox = (BoxView) _nextBlockBox.getContent();
         _nextBlockBox.setScale(.6);
 
         // Add PlayView listener to call playViewNextBlockChanged()
         _playView.addPropChangeListener(pc -> playViewNextBlockChanged(), PlayView.NextBlock_Prop);
+    }
+
+    /**
+     * Initialize showing.
+     */
+    protected void initShowing()
+    {
+        runLater(() -> _playView.startGame());
     }
 
     /**
@@ -87,8 +103,8 @@ public class TetrisPane extends ViewOwner {
      */
     static void appThreadMain()
     {
-        TetrisPane tp = new TetrisPane();
-        tp.setWindowVisible(true);
-        tp.runLater(() -> tp._playView.startGame());
+        TetrisPane tetrisPane = new TetrisPane();
+        tetrisPane.getWindow().setMaximized(SnapUtils.isWebVM);
+        tetrisPane.setWindowVisible(true);
     }
 }

@@ -18,10 +18,10 @@ public class Pattern {
     public int[] fill;
     
     // The color of pattern
-    public Color color;
+    private Color _color;
     
-    // The image
-    public Image image;
+    // The pattern image
+    private Image _image;
 
     // Pattern constants
     public static Pattern SQUARE, STICK, BOAT, L1, L2, S1, S2;
@@ -54,9 +54,8 @@ public class Pattern {
     {
         rowCount = aRowCount;
         colCount = aColCount;
-        color = aColor;
+        _color = aColor;
         fill = fillArray;
-        image = getImage(aColor);
         tileCount = fill.length/2;
     }
 
@@ -78,7 +77,8 @@ public class Pattern {
      */
     public void paintTile(Painter aPntr, double tileX, double tileY)
     {
-        aPntr.drawImage(image, tileX - TILE_OFFSET, tileY - TILE_OFFSET);
+        if (_image == null) _image = getImage(_color);
+        aPntr.drawImage(_image, tileX - TILE_OFFSET, tileY - TILE_OFFSET);
     }
 
     /**
@@ -87,7 +87,7 @@ public class Pattern {
     public Pattern getRotateRight()
     {
         int[] rotatedFillArray = getRotatedFillArray();
-        return new Pattern(colCount, rowCount, color, rotatedFillArray);
+        return new Pattern(colCount, rowCount, _color, rotatedFillArray);
     }
 
     /**
@@ -123,7 +123,7 @@ public class Pattern {
      */
     private static Image getImage(Color aColor)
     {
-        View view = new View() { };
+        View view = new BoxView();
         view.setSize(TILE_SIZE, TILE_SIZE);
         view.setPrefSize(TILE_SIZE, TILE_SIZE);
         view.setBorder(aColor.blend(Color.BLACK,.1), 1);
