@@ -4,6 +4,7 @@ import snap.geom.*;
 import snap.gfx.*;
 import snap.util.MathUtils;
 import snap.view.*;
+import snap.viewx.Explode;
 
 /**
  * This class is the main game view.
@@ -239,7 +240,7 @@ public class PlayView extends ParentView {
     {
         // Cache row index, explode row and remove from Rows list
         int rowIndex = _stackRows.indexOf(aRow);
-        snapdemos.shared.Explode.explode(aRow, null, 20, 5, 0);
+        new Explode(aRow, 20, 5, null).play();
         _stackRows.remove(aRow);
         removeChild(aRow);
 
@@ -310,7 +311,7 @@ public class PlayView extends ParentView {
         // Explode rows
         for (int i = 0; i < _stackRows.size(); i++) {
             StackRow row = _stackRows.get(_stackRows.size() - i - 1);
-            snapdemos.shared.Explode.explode(row, null, 20, 5, i * 150);
+            new Explode(row, 20, 5, null).playDelayed(i * 150);
         }
 
         addBlockToRows();
