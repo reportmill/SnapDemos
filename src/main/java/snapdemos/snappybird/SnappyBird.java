@@ -2,6 +2,7 @@ package snapdemos.snappybird;
 import java.util.Random;
 import snap.geom.*;
 import snap.gfx.*;
+import snap.util.SnapUtils;
 import snap.view.*;
 import snap.viewx.Explode;
 
@@ -52,14 +53,20 @@ public class SnappyBird extends ViewOwner {
         _mainView.setClipToBounds(true);
         _mainView.setBorder(Color.GRAY, 1);
         _mainView.addEventHandler(e -> flap(), MousePress);
+        _mainView.addEventHandler(e -> flap(), KeyPress);
+        _mainView.setFocusable(true);
+        setFirstFocus(_mainView);
 
         // Create Flappy Image and ImageView and add
         _flappyView = new ImageView(FLAPPY_IMAGE);
         _flappyView.setBounds(180, 220, 60, 45);
         _mainView.addChild(_flappyView);
 
+        // Create ScaleBox to work with small window sizes
+        ScaleBox scaleBox = new ScaleBox(_mainView, true, true);
+
         // Return
-        return _mainView;
+        return scaleBox;
     }
 
     /**
@@ -203,7 +210,16 @@ public class SnappyBird extends ViewOwner {
      */
     public static void main(String[] args)
     {
+        ViewUtils.runLater(SnappyBird::mainLater);
+    }
+
+    /**
+     * Standard main method on event thread.
+     */
+    public static void mainLater()
+    {
         SnappyBird snappyBird = new SnappyBird();
+        snappyBird.getWindow().setMaximized(SnapUtils.isWebVM);
         snappyBird.setWindowVisible(true);
     }
 }
