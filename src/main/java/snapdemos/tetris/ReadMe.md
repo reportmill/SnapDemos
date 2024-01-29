@@ -1,4 +1,4 @@
-# Tetris - a Java UI toolkit
+# Tetris
 
 This is a simple clone of the Tetris game, written with SnapKit.
 

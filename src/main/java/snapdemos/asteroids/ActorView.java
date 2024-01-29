@@ -8,9 +8,9 @@ import snap.view.ImageView;
 import snap.view.View;
 
 /**
- * This class models game objects in a scene.
+ * This view class is the base class for individual elements of a game and manages painting, movement and collisions.
  */
-public class GameActor extends ImageView {
+public class ActorView extends ImageView {
 
     // The velocity vector
     private Vector _velocity;
@@ -25,7 +25,7 @@ public class GameActor extends ImageView {
     /**
      * Constructor.
      */
-    public GameActor()
+    public ActorView()
     {
         _velocity = new Vector();
     }
@@ -33,7 +33,7 @@ public class GameActor extends ImageView {
     /**
      * Returns the scene that holds this actor.
      */
-    public GameScene getScene()  { return getParent(GameScene.class); }
+    public GameView getScene()  { return getParent(GameView.class); }
 
     /**
      * Returns the velocity vector.
@@ -94,7 +94,7 @@ public class GameActor extends ImageView {
 
         // Wrap to opposite edge if out of bounds
         if (_wrapEdges) {
-            GameScene scene = getScene();
+            GameView scene = getScene();
             double sceneW = scene.getWidth();
             double sceneH = scene.getHeight();
             if (newX >= sceneW) newX = 0;
@@ -134,7 +134,7 @@ public class GameActor extends ImageView {
     /**
      * Returns the first actor in range.
      */
-    public <T extends GameActor> T getActorInRange(Class<T> aClass)
+    public <T extends ActorView> T getActorInRange(Class<T> aClass)
     {
         double thisRadius = getWidth() / 2;
 
@@ -146,7 +146,7 @@ public class GameActor extends ImageView {
             if (aClass == null || aClass.isInstance(child)) {
                 double thatRadius = child.getWidth();
                 double radiusAll = thisRadius + thatRadius;
-                if (getDistance((GameActor) child) <= radiusAll)
+                if (getDistance((ActorView) child) <= radiusAll)
                     return (T) child;
             }
         }
@@ -158,7 +158,7 @@ public class GameActor extends ImageView {
     /**
      * Returns the distance to the given actor.
      */
-    public double getDistance(GameActor anActor)
+    public double getDistance(ActorView anActor)
     {
         return getDistance(anActor.getCenterX(), anActor.getCenterY());
     }

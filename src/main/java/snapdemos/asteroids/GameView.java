@@ -4,6 +4,7 @@
 package snapdemos.asteroids;
 import snap.geom.Point;
 import snap.gfx.Color;
+import snap.util.ArrayUtils;
 import snap.view.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,9 +12,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The parent and background for SnapActors.
+ * This view class paints the game background and manages child actor views.
  */
-public class GameScene extends ChildView {
+public class GameView extends ChildView {
 
     // Whether mouse was clicked on this frame
     private ViewEvent  _mouseClicked;
@@ -24,13 +25,16 @@ public class GameScene extends ChildView {
     // The animation timer
     private ViewTimer  _timer = new ViewTimer(FRAME_DELAY, t -> processNextFrame());
 
+    // The runnable to process next frame
+    private Runnable _processNextFrameRun;
+
     // Constant for frame delay
     private static final int FRAME_DELAY = 40;
 
     /**
      * Create new SnapScene.
      */
-    public GameScene()
+    public GameView()
     {
         super();
         setFill(Color.WHITE);
@@ -44,7 +48,7 @@ public class GameScene extends ChildView {
     /**
      * Adds the given actor to scene.
      */
-    public void addActor(GameActor anActor)
+    public void addActor(ActorView anActor)
     {
         addChild(anActor);
     }
@@ -52,15 +56,15 @@ public class GameScene extends ChildView {
     /**
      * Removes an actor.
      */
-    public GameActor removeActor(int anIndex)
+    public ActorView removeActor(int anIndex)
     {
-        return (GameActor) removeChild(anIndex);
+        return (ActorView) removeChild(anIndex);
     }
 
     /**
      * Removes an actor.
      */
-    public int removeActor(GameActor anActor)
+    public int removeActor(ActorView anActor)
     {
         int index = indexOfChild(anActor);
         if (index >= 0) removeActor(index);
@@ -70,7 +74,7 @@ public class GameScene extends ChildView {
     /**
      * Adds the given actor to scene at given XY.
      */
-    public void addActorAtXY(GameActor anActor, double aX, double aY)
+    public void addActorAtXY(ActorView anActor, double aX, double aY)
     {
         addActor(anActor);
         anActor.setCenterXY(aX, aY);
@@ -79,19 +83,19 @@ public class GameScene extends ChildView {
     /**
      * Returns the actor with given name.
      */
-    public GameActor getActorForName(String aName)
+    public ActorView getActorForName(String aName)
     {
         View child = getChildForName(aName);
-        return child instanceof GameActor ? (GameActor) child : null;
+        return child instanceof ActorView ? (ActorView) child : null;
     }
 
     /**
      * Returns the scene actor intersecting given point in local coords.
      */
-    public <T extends GameActor> T getActorAtXY(double aX, double aY, Class<T> aClass)
+    public <T extends ActorView> T getActorAtXY(double aX, double aY, Class<T> aClass)
     {
         for (View child : getChildren()) {
-            if (!(child instanceof GameActor)) continue;
+            if (!(child instanceof ActorView)) continue;
             if (aClass == null || aClass.isInstance(child)) {
                 Point point = child.parentToLocal(aX, aY);
                 if (child.contains(point.getX(), point.getY()))
@@ -106,12 +110,12 @@ public class GameScene extends ChildView {
     /**
      * Returns the scene actor intersecting given point in local coords.
      */
-    public <T extends GameActor> List<T> getActorsAtXY(double aX, double aY, Class<T> aClass)
+    public <T extends ActorView> List<T> getActorsAtXY(double aX, double aY, Class<T> aClass)
     {
         List<T> actorsAtXY = new ArrayList<>();
 
         for (View child : getChildren()) {
-            if (!(child instanceof GameActor)) continue;
+            if (!(child instanceof ActorView)) continue;
             if (aClass == null || aClass.isInstance(child)) {
                 Point point = child.parentToLocal(aX, aY);
                 if (child.contains(point.getX(), point.getY()))
@@ -121,6 +125,15 @@ public class GameScene extends ChildView {
 
         // Return
         return actorsAtXY;
+    }
+
+    /**
+     * Returns the actors for class.
+     */
+    public <T> T[] getActorsForClass(Class<T> aClass)
+    {
+        View[] children = getChildren();
+        return ArrayUtils.mapNonNull(children, child -> aClass.isInstance(child) ? (T) child : null, aClass);
     }
 
     /**
@@ -138,27 +151,30 @@ public class GameScene extends ChildView {
     }
 
     /**
+     * Whether game is playing.
+     */
+    public boolean isPlaying()  { return _processNextFrameRun != null; }
+
+    /**
      * Starts the animation.
      */
-    public void start()
+    public void startAnim()
     {
-        _timer.start(800);
+        if (_processNextFrameRun == null) {
+            _processNextFrameRun = this::processNextFrame;
+            ViewUtils.runDelayed(() -> getEnv().runIntervals(_processNextFrameRun, FRAME_DELAY), 800);
+        }
     }
 
     /**
      * Stops the animation.
      */
-    public void stop()
+    public void stopAnim()
     {
-        _timer.stop();
-    }
-
-    /**
-     * Whether scene is playing.
-     */
-    public boolean isPlaying()
-    {
-        return _timer.isRunning();
+        if (_processNextFrameRun != null) {
+            getEnv().stopIntervals(_processNextFrameRun);
+            _processNextFrameRun = null;
+        }
     }
 
     /**
@@ -172,8 +188,8 @@ public class GameScene extends ChildView {
 
         // IF showing, start, otherwise, stop
         if (aValue)
-            start();
-        else stop();
+            startAnim();
+        else stopAnim();
     }
 
     /**
@@ -208,8 +224,8 @@ public class GameScene extends ChildView {
 
         View[] children = getChildren();
         for (View child : children) {
-            if (child instanceof GameActor && child.getParent() != null)
-                ((GameActor) child).act();
+            if (child instanceof ActorView && child.getParent() != null)
+                ((ActorView) child).act();
         }
 
         _mouseClicked = null;

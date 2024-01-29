@@ -6,7 +6,7 @@ import snap.gfx.SoundClip;
 /**
  * This class models a bullet.
  */
-public class Bullet extends GameActor
+public class Bullet extends ActorView
 {
     // The amount of life left in a bullet (disappears at zero)
     private int _life = 50;

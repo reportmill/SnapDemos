@@ -8,7 +8,7 @@ import snap.viewx.Explode;
 /**
  * This class models the asteroids rocket.
  */
-public class Rocket extends GameActor
+public class Rocket extends ActorView
 {
     // Whether exploding
     private boolean _exploding;
@@ -70,7 +70,7 @@ public class Rocket extends GameActor
     private void handleKeys()
     {
         // Handle thrust key (up)
-        GameScene scene = getScene();
+        GameView scene = getScene();
         boolean isThrusting = scene.isKeyDown("up");
         setThrusting(isThrusting);
 
@@ -108,9 +108,9 @@ public class Rocket extends GameActor
      */
     private void explosionFinished()
     {
-        Space space = (Space) getScene();
-        space.removeActor(this);
-        space.endGame();
+        SpaceView spaceView = (SpaceView) getScene();
+        spaceView.removeActor(this);
+        spaceView.endGame();
     }
     
     /**
@@ -128,7 +128,7 @@ public class Rocket extends GameActor
             Point bulletPoint = localToParent(getWidth(), getHeight() / 2);
 
             // Add bullet to scene, move a bit and play sound
-            GameScene scene = getScene();
+            GameView scene = getScene();
             scene.addActorAtXY(bullet, bulletPoint.x, bulletPoint.y);
             bullet.move();
             bullet.playSound();

@@ -1,16 +1,24 @@
 package snapdemos.asteroids;
 import snap.geom.Ellipse;
+import snap.geom.Pos;
 import snap.gfx.Color;
+import snap.gfx.Font;
 import snap.gfx.Image;
 import snap.gfx.Painter;
+import snap.util.SnapUtils;
+import snap.view.Label;
+import snap.view.ScaleBox;
 import snap.view.ViewOwner;
 import snap.view.ViewUtils;
+import snap.viewx.Explode;
+import snapdemos.tetris.StackRow;
+
 import java.util.Random;
 
 /**
  * This class holds the main game view.
  */
-public class Space extends GameScene
+public class SpaceView extends GameView
 {
     // Whether the game is running
     private boolean _started;
@@ -21,13 +29,13 @@ public class Space extends GameScene
     // Constants
     private static final int GAME_WIDTH = 900;
     private static final int GAME_HEIGHT = 650;
-    private static final int START_ASTEROID_COUNT = 4;
+    private static final int INITIAL_ASTEROID_COUNT = 4;
     private static final int BACKGROUND_STAR_COUNT = 300;
 
     /**
      * Constructor.
      */
-    public Space() 
+    public SpaceView()
     {
         super();
 
@@ -55,7 +63,7 @@ public class Space extends GameScene
         addActorAtXY(rocket, getWidth() / 2 + 100, getHeight() / 2);
 
         // Create and add asteroids
-        for(int i = 0; i < START_ASTEROID_COUNT; i++) {
+        for(int i = 0; i < INITIAL_ASTEROID_COUNT; i++) {
             Asteroid asteroid = new Asteroid();
             int x = new Random().nextInt((int) getWidth() / 2);
             int y = new Random().nextInt((int) getHeight() / 2);
@@ -82,6 +90,24 @@ public class Space extends GameScene
     {
         if (!_started && (isMouseClicked() || isKeyDown("space")))
             ViewUtils.runDelayed(() -> startGame(), 100);
+    }
+
+    /**
+     * Called when game is over.
+     */
+    protected void gameOver()
+    {
+        // Create 'Game Over' label and animate
+        Label label = new Label("Game Over");
+        label.setPropValues(Font_Prop, "Arial Bold 72", Opacity_Prop, 0);
+        label.setTextFill(Color.MAGENTA);
+        label.setSize(label.getPrefSize());
+        label.setScale(.1);
+        addChild(label);
+        label.setManaged(false);
+        label.setLean(Pos.CENTER);
+        label.getAnim(1000).getAnim(1000 + 1200).setScale(1).setOpacity(1).setRotate(360).play();
+        getEnv().runDelayed(this::stopAnim, 2200);
     }
 
     /**
@@ -132,7 +158,11 @@ public class Space extends GameScene
      */
     private static void mainLater(String[] args)
     {
-        Space space = new Space();
-        new ViewOwner(space).setWindowVisible(true);
+        SpaceView spaceView = new SpaceView();
+        ScaleBox scaleBox = new ScaleBox(spaceView, true, true);
+        ViewOwner viewOwner = new ViewOwner(scaleBox);
+        viewOwner.setFirstFocus(spaceView);
+        viewOwner.getWindow().setMaximized(SnapUtils.isWebVM);
+        viewOwner.setWindowVisible(true);
     }
 }

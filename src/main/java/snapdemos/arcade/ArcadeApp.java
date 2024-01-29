@@ -4,7 +4,7 @@ import snap.view.Label;
 import snap.view.ViewEvent;
 import snap.view.ViewOwner;
 import snap.view.ViewUtils;
-import snapdemos.asteroids.Space;
+import snapdemos.asteroids.SpaceView;
 import snapdemos.snappybird.SnappyBird;
 import snapdemos.tetris.TetrisPane;
 
@@ -30,7 +30,7 @@ public class ArcadeApp extends ViewOwner {
     {
         // Handle AsteroidsButton
         if (anEvent.equals("AsteroidsButton")) {
-            Space.main(new String[0]);
+            SpaceView.main(new String[0]);
             getWindow().hide();
         }
 

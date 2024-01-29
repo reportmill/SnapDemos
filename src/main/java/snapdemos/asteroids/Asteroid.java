@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * This class models an asteroid.
  */
-public class Asteroid extends GameActor
+public class Asteroid extends ActorView
 {
     // The amount of life left
     private int _life;
@@ -90,22 +90,36 @@ public class Asteroid extends GameActor
         new Explode(this, 20, 20, null).play();
         
         // Remove this asteroid
-        GameScene scene = getScene();
+        GameView scene = getScene();
         scene.removeActor(this);
 
         // If not minimal size, create and add two half asteroids
-        int size = (int) getWidth();
-        if (size > 16) {
-            double angle = getVelocity().getAngle() + new Random().nextInt(45);
-            double length = getVelocity().getLength();
-            Vector speed1 = Vector.getVectorForAngleAndLength(angle + 60, length * 1.2);
-            Vector speed2 = Vector.getVectorForAngleAndLength(angle - 60, length * 1.2);
-            Asteroid a1 = new Asteroid(size / 2, speed1);
-            Asteroid a2 = new Asteroid(size / 2, speed2);
-            scene.addActorAtXY(a1, getCenterX(), getCenterY());
-            scene.addActorAtXY(a2, getCenterX(), getCenterY());
-            a1.move();
-            a2.move();
+        if (getWidth() > 16)
+            subdivide(scene);
+
+        // If no other asteroids left, do game over
+        else {
+            Asteroid[] asteroids = scene.getActorsForClass(Asteroid.class);
+            if (asteroids.length == 0)
+                ((SpaceView) scene).gameOver();
         }
+    }
+
+    /**
+     * Breaks asteroid into two smaller asteroids.
+     */
+    private void subdivide(GameView scene)
+    {
+        double angle = getVelocity().getAngle() + new Random().nextInt(45);
+        double length = getVelocity().getLength();
+        Vector speed1 = Vector.getVectorForAngleAndLength(angle + 60, length * 1.2);
+        Vector speed2 = Vector.getVectorForAngleAndLength(angle - 60, length * 1.2);
+        int size = (int) getWidth();
+        Asteroid a1 = new Asteroid(size / 2, speed1);
+        Asteroid a2 = new Asteroid(size / 2, speed2);
+        scene.addActorAtXY(a1, getCenterX(), getCenterY());
+        scene.addActorAtXY(a2, getCenterX(), getCenterY());
+        a1.move();
+        a2.move();
     }
 }
