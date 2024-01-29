@@ -110,7 +110,7 @@ public class Rocket extends ActorView
     {
         SpaceView spaceView = (SpaceView) getScene();
         spaceView.removeActor(this);
-        spaceView.endGame();
+        spaceView.gameOver();
     }
     
     /**

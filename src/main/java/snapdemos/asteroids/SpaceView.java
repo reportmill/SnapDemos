@@ -2,7 +2,6 @@ package snapdemos.asteroids;
 import snap.geom.Ellipse;
 import snap.geom.Pos;
 import snap.gfx.Color;
-import snap.gfx.Font;
 import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.util.SnapUtils;
@@ -10,9 +9,6 @@ import snap.view.Label;
 import snap.view.ScaleBox;
 import snap.view.ViewOwner;
 import snap.view.ViewUtils;
-import snap.viewx.Explode;
-import snapdemos.tetris.StackRow;
-
 import java.util.Random;
 
 /**
@@ -42,6 +38,7 @@ public class SpaceView extends GameView
         // Set size
         setSize(GAME_WIDTH, GAME_HEIGHT);
         setPrefSize(getSize());
+        setClipToBounds(true);
 
         // Create background
         createBackground();
@@ -75,14 +72,6 @@ public class SpaceView extends GameView
     }
 
     /**
-     * Stops the game.
-     */
-    public void endGame()
-    {
-        _started = false;
-    }
-
-    /**
      * Override to see if game needs restart.
      */
     @Override
@@ -97,6 +86,8 @@ public class SpaceView extends GameView
      */
     protected void gameOver()
     {
+        _started = false;
+
         // Create 'Game Over' label and animate
         Label label = new Label("Game Over");
         label.setPropValues(Font_Prop, "Arial Bold 72", Opacity_Prop, 0);
