@@ -22,9 +22,6 @@ public class GameView extends ChildView {
     // The pressed key
     private Set<Integer>  _keyDowns = new HashSet<>();
 
-    // The animation timer
-    private ViewTimer  _timer = new ViewTimer(FRAME_DELAY, t -> processNextFrame());
-
     // The runnable to process next frame
     private Runnable _processNextFrameRun;
 
