@@ -23,8 +23,8 @@ public class SlideView extends ChildView {
     private StringView _pageText;
 
     // The fonts
-    private static final Font TITLE_FONT = Font.Arial14.deriveFont(64).getBold();
-    private static final Font BODY_FONT = Font.Arial14.deriveFont(32);
+    private static final Font TITLE_FONT = Font.Arial14.copyForSize(64).getBold();
+    private static final Font BODY_FONT = Font.Arial14.copyForSize(32);
 
     /**
      * Constructor for given SlidePane.
