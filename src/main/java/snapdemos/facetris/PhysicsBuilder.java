@@ -152,7 +152,7 @@ public class PhysicsBuilder {
         List <View> hits = new ArrayList();
         Rect bnds = aView.getBoundsParent();
         for (View v : editor.getChildren()) {
-            if(v!=aView && v.getBoundsLocal().intersects(v.parentToLocal(bnds)))
+            if(v!=aView && v.getBoundsLocal().intersectsShape(v.parentToLocal(bnds)))
                 hits.add(v);
         }
 

@@ -71,7 +71,7 @@ public class StackRow extends View {
             Rect blockTileRect2 = blockTileRect.getInsetRect(2, 2);
             Rect[] rowTileRectsInParentCoords = getTileRectsInParent();
             for(Rect rowTileRect : rowTileRectsInParentCoords)
-                if(rowTileRect.intersects(blockTileRect2))
+                if(rowTileRect.intersectsShape(blockTileRect2))
                     return true;
         }
 
