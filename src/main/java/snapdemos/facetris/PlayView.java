@@ -1,5 +1,4 @@
 package snapdemos.facetris;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import snap.geom.Rect;
 import snap.gfx.Border;
@@ -45,8 +44,8 @@ public class PlayView extends ParentView {
         setFill(new Color("#F0F8FF"));
         setBorder(Color.BLACK, BORDER_SIZE);
         setBorder(getBorder().copyFor(Border.PaintAbove_Prop, true));
-        _timer = new ViewTimer(25, t -> animFrame());
-        _newFaceTimer = new ViewTimer(3500, t -> addFace());
+        _timer = new ViewTimer(this::animFrame, 25);
+        _newFaceTimer = new ViewTimer(this::addFace, 3500);
         setClipToBounds(true);
     }
 

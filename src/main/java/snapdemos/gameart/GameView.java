@@ -39,7 +39,7 @@ public class GameView extends View {
         ImageSet imageSet = _assetFile.getSpriteSets()[0].getImageSet();
         setImageSet(imageSet);
 
-        new ViewTimer(40, vt -> repaint()).start();
+        new ViewTimer(this::repaint, 40).start();
 
         setPrefSize(500, 500);
         setFill(Color.WHITE);
