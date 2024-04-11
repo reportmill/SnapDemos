@@ -1,8 +1,10 @@
 package snapdemos.snapshow;
 import snap.geom.HPos;
+import snap.geom.Insets;
 import snap.geom.Pos;
 import snap.geom.VPos;
 import snap.gfx.*;
+import snap.text.TextLineStyle;
 import snap.view.*;
 
 /**
@@ -23,19 +25,27 @@ public class SlideView extends ChildView {
     private StringView _pageText;
 
     // The fonts
-    private static final Font TITLE_FONT = Font.Arial14.copyForSize(64).getBold();
-    private static final Font BODY_FONT = Font.Arial14.copyForSize(32);
+    private static final Font TITLE_FONT = new Font("Arial Bold", 64);
+    private static final Font BODY_FONT = new Font("Arial", 36);
+    private static final Font BODY_FONT2 = BODY_FONT.copyForSize(30);
+    private static final Font BODY_FONT3 = BODY_FONT.copyForSize(24);
+
+    // Constants
+    private static final double SLIDE_WIDTH = 792;
+    private static final double SLIDE_HEIGHT = 612;
+    private static final Insets BODY_MARGIN = new Insets(182, 36, 50, 50);
+    private static final double BODY_WIDTH = SLIDE_WIDTH - BODY_MARGIN.getWidth();
+    private static final double BODY_HEIGHT = SLIDE_HEIGHT - BODY_MARGIN.getHeight();
 
     /**
      * Constructor for given SlidePane.
      */
-    public SlideView(SlidePane aSP)
+    public SlideView(SlidePane aSP, String[] lineItems)
     {
         super();
         _slidePane = aSP;
         setAlignY(VPos.CENTER);
-        setPrefSize(792, 612);
-        setSize(792, 612);
+        setPrefSize(SLIDE_WIDTH, SLIDE_HEIGHT);
         setBorder(Color.BLACK, 1);
         enableEvents(MouseRelease);
 
@@ -48,11 +58,11 @@ public class SlideView extends ChildView {
 
         // Create HeaderView
         _headerView = new TextArea();
-        _headerView.getTextBlock().setRichText(true);
+        _headerView.setWrapLines(true);
         _headerView.setAlignY(VPos.CENTER);
+        _headerView.setDefaultStyle(_headerView.getDefaultStyle().copyFor(TITLE_FONT, Color.WHITE));
         _headerView.getTextBlock().setAlignX(HPos.CENTER);
         _headerView.setBorderRadius(10);
-        _headerView.setWrapLines(true);
         _headerView.setFont(TITLE_FONT); //_headerView.setFill(Color.LIGHTBLUE);
         _headerView.setTextFill(Color.WHITE);
         _headerView.setEffect(new ShadowEffect(15, Color.BLACK, 2, 2));
@@ -62,9 +72,7 @@ public class SlideView extends ChildView {
 
         // Create BodyView
         _bodyView = new BodyView();
-        _bodyView.setAlignY(VPos.CENTER);
-        _bodyView.setPickable(false);
-        _bodyView.setBounds(72, 182, 684, 380);
+        _bodyView.setBounds(BODY_MARGIN.left, BODY_MARGIN.top, BODY_WIDTH, BODY_HEIGHT);
         addChild(_bodyView);
 
         // Create PageText
@@ -78,6 +86,9 @@ public class SlideView extends ChildView {
         if (badgeImage.isLoaded())
             addBadgeImageToSlide();
         else badgeImage.addLoadListener(() -> addBadgeImageToSlide());
+
+        // Set line items
+        setItems(lineItems);
     }
 
     /**
@@ -93,7 +104,7 @@ public class SlideView extends ChildView {
      */
     public void setHeaderText(String aValue)
     {
-        _headerView.addChars(aValue, TITLE_FONT, Color.WHITE);
+        _headerView.addChars(aValue);
         _headerView.scaleTextToFit();
     }
 
@@ -109,18 +120,20 @@ public class SlideView extends ChildView {
         // Add Body items
         for (int i = 1; i < theItems.length; i++) {
             String item = theItems[i];
-            if (item.trim().length() == 0) continue;
             _bodyView.addItem(item);
         }
 
-        while (_bodyView.getPrefHeight(_bodyView.getWidth()) > _bodyView.getHeight()) {
+        // Shrink body to fit slide
+        while (_bodyView.getPrefHeight(BODY_WIDTH) > _bodyView.getHeight()) {
             for (View child : _bodyView.getChildren()) {
                 TextArea textArea = (TextArea) child;
-                double scale = textArea.getFontScale() - .05;
-                textArea.setFontScale(scale);
+                textArea.setFontScale(textArea.getFontScale() - .05);
             }
-            _bodyView.relayout();
         }
+
+        // If more than a half inch of space left, add to padding
+        if (_bodyView.getPrefHeight(BODY_WIDTH) + 36 < _bodyView.getHeight())
+            _bodyView.setPadding(24, 0, 0, 0);
     }
 
     /**
@@ -171,6 +184,7 @@ public class SlideView extends ChildView {
         {
             setSpacing(12);
             setFillWidth(true);
+            setPickable(false);
         }
 
         /**
@@ -178,19 +192,25 @@ public class SlideView extends ChildView {
          */
         public void addItem(String anItem)
         {
+            // Get indent level
+            int indentLevel = 0;
+            while (indentLevel < anItem.length() && anItem.charAt(indentLevel) == '\t')
+                indentLevel++;
+
             // Get string
-            String string = anItem;
-            if (string.startsWith("\t\t"))
-                string = string.replace("\t\t", "\t\u2022 ");
-            else if (string.startsWith("\t"))
-                string = string.replace("\t", "\u2022 ");
+            String string = "\u2022 " + anItem.trim();
+
+            // Get font
+            Font itemFont = indentLevel == 0 ? BODY_FONT : indentLevel == 1 ? BODY_FONT2 : BODY_FONT3;
+            double leftMargin = indentLevel * 30;
 
             // Create TextView
-            TextArea text = new TextArea();
-            text.setFont(BODY_FONT);
-            text.setWrapLines(true);
-            text.addChars(string, BODY_FONT);
-            addChild(text);
+            TextArea textArea = new TextArea();
+            textArea.setWrapLines(true);
+            textArea.setMargin(0, 0, 0, leftMargin);
+            textArea.setDefaultLineStyle(textArea.getDefaultLineStyle().copyFor(TextLineStyle.LEFT_INDENT_KEY, 20));
+            textArea.addChars(string, itemFont);
+            addChild(textArea);
         }
     }
 }

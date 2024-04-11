@@ -2,6 +2,7 @@ package snapdemos.snapshow;
 import java.util.*;
 import snap.gfx.Color;
 import snap.gfx.Image;
+import snap.util.ArrayUtils;
 import snap.util.SnapUtils;
 import snap.view.*;
 import snap.viewx.TransitionPane;
@@ -23,12 +24,19 @@ public class SlidePane extends ViewOwner {
     // The image
     protected Image _image = getImage("badge.png");
 
+    // Embedded presentations
+    private static final String SHOW1 = "Show1.txt";
+    private static final String SNAPCODE_PRES = "SnapCodePres.txt";
+
     /**
      * Constructor.
      */
-    public SlidePane()
+    public SlidePane(String presentationName)
     {
         super();
+        Object source = SlidePane.class.getResource(presentationName);
+        if (source != null)
+            setSource(source);
     }
 
     /**
@@ -36,31 +44,32 @@ public class SlidePane extends ViewOwner {
      */
     public void setSource(Object aSource)
     {
-        String text = SnapUtils.getText(aSource);
-        text = text.replace("\n\n", "\n").replace("\n\n", "\n");
+        // Get text without
+        String text = SnapUtils.getText(aSource); assert (text != null);
+        while (text.contains("\n\n")) text = text.replace("\n\n", "\n");
+        text = text.replace("    ", "\t");
+
+        // Get items (filter out empty items)
         String[] items = text.split("\n");
+        items = ArrayUtils.filter(items, item -> item.trim().length() > 0);
+        int itemIndex = 0;
 
-        int i = 0;
-        while (i < items.length && items[i].trim().length() == 0) i++;
-        while (i < items.length) {
+        // Iterate over items
+        while (itemIndex < items.length) {
 
-            // Get range of items for slide
-            int start = i, end = i + 1;
-            while (end < items.length && items[end].startsWith("\t")) end++;
+            // Get end index for next slide (last item index with tab indent)
+            int endIndex = itemIndex + 1;
+            while (endIndex < items.length && items[endIndex].startsWith("\t"))
+                endIndex++;
 
             // Get slide items and create/add slide
-            String[] slideItems = Arrays.copyOfRange(items, start, end);
-            SlideView slideView = new SlideView(this);
-            slideView.setItems(slideItems);
+            String[] slideItems = Arrays.copyOfRange(items, itemIndex, endIndex);
+            SlideView slideView = new SlideView(this, slideItems);
             _slides.add(slideView);
 
             // Skip to next slide start
-            i = end;
-            while (i < items.length && items[i].trim().length() == 0) i++;
+            itemIndex = endIndex;
         }
-
-        getUI();
-        setSlideIndex(0);
     }
 
     /**
@@ -123,10 +132,23 @@ public class SlidePane extends ViewOwner {
     {
         _mainBox = new TransitionPane();
         _mainBox.setFill(Color.WHITE);
-        ScaleBox box = new ScaleBox(_mainBox, true, true);
-        box.setPadding(5, 5, 5, 5);
-        box.setGrowWidth(true);
-        return box;
+
+        // Wrap main box in scale box
+        ScaleBox scaleBox = new ScaleBox(_mainBox, true, true);
+        scaleBox.setPadding(5, 5, 5, 5);
+        scaleBox.setGrowWidth(true);
+
+        // Return
+        return scaleBox;
+    }
+
+    /**
+     * Initialize UI.
+     */
+    @Override
+    protected void initUI()
+    {
+        setSlideIndex(0);
     }
 
     /**
@@ -134,10 +156,8 @@ public class SlidePane extends ViewOwner {
      */
     public static void main(String[] args)
     {
-        SlidePane slidePane = new SlidePane();
-        slidePane.setSource(SlidePane.class.getResource("Show1.txt"));
-        if (SnapUtils.isWebVM)
-            slidePane.getWindow().setMaximized(true);
+        SlidePane slidePane = new SlidePane(SNAPCODE_PRES);
+        slidePane.getWindow().setMaximized(SnapUtils.isWebVM);
         slidePane.setWindowVisible(true);
     }
 }
