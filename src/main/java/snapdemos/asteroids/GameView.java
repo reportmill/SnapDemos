@@ -29,7 +29,7 @@ public class GameView extends ChildView {
     private static final int FRAME_DELAY = 40;
 
     /**
-     * Create new SnapScene.
+     * Constructor.
      */
     public GameView()
     {
