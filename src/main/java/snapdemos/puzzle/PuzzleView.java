@@ -176,11 +176,7 @@ public class PuzzleView extends RowView {
         // Repaint selected
         if (_selPieceViews.size() > 0) {
             PuzzlePieceView selPieceView = _selPieceViews.get(0);
-            aPntr.save();
-            aPntr.transform(selPieceView.getParent().getLocalToParent());
-            aPntr.transform(selPieceView.getLocalToParent());
-            ViewUtils.paintAll(selPieceView, aPntr);
-            aPntr.restore();
+            ViewUtils.paintViewInView(selPieceView, this, aPntr);
         }
     }
 
