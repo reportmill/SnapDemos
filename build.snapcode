@@ -1,0 +1,8 @@
+{
+	"Class": "BuildFile",
+	"Dependencies": [
+		{ "Class": "MavenDependency", "Group": "org.jbox2d", "Name": "jbox2d-library", "Version": "2.2.1.1" }
+	],
+	"MainClassName": "TetrisPane",
+	"IncludeSnapKitRuntime": true
+}
