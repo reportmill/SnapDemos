@@ -25,16 +25,13 @@ public class PlayView extends ParentView {
     private int BORDER_SIZE = 2;
 
     // The Timer
-    private ViewTimer _timer;
-
-    // The Timer
     private ViewTimer _newFaceTimer;
 
     // The Random
     private Random  _random = new Random();
 
     // The PhysicsRunner
-    PhysicsRunner          _physRunner;
+    private PhysicsRunner _physRunner;
 
     /**
      * Creates PlayView.
@@ -44,7 +41,6 @@ public class PlayView extends ParentView {
         setFill(new Color("#F0F8FF"));
         setBorder(Color.BLACK, BORDER_SIZE);
         setBorder(getBorder().copyFor(Border.PaintAbove_Prop, true));
-        _timer = new ViewTimer(this::animFrame, 25);
         _newFaceTimer = new ViewTimer(this::addFace, 3500);
         setClipToBounds(true);
     }
@@ -70,10 +66,9 @@ public class PlayView extends ParentView {
         removeChildren();
 
         // Start timers
-        //_timer.start();
         _newFaceTimer.start(0);
 
-        if (_physRunner!=null)
+        if (_physRunner != null)
             _physRunner.setRunning(false);
 
         ParentView worldView = this;
@@ -89,8 +84,8 @@ public class PlayView extends ParentView {
      */
     public void stop()
     {
-        _timer.stop();
         _newFaceTimer.stop();
+        _physRunner.setRunning(false);
 
         ((Facetris)getOwner()).gameOver();
     }
@@ -113,7 +108,7 @@ public class PlayView extends ParentView {
     protected void addFace()
     {
         // Get next face and view
-        Face face = FaceIndex.get().getNextFaceFromQueue();
+        Face face = FaceIndex.getShared().getNextFaceFromQueue();
         _faces.addFieldFace(face);
 
         View view = face.getView();
@@ -130,7 +125,7 @@ public class PlayView extends ParentView {
         view.setXY(x, -vh);
         getOwner().resetLater();
 
-        if (_physRunner!=null)
+        if (_physRunner != null)
             _physRunner.addPhysForView(view);
     }
 
@@ -141,13 +136,14 @@ public class PlayView extends ParentView {
     {
         // Get main face and name
         Face face = _faces.getMainFace();
-        if (face==null) return false;
+        if (face == null)
+            return false;
         String name = face.getName().toLowerCase();
         String first = face.getFirstName().toLowerCase();
 
         // If mace matches
-        String gname = aName.toLowerCase();
-        boolean match = gname.length()>0 && (name.startsWith(gname) || first.startsWith(gname));
+        String guessName = aName.toLowerCase();
+        boolean match = guessName.length() > 0 && (name.startsWith(guessName) || first.startsWith(guessName));
         if (match)
             handleFaceWin(face);
         else handleFaceLose(face);
@@ -177,7 +173,7 @@ public class PlayView extends ParentView {
         removeChild(view);
         view.setOpacity(1);
 
-        if (_physRunner!=null)
+        if (_physRunner != null)
             _physRunner.removePhysForView(view);
     }
 
@@ -189,7 +185,7 @@ public class PlayView extends ParentView {
         _player.addLostFace(aFace);
         getOwner().resetLater();
 
-        Body body = (Body)aFace.getView().getPhysics().getNative();
+        Body body = (Body) aFace.getView().getPhysics().getNative();
         body.setGravityScale(2.5f);
 
         if (_player.getLostFaces().size() >= 3)
@@ -216,7 +212,7 @@ public class PlayView extends ParentView {
         moveFaces();
 
         // If no more faces, stop
-        if (_faces.getFallFaces().size()==0 && _player.getLostFaces().size()>=3)
+        if (_faces.getFallFaces().size() == 0 && _player.getLostFaces().size() >= 3)
             stop();
     }
 
@@ -226,7 +222,7 @@ public class PlayView extends ParentView {
     void moveFaces()
     {
         // Get falling faces
-        Face fallFaces[] = _faces.getFallFaces().toArray(new Face[0]);
+        Face[] fallFaces = _faces.getFallFaces().toArray(new Face[0]);
 
         // Iterate over faces
         for (Face face : fallFaces) {
@@ -258,7 +254,8 @@ public class PlayView extends ParentView {
             return true;
 
         for (Face face : _player.getLostFaces()) {
-            if (face==aFace) break;
+            if (face == aFace)
+                break;
             if (face.getView().getBounds().intersectsRect(rect))
                 return true;
         }

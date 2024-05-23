@@ -71,7 +71,7 @@ public class Facetris extends ViewOwner {
     {
         // Update coming faces
         ColView comingSoonView = getView("ComingSoonView", ColView.class);
-        Face comingFaces[] = FaceIndex.get().getNextQueue().toArray(new Face[0]);
+        Face comingFaces[] = FaceIndex.getShared().getNextQueue().toArray(new Face[0]);
         if (comingFaces.length==0) {
             comingSoonView.removeChildren();
             return;
@@ -130,7 +130,7 @@ public class Facetris extends ViewOwner {
         // Handle CheatCheckBox
         if (anEvent.equals("CheatCheckBox")) {
             _cheat = anEvent.getBoolValue();
-            FaceIndex.get().getNextQueue().forEach(i -> i.getView().setShowName(_cheat));
+            FaceIndex.getShared().getNextQueue().forEach(i -> i.getView().setShowName(_cheat));
             playGame();
         }
     }
@@ -141,7 +141,7 @@ public class Facetris extends ViewOwner {
     @Override
     protected void initShowing()
     {
-        Face face = FaceIndex.get().getNextQueue().peek();
+        Face face = FaceIndex.getShared().getNextQueue().peek();
         Image img = face.getImage();
         if (img.isLoaded())
             runLater(() -> showStartPane());
@@ -199,7 +199,7 @@ public class Facetris extends ViewOwner {
             item = face.getName();
         else if (face!=null && face.getFirstName().toLowerCase().startsWith(text.toLowerCase()))
             item = face.getFirstName();
-        else item = FaceIndex.get().getNameForPrefix(selStart>0? text : "");
+        else item = FaceIndex.getShared().getNameForPrefix(selStart>0? text : "");
 
         // If completion available, set completion text
         if (item!=null)

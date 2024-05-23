@@ -5,7 +5,7 @@ import snap.view.ImageView;
 import snap.web.WebURL;
 
 /**
- * An class to hold face information.
+ * A class to hold face information.
  */
 public class Face {
 
@@ -16,7 +16,7 @@ public class Face {
     private String  _first;
 
     // The filename
-    private String  _fname;
+    private String _filename;
 
     // The image
     private Image  _image;
@@ -34,12 +34,12 @@ public class Face {
     public enum Status { InPlay, Won, Lost }
 
     /**
-     * Create Face.
+     * Constructor.
      */
     public Face(String aFileName)
     {
-        // Set first name
-        _fname = aFileName;
+        // Set filename
+        _filename = aFileName;
 
         // Get name
         _name = aFileName.replace(".jpg", "");
@@ -50,16 +50,16 @@ public class Face {
         _name = _name.replace("_Spain", "");
         _name = _name.replace("_", " ");
 
-        int ind = _name.indexOf('(');
-        if (ind>0) {
-            int ind2 = _name.indexOf(')', ind+1);
-            _first = _name.substring(ind+1, ind2);
-            _name = _name.substring(0, ind);
+        int parenIndex = _name.indexOf('(');
+        if (parenIndex > 0) {
+            int endIndex = _name.indexOf(')', parenIndex+1);
+            _first = _name.substring(parenIndex+1, endIndex);
+            _name = _name.substring(0, parenIndex);
         }
         else {
-            ind = _name.indexOf(" ");
-            if (ind>0)
-                _first = _name.substring(0, ind);
+            parenIndex = _name.indexOf(" ");
+            if (parenIndex > 0)
+                _first = _name.substring(0, parenIndex);
             else _first = _name;
         }
     }
@@ -95,17 +95,17 @@ public class Face {
     /**
      * Returns whether in play.
      */
-    public boolean inPlay()  { return _status==Status.InPlay; }
+    public boolean inPlay()  { return _status == Status.InPlay; }
 
     /**
      * Returns whether is won.
      */
-    public boolean isWon()  { return _status==Status.Won; }
+    public boolean isWon()  { return _status == Status.Won; }
 
     /**
      * Returns whether is lost.
      */
-    public boolean isLost()  { return _status==Status.Lost; }
+    public boolean isLost()  { return _status == Status.Lost; }
 
     /**
      * Returns the image.
@@ -113,7 +113,7 @@ public class Face {
     public Image getImage()
     {
         if (_image!=null) return _image;
-        String urls = FaceIndex.ROOT + '/' + _fname;
+        String urls = FaceIndex.ROOT + '/' + _filename;
         WebURL url = WebURL.getURL(urls);
         Image img = Image.getImageForSource(url);
         return _image = img;

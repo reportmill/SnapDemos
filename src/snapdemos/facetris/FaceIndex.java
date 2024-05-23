@@ -1,6 +1,5 @@
 package snapdemos.facetris;
-import snap.gfx.GFXEnv;
-import snap.util.SnapUtils;
+import snap.util.ArrayUtils;
 import snap.web.WebURL;
 import java.util.*;
 
@@ -10,30 +9,31 @@ import java.util.*;
 public class FaceIndex {
 
     // The FaceInfos
-    private Face  _finfos[];
+    private Face[] _faces;
 
     // The FaceInfo pool
-    private List<Face>  _facePool;
+    private List<Face> _facePool;
 
     // A queue of the next 5 faces
-    private Queue<Face>  _faceQueue;
+    private Queue<Face> _faceQueue;
 
     // The names
-    private String  _names[];
+    private String[] _names;
 
     // Random
-    private Random  _random = new Random();
+    private Random _random = new Random();
 
     // The root
-    public static String ROOT = "/Users/jeff/Gamma/Images";
+    public static String ROOT = "https://reportmill.com/images/Facetris";
 
     // Shared index
     private static FaceIndex _shared;
 
+    /**
+     * Constructor.
+     */
     public FaceIndex()
     {
-        if(SnapUtils.isTeaVM)
-            ROOT = GFXEnv.getEnv().getClassRoot() + "/Images";
     }
 
     /**
@@ -42,9 +42,9 @@ public class FaceIndex {
     private Face getNextFace()
     {
         List <Face> facePool = getFacePool();
-        if (facePool.size()==0) return null;
-        int index = _random.nextInt(facePool.size());
-        return facePool.remove(index);
+        if (facePool.size() == 0) return null;
+        int nextIndex = _random.nextInt(facePool.size());
+        return facePool.remove(nextIndex);
     }
 
     /**
@@ -66,8 +66,8 @@ public class FaceIndex {
      */
     private List<Face> getFacePool()
     {
-        if (_facePool!=null) return _facePool;
-        Face finfos[] = getFaceInfos();
+        if (_facePool != null) return _facePool;
+        Face[] finfos = getFaceInfos();
         List <Face> facePool = new ArrayList<>(finfos.length);
         Collections.addAll(facePool, finfos);
         return _facePool = facePool;
@@ -78,9 +78,10 @@ public class FaceIndex {
      */
     public Queue<Face> getNextQueue()
     {
-        if (_faceQueue!=null) return _faceQueue;
+        if (_faceQueue != null) return _faceQueue;
         _faceQueue = new ArrayDeque<>();
-        for (int i=0; i<4; i++) addFaceToQueue();
+        for (int i = 0; i < 4; i++)
+            addFaceToQueue();
         return _faceQueue;
     }
 
@@ -89,9 +90,9 @@ public class FaceIndex {
      */
     private void addFaceToQueue()
     {
-        Queue<Face> faceQueue = _faceQueue!=null ? _faceQueue : getNextQueue();
+        Queue<Face> faceQueue = _faceQueue != null ? _faceQueue : getNextQueue();
         Face face = getNextFace();
-        if (face!=null) {
+        if (face != null) {
             faceQueue.add(face);
             face.getView();
         }
@@ -103,23 +104,25 @@ public class FaceIndex {
     public Face[] getFaceInfos()
     {
         // If already set, just return
-        if (_finfos!=null) return _finfos;
+        if (_faces != null) return _faces;
 
         // Get index and entries
-        String index = getIndexText();
-        String entries[] = index.split("\n");
+        String indexText = getIndexText();
+        String[] entryStrings = indexText.split("\n");
 
         // Iterate over entries and add to list
-        List<Face> finfos = new ArrayList<>();
-        for (String entry : entries)
+        List<Face> facesList = new ArrayList<>();
+        for (String entryStr : entryStrings)
         {
-            String fname = entry.trim();
-            if (fname.length()>0) {
-                Face finfo = new Face(fname);
-                finfos.add(finfo);
+            String filename = entryStr.trim();
+            if (filename.length()>0) {
+                Face face = new Face(filename);
+                facesList.add(face);
             }
         }
-        return _finfos = finfos.toArray(new Face[0]);
+
+        // Return array
+        return _faces = facesList.toArray(new Face[0]);
     }
 
     /**
@@ -127,12 +130,9 @@ public class FaceIndex {
      */
     public String[] getNames()
     {
-        if (_names!=null) return _names;
-        Face faces[] = getFaceInfos();
-        List<String> names = new ArrayList<>(faces.length);
-        for (Face face : faces)
-            names.add(face.getName());
-        return _names = names.toArray(new String[0]);
+        if (_names != null) return _names;
+        Face[] faces = getFaceInfos();
+        return ArrayUtils.map(faces, face -> face.getName(), String.class);
     }
 
     /**
@@ -141,11 +141,8 @@ public class FaceIndex {
     public String getNameForPrefix(String aPrefix)
     {
         String prefix = aPrefix.toLowerCase();
-        String names[] = getNames();
-        for (String name : names)
-            if (name.toLowerCase().startsWith(prefix))
-                return name;
-        return null;
+        String[] names = getNames();
+        return ArrayUtils.findMatch(names, name -> name.toLowerCase().startsWith(prefix));
     }
 
     /**
@@ -153,18 +150,17 @@ public class FaceIndex {
      */
     public String getIndexText()
     {
-        String urls = ROOT + "/index.txt";
-        WebURL url = WebURL.getURL(urls);
-        String text = url.getText();
-        return text;
+        String indexUrlAddress = ROOT + "/index.txt";
+        WebURL indexUrl = WebURL.getURL(indexUrlAddress); assert (indexUrl != null);
+        return indexUrl.getText();
     }
 
     /**
      * Returns the FaceIndex.
      */
-    public static FaceIndex get()
+    public static FaceIndex getShared()
     {
-        if (_shared!=null) return _shared;
+        if (_shared != null) return _shared;
         return _shared = new FaceIndex();
     }
 }

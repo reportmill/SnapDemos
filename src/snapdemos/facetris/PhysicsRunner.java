@@ -346,7 +346,7 @@ public class PhysicsRunner {
     public Transform getViewToBox()
     {
         // If already set, just return
-        if(_localToBox!=null) return _localToBox;
+        if(_localToBox != null) return _localToBox;
 
         // Create transform from WorldView bounds to World bounds
         Rect r0 = _view.getBoundsLocal();
@@ -376,41 +376,32 @@ public class PhysicsRunner {
     /**
      * Return Vec2 for snap Point.
      */
-    Vec2 getVec(Point aPnt)  { return new Vec2((float)aPnt.x, (float)aPnt.y); }
+    Vec2 getVec(Point aPnt)  { return new Vec2((float) aPnt.x, (float) aPnt.y); }
 
     private class ViewContactListener implements ContactListener {
 
         @Override
         public void beginContact(Contact contact)
         {
-            View viewA = (View)contact.getFixtureA().getBody().getUserData();
-            View viewB = (View)contact.getFixtureB().getBody().getUserData();
+            View viewA = (View) contact.getFixtureA().getBody().getUserData();
+            View viewB = (View) contact.getFixtureB().getBody().getUserData();
             if (viewA instanceof FaceView) {
-                FaceView fview = (FaceView)viewA;
-                ((PlayView)_view).handleFaceCollide(fview.getFace());
+                FaceView faceView = (FaceView) viewA;
+                ((PlayView) _view).handleFaceCollide(faceView.getFace());
             }
             if (viewB instanceof FaceView) {
-                FaceView fview = (FaceView)viewB;
-                ((PlayView)_view).handleFaceCollide(fview.getFace());
+                FaceView faceView = (FaceView) viewB;
+                ((PlayView) _view).handleFaceCollide(faceView.getFace());
             }
         }
 
         @Override
-        public void endContact(Contact contact)
-        {
-
-        }
+        public void endContact(Contact contact)  { }
 
         @Override
-        public void preSolve(Contact contact, Manifold oldManifold)
-        {
-
-        }
+        public void preSolve(Contact contact, Manifold oldManifold)  { }
 
         @Override
-        public void postSolve(Contact contact, ContactImpulse impulse)
-        {
-
-        }
+        public void postSolve(Contact contact, ContactImpulse impulse)  { }
     }
 }

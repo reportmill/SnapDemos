@@ -9,13 +9,14 @@ import snap.view.*;
 public class StartPane extends ViewOwner {
 
     // Facetris
-    Facetris  _facetris;
+    private Facetris  _facetris;
 
     /**
-     * Create StartPane.
+     * Constructor.
      */
     public StartPane(Facetris aFactris)
     {
+        super();
         _facetris = aFactris;
     }
 

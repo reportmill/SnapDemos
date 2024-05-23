@@ -2,7 +2,7 @@
 <ColView FillWidth="true">
   <RowView Padding="5" Align="CENTER" >
     <LineBorder color="#000000" width="2" />
-    <Label Name="TitleLabel" Align="CENTER" text="Gamma Facetris">
+    <Label Name="TitleLabel" Align="CENTER" text="Celebrity Facetris">
       <font name="Arial Bold" size="40" />
     </Label>
     <CheckBox Name="CheatCheckBox" Text="Cheat" Padding="8" LeanX="RIGHT" />
