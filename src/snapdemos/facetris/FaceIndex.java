@@ -9,13 +9,13 @@ import java.util.*;
 public class FaceIndex {
 
     // The FaceInfos
-    private Face[] _faces;
+    private FaceEntry[] _faceEntries;
 
     // The FaceInfo pool
-    private List<Face> _facePool;
+    private List<FaceEntry> _facePool;
 
     // A queue of the next 5 faces
-    private Queue<Face> _faceQueue;
+    private Queue<FaceEntry> _faceQueue;
 
     // The names
     private String[] _names;
@@ -39,9 +39,9 @@ public class FaceIndex {
     /**
      * Returns the next face.
      */
-    private Face getNextFace()
+    private FaceEntry getNextFace()
     {
-        List <Face> facePool = getFacePool();
+        List <FaceEntry> facePool = getFacePool();
         if (facePool.size() == 0) return null;
         int nextIndex = _random.nextInt(facePool.size());
         return facePool.remove(nextIndex);
@@ -50,25 +50,25 @@ public class FaceIndex {
     /**
      * Returns the next face.
      */
-    public Face getNextFaceFromQueue()
+    public FaceEntry getNextFaceFromQueue()
     {
         // Add new face to queue
         addFaceToQueue();
 
         // Return face from front
-        Queue<Face> faceQueue = getNextQueue();
-        Face face = faceQueue.poll();
+        Queue<FaceEntry> faceQueue = getNextQueue();
+        FaceEntry face = faceQueue.poll();
         return face;
     }
 
     /**
      * Returns the faceInfo pool.
      */
-    private List<Face> getFacePool()
+    private List<FaceEntry> getFacePool()
     {
         if (_facePool != null) return _facePool;
-        Face[] finfos = getFaceInfos();
-        List <Face> facePool = new ArrayList<>(finfos.length);
+        FaceEntry[] finfos = getFaceInfos();
+        List <FaceEntry> facePool = new ArrayList<>(finfos.length);
         Collections.addAll(facePool, finfos);
         return _facePool = facePool;
     }
@@ -76,7 +76,7 @@ public class FaceIndex {
     /**
      * Returns the next queue.
      */
-    public Queue<Face> getNextQueue()
+    public Queue<FaceEntry> getNextQueue()
     {
         if (_faceQueue != null) return _faceQueue;
         _faceQueue = new ArrayDeque<>();
@@ -90,8 +90,8 @@ public class FaceIndex {
      */
     private void addFaceToQueue()
     {
-        Queue<Face> faceQueue = _faceQueue != null ? _faceQueue : getNextQueue();
-        Face face = getNextFace();
+        Queue<FaceEntry> faceQueue = _faceQueue != null ? _faceQueue : getNextQueue();
+        FaceEntry face = getNextFace();
         if (face != null) {
             faceQueue.add(face);
             face.getView();
@@ -101,28 +101,28 @@ public class FaceIndex {
     /**
      * Returns the array of FaceInfo.
      */
-    public Face[] getFaceInfos()
+    public FaceEntry[] getFaceInfos()
     {
         // If already set, just return
-        if (_faces != null) return _faces;
+        if (_faceEntries != null) return _faceEntries;
 
         // Get index and entries
         String indexText = getIndexText();
         String[] entryStrings = indexText.split("\n");
 
         // Iterate over entries and add to list
-        List<Face> facesList = new ArrayList<>();
+        List<FaceEntry> facesList = new ArrayList<>();
         for (String entryStr : entryStrings)
         {
             String filename = entryStr.trim();
             if (filename.length()>0) {
-                Face face = new Face(filename);
+                FaceEntry face = new FaceEntry(filename);
                 facesList.add(face);
             }
         }
 
         // Return array
-        return _faces = facesList.toArray(new Face[0]);
+        return _faceEntries = facesList.toArray(new FaceEntry[0]);
     }
 
     /**
@@ -131,7 +131,7 @@ public class FaceIndex {
     public String[] getNames()
     {
         if (_names != null) return _names;
-        Face[] faces = getFaceInfos();
+        FaceEntry[] faces = getFaceInfos();
         return ArrayUtils.map(faces, face -> face.getName(), String.class);
     }
 

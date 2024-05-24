@@ -3,6 +3,7 @@ import snap.gfx.Color;
 import snap.gfx.Effect;
 import snap.gfx.Image;
 import snap.gfx.ShadowEffect;
+import snap.util.SnapUtils;
 import snap.view.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * The main UI controller for Facetris.
  */
-public class Facetris extends ViewOwner {
+public class FacetrisApp extends ViewOwner {
 
     // The PlayView
     private PlayView  _playView;
@@ -25,7 +26,7 @@ public class Facetris extends ViewOwner {
     // Whether to cheat
     public static boolean  _cheat;
 
-    //
+    // Constant for title shadow
     private Effect SHADOW = new ShadowEffect();
 
     /**
@@ -71,23 +72,23 @@ public class Facetris extends ViewOwner {
     {
         // Update coming faces
         ColView comingSoonView = getView("ComingSoonView", ColView.class);
-        Face comingFaces[] = FaceIndex.getShared().getNextQueue().toArray(new Face[0]);
-        if (comingFaces.length==0) {
+        FaceEntry[] comingFaces = FaceIndex.getShared().getNextQueue().toArray(new FaceEntry[0]);
+        if (comingFaces.length == 0) {
             comingSoonView.removeChildren();
             return;
         }
 
         // Remove uses faces
         List<View> children = new ArrayList<>(Arrays.asList(comingSoonView.getChildren()));
-        while (children.size()>0 && comingFaces[0].getMiniView() != children.get(0)) {
+        while (children.size() > 0 && comingFaces[0].getMiniView() != children.get(0)) {
             View view = children.remove(0);
             view.setEffect(null);
             view.getAnim(500).setPrefHeight(0).setOnFinish(() -> comingSoonView.removeChild(view)).play();
         }
 
         // Add new faces
-        for (int i=children.size(); i<comingFaces.length; i++) {
-            Face face = comingFaces[i];
+        for (int i = children.size(); i < comingFaces.length; i++) {
+            FaceEntry face = comingFaces[i];
             comingSoonView.addChild(face.getMiniView());
         }
     }
@@ -99,18 +100,18 @@ public class Facetris extends ViewOwner {
     {
         // Update coming faces
         ColView familiarView = getView("FamiliarFacesView", ColView.class);
-        Face familiarFaces[] = getPlayer().getWonFaces().toArray(new Face[0]);
-        if (familiarFaces.length==0) {
+        FaceEntry[] familiarFaces = getPlayer().getWonFaces().toArray(new FaceEntry[0]);
+        if (familiarFaces.length == 0) {
             familiarView.removeChildren();
             return;
         }
 
         // Add Familiar faces
-        while (familiarView.getChildCount()<familiarFaces.length) {
-            Face face = familiarFaces[familiarView.getChildCount()];
+        while (familiarView.getChildCount() < familiarFaces.length) {
+            FaceEntry face = familiarFaces[familiarView.getChildCount()];
             View view = face.getMiniView();
             familiarView.addChild(view, 0);
-            double height = face.getImage().getHeight()/2;
+            double height = face.getImage().getHeight() / 2;
             view.setPrefHeight(0);
             view.getAnimCleared(500).setPrefHeight(height).setOnFinish(() -> view.setEffect(SHADOW)).play();
         }
@@ -141,7 +142,7 @@ public class Facetris extends ViewOwner {
     @Override
     protected void initShowing()
     {
-        Face face = FaceIndex.getShared().getNextQueue().peek();
+        FaceEntry face = FaceIndex.getShared().getNextQueue().peek();
         Image img = face.getImage();
         if (img.isLoaded())
             runLater(() -> showStartPane());
@@ -194,7 +195,7 @@ public class Facetris extends ViewOwner {
 
         // Look for possible completion
         String item = null;
-        Face face = _playView.getField().getMainFace();
+        FaceEntry face = _playView.getField().getMainFace();
         if (face!=null && face.getName().toLowerCase().startsWith(text.toLowerCase()))
             item = face.getName();
         else if (face!=null && face.getFirstName().toLowerCase().startsWith(text.toLowerCase()))
@@ -209,17 +210,18 @@ public class Facetris extends ViewOwner {
     /**
      * Standard Main implementation.
      */
-    public static void main(String args[])
+    public static void main(String[] args)
     {
-        ViewUtils.runLater(() -> mainLater(args));
+        ViewUtils.runLater(FacetrisApp::mainLater);
     }
 
     /**
      * Standard Main implementation.
      */
-    public static void mainLater(String args[])
+    private static void mainLater()
     {
-        Facetris game = new Facetris();
-        game.setWindowVisible(true);
+        FacetrisApp facetrisApp = new FacetrisApp();
+        facetrisApp.getWindow().setMaximized(SnapUtils.isWebVM);
+        facetrisApp.setWindowVisible(true);
     }
 }

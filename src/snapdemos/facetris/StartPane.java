@@ -9,12 +9,12 @@ import snap.view.*;
 public class StartPane extends ViewOwner {
 
     // Facetris
-    private Facetris  _facetris;
+    private FacetrisApp _facetris;
 
     /**
      * Constructor.
      */
-    public StartPane(Facetris aFactris)
+    public StartPane(FacetrisApp aFactris)
     {
         super();
         _facetris = aFactris;
@@ -35,14 +35,13 @@ public class StartPane extends ViewOwner {
             ui.setOpacity(1);
             setViewValue("TopLabel", "Game Over");
             int count = _facetris.getPlayer().getWonFaces().size();
-            setViewValue("Label2", "You recongized " + count + " faces.");
+            setViewValue("Label2", "You recognized " + count + " faces.");
             setViewValue("Label3", "");
         }
 
         ParentView view = _facetris.getUI(ParentView.class);
         ViewUtils.addChild(view, ui);
-        ui.setX(200);
-        ui.setY(-ui.getHeight());
+        ui.setXY(200, -ui.getHeight());
         ui.getAnimCleared(1000).setY(200).play();
     }
 

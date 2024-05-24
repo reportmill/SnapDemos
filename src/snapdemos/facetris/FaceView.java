@@ -9,7 +9,7 @@ import snap.view.*;
 public class FaceView extends StackView {
 
     // The face
-    private Face _face;
+    private FaceEntry _faceEntry;
 
     // The ImageView
     private ImageView  _imageView;
@@ -26,9 +26,9 @@ public class FaceView extends StackView {
     /**
      * Create FaceView.
      */
-    public FaceView(Face aFace)
+    public FaceView(FaceEntry aFace)
     {
-        _face = aFace;
+        _faceEntry = aFace;
 
         setPadding(10,10,10,10);
         setFill(Color.WHITE);
@@ -40,7 +40,7 @@ public class FaceView extends StackView {
         _imageView.setBorder(new Color(.9), 1);
         addChild(_imageView);
 
-        setShowName(Facetris._cheat);
+        setShowName(FacetrisApp._cheat);
 
         // If not loaded, set to resize when loaded
         if (!img.isLoaded())
@@ -51,7 +51,7 @@ public class FaceView extends StackView {
     /**
      * Returns the face.
      */
-    public Face getFace()  { return _face; }
+    public FaceEntry getFace()  { return _faceEntry; }
 
     /**
      * Returns whether face is lost.
@@ -96,13 +96,13 @@ public class FaceView extends StackView {
         if (aValue==isShowName()) return;
 
         if (aValue) {
-            _nameLabel1 = new Label(_face.getName());
+            _nameLabel1 = new Label(_faceEntry.getName());
             _nameLabel1.setFont(Font.Arial12.getBold());
             _nameLabel1.setLean(Pos.BOTTOM_CENTER);
             _nameLabel1.setPadding(2, 2, 10, 2);
             addChild(_nameLabel1);
 
-            _nameLabel2 = new Label(_face.getName());
+            _nameLabel2 = new Label(_faceEntry.getName());
             _nameLabel2.setFont(Font.Arial12.getBold());
             _nameLabel2.setTextFill(Color.WHITE);
             _nameLabel2.setLean(Pos.BOTTOM_CENTER);

@@ -7,7 +7,7 @@ import snap.web.WebURL;
 /**
  * A class to hold face information.
  */
-public class Face {
+public class FaceEntry {
 
     // The name
     private String  _name;
@@ -36,7 +36,7 @@ public class Face {
     /**
      * Constructor.
      */
-    public Face(String aFileName)
+    public FaceEntry(String aFileName)
     {
         // Set filename
         _filename = aFileName;

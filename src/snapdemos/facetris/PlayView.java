@@ -87,7 +87,7 @@ public class PlayView extends ParentView {
         _newFaceTimer.stop();
         _physRunner.setRunning(false);
 
-        ((Facetris)getOwner()).gameOver();
+        ((FacetrisApp)getOwner()).gameOver();
     }
 
     /**
@@ -108,7 +108,7 @@ public class PlayView extends ParentView {
     protected void addFace()
     {
         // Get next face and view
-        Face face = FaceIndex.getShared().getNextFaceFromQueue();
+        FaceEntry face = FaceIndex.getShared().getNextFaceFromQueue();
         _faces.addFieldFace(face);
 
         View view = face.getView();
@@ -135,7 +135,7 @@ public class PlayView extends ParentView {
     public boolean handleGuessFace(String aName)
     {
         // Get main face and name
-        Face face = _faces.getMainFace();
+        FaceEntry face = _faces.getMainFace();
         if (face == null)
             return false;
         String name = face.getName().toLowerCase();
@@ -153,7 +153,7 @@ public class PlayView extends ParentView {
     /**
      * Add win face.
      */
-    void handleFaceWin(Face aFace)
+    void handleFaceWin(FaceEntry aFace)
     {
         _player.addWonFace(aFace);
 
@@ -165,7 +165,7 @@ public class PlayView extends ParentView {
     /**
      * Called when addWinFace anim is finished.
      */
-    void handleFaceWinAnimDone(Face aFace)
+    void handleFaceWinAnimDone(FaceEntry aFace)
     {
         _faces.removeFieldFace(aFace);
 
@@ -180,7 +180,7 @@ public class PlayView extends ParentView {
     /**
      * Called to add a lose face.
      */
-    void handleFaceLose(Face aFace)
+    void handleFaceLose(FaceEntry aFace)
     {
         _player.addLostFace(aFace);
         getOwner().resetLater();
@@ -195,7 +195,7 @@ public class PlayView extends ParentView {
     /**
      * Add lost face.
      */
-    void handleFaceCollide(Face aFace)
+    void handleFaceCollide(FaceEntry aFace)
     {
         if (aFace.inPlay())
             handleFaceLose(aFace);
@@ -222,10 +222,10 @@ public class PlayView extends ParentView {
     void moveFaces()
     {
         // Get falling faces
-        Face[] fallFaces = _faces.getFallFaces().toArray(new Face[0]);
+        FaceEntry[] fallFaces = _faces.getFallFaces().toArray(new FaceEntry[0]);
 
         // Iterate over faces
-        for (Face face : fallFaces) {
+        for (FaceEntry face : fallFaces) {
 
             // If move will collide,
             double dx = face.getView().isLost() ? 6 : 2;
@@ -243,7 +243,7 @@ public class PlayView extends ParentView {
     /**
      * Returns whether face move would hit anything.
      */
-    public boolean willCollide(Face aFace, double dx)
+    public boolean willCollide(FaceEntry aFace, double dx)
     {
         View view = aFace.getView();
         Rect rect = view.getBounds();
@@ -253,7 +253,7 @@ public class PlayView extends ParentView {
         if (rect.getMaxY() > getBounds().getHeight() - BORDER_SIZE)
             return true;
 
-        for (Face face : _player.getLostFaces()) {
+        for (FaceEntry face : _player.getLostFaces()) {
             if (face == aFace)
                 break;
             if (face.getView().getBounds().intersectsRect(rect))

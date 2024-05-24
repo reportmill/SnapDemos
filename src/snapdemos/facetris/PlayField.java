@@ -8,17 +8,17 @@ import java.util.List;
 public class PlayField {
 
     // The Faces
-    private List<Face>  _fieldFaces = new ArrayList<>();
+    private List<FaceEntry>  _fieldFaces = new ArrayList<>();
 
     // The falling Faces
-    private List<Face>  _fallFaces = new ArrayList<>();
+    private List<FaceEntry>  _fallFaces = new ArrayList<>();
 
     /**
      * Returns the first face still in play.
      */
-    public Face getMainFace()
+    public FaceEntry getMainFace()
     {
-        for (Face face : getFallFaces())
+        for (FaceEntry face : getFallFaces())
             if (face.inPlay())
                 return face;
         return null;
@@ -27,7 +27,7 @@ public class PlayField {
     /**
      * Returns the active faces.
      */
-    public List<Face> getFieldFaces()
+    public List<FaceEntry> getFieldFaces()
     {
         return _fieldFaces;
     }
@@ -35,7 +35,7 @@ public class PlayField {
     /**
      * Adds a face.
      */
-    protected void addFieldFace(Face aFace)
+    protected void addFieldFace(FaceEntry aFace)
     {
         _fieldFaces.add(aFace);
         _fallFaces.add(aFace);
@@ -44,7 +44,7 @@ public class PlayField {
     /**
      * Removes a face.
      */
-    protected void removeFieldFace(Face aFace)
+    protected void removeFieldFace(FaceEntry aFace)
     {
         _fieldFaces.remove(aFace);
         removeFallFace(aFace);
@@ -53,7 +53,7 @@ public class PlayField {
     /**
      * Returns the falling faces.
      */
-    public List<Face> getFallFaces()
+    public List<FaceEntry> getFallFaces()
     {
         return _fallFaces;
     }
@@ -61,7 +61,7 @@ public class PlayField {
     /**
      * Removes a face.
      */
-    protected void removeFallFace(Face aFace)
+    protected void removeFallFace(FaceEntry aFace)
     {
         _fallFaces.remove(aFace);
     }

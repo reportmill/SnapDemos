@@ -8,15 +8,15 @@ import java.util.List;
 public class Player {
 
     // The Won faces
-    private List<Face>  _wonFaces = new ArrayList<>();
+    private List<FaceEntry>  _wonFaces = new ArrayList<>();
 
     // The Lost Faces
-    private List<Face>  _lostFaces = new ArrayList<>();
+    private List<FaceEntry>  _lostFaces = new ArrayList<>();
 
     /**
      * Returns the faces we've won.
      */
-    public List<Face> getWonFaces()
+    public List<FaceEntry> getWonFaces()
     {
         return _wonFaces;
     }
@@ -24,16 +24,16 @@ public class Player {
     /**
      * Add familiar face.
      */
-    public void addWonFace(Face aFace)
+    public void addWonFace(FaceEntry aFace)
     {
         _wonFaces.add(aFace);
-        aFace.setStatus(Face.Status.Won);
+        aFace.setStatus(FaceEntry.Status.Won);
     }
 
     /**
      * Returns the faces we've lost.
      */
-    public List<Face> getLostFaces()
+    public List<FaceEntry> getLostFaces()
     {
         return _lostFaces;
     }
@@ -41,10 +41,10 @@ public class Player {
     /**
      * Add lost face.
      */
-    void addLostFace(Face aFace)
+    void addLostFace(FaceEntry aFace)
     {
         _lostFaces.add(aFace);
-        aFace.setStatus(Face.Status.Lost);
+        aFace.setStatus(FaceEntry.Status.Lost);
    }
 
     /**
