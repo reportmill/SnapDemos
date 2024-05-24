@@ -8,10 +8,10 @@ import snap.view.*;
 public class Gem extends ImageView {
 
     // The Gem id
-    int     _gid;
+    private int _gemId;
     
     // The gem col/row
-    int     _col, _row;
+    private int _col, _row;
     
     // Constants
     static int TILE_SIZE = PlayView.TILE_SIZE;
@@ -26,35 +26,34 @@ public class Gem extends ImageView {
     static Image YELLOW_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/YellowGem.png");
     static Image ALL[] = new Image[] { BLUE_GEM, GREEN_GEM, ORANGE_GEM, PURPLE_GEM, RED_GEM, WHITE_GEM, YELLOW_GEM };
 
-/**
- * Create new Gem.
- */
-public Gem()
-{
-    _gid = (int)Math.floor(Math.random()*7);
-    setImage(ALL[_gid]);
-    setSize(TILE_SIZE,TILE_SIZE);
-    setPrefSize(TILE_SIZE,TILE_SIZE);
-}
+    /**
+     * Create new Gem.
+     */
+    public Gem()
+    {
+        _gemId = (int) Math.floor(Math.random() * 7);
+        setImage(ALL[_gemId]);
+        setSize(TILE_SIZE, TILE_SIZE);
+        setPrefSize(TILE_SIZE, TILE_SIZE);
+    }
 
-/**
- * Returns the gem id.
- */
-public int getId()  { return _gid; }
+    /**
+     * Returns the gem id.
+     */
+    public int getId()  { return _gemId; }
 
-/**
- * Returns the column of gem.
- */
-public int getCol()  { return _col; }
+    /**
+     * Returns the column of gem.
+     */
+    public int getCol()  { return _col; }
 
-/**
- * Returns the row of gem.
- */
-public int getRow()  { return _row; }
+    /**
+     * Returns the row of gem.
+     */
+    public int getRow()  { return _row; }
 
-/**
- * Sets the gem col/row.
- */
-public void setColRow(int aCol, int aRow)  { _col = aCol; _row = aRow; }
-
+    /**
+     * Sets the gem col/row.
+     */
+    public void setColRow(int aCol, int aRow)  { _col = aCol; _row = aRow; }
 }

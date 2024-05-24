@@ -5,6 +5,7 @@ import snap.view.ViewEvent;
 import snap.view.ViewOwner;
 import snap.view.ViewUtils;
 import snapdemos.asteroids.SpaceView;
+import snapdemos.jewels.JewelsApp;
 import snapdemos.snappybird.SnappyBird;
 import snapdemos.tetris.TetrisPane;
 
@@ -48,7 +49,7 @@ public class ArcadeApp extends ViewOwner {
 
         // Handle JewelsButton
         if (anEvent.equals("JewelsButton")) {
-            snapdemos.jewels.AppPane.main(new String[0]);
+            JewelsApp.main(new String[0]);
             getWindow().hide();
         }
 
