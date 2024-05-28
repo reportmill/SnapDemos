@@ -1,13 +1,11 @@
 package snapdemos.facetris;
 import org.jbox2d.dynamics.Body;
-import snap.geom.Rect;
 import snap.gfx.Border;
 import snap.gfx.Color;
 import snap.view.ParentView;
 import snap.view.View;
 import snap.view.ViewTimer;
 import snap.view.ViewUtils;
-
 import java.util.Random;
 
 /**
@@ -85,7 +83,6 @@ public class PlayView extends ParentView {
     public void stop()
     {
         _newFaceTimer.stop();
-        _physRunner.setRunning(false);
 
         ((FacetrisApp)getOwner()).gameOver();
     }
@@ -132,12 +129,12 @@ public class PlayView extends ParentView {
     /**
      * Called to guess a face.
      */
-    public boolean handleGuessFace(String aName)
+    public void handleGuessFace(String aName)
     {
         // Get main face and name
         FaceEntry face = _faces.getMainFace();
         if (face == null)
-            return false;
+            return;
         String name = face.getName().toLowerCase();
         String first = face.getFirstName().toLowerCase();
 
@@ -147,7 +144,6 @@ public class PlayView extends ParentView {
         if (match)
             handleFaceWin(face);
         else handleFaceLose(face);
-        return match;
     }
 
     /**
@@ -201,64 +197,5 @@ public class PlayView extends ParentView {
             handleFaceLose(aFace);
 
         _faces.removeFallFace(aFace);
-    }
-
-    /**
-     * Called for every frame.
-     */
-    private void animFrame()
-    {
-        // Move faces
-        moveFaces();
-
-        // If no more faces, stop
-        if (_faces.getFallFaces().size() == 0 && _player.getLostFaces().size() >= 3)
-            stop();
-    }
-
-    /**
-     * Moves any falling faces.
-     */
-    void moveFaces()
-    {
-        // Get falling faces
-        FaceEntry[] fallFaces = _faces.getFallFaces().toArray(new FaceEntry[0]);
-
-        // Iterate over faces
-        for (FaceEntry face : fallFaces) {
-
-            // If move will collide,
-            double dx = face.getView().isLost() ? 6 : 2;
-            if (willCollide(face, dx))
-                handleFaceCollide(face);
-
-            // Otherwise, move face
-            else {
-                View view = face.getView();
-                view.setY(view.getY() + dx);
-            }
-        }
-    }
-
-    /**
-     * Returns whether face move would hit anything.
-     */
-    public boolean willCollide(FaceEntry aFace, double dx)
-    {
-        View view = aFace.getView();
-        Rect rect = view.getBounds();
-        rect.y += dx;
-
-        // If will hit border, return true
-        if (rect.getMaxY() > getBounds().getHeight() - BORDER_SIZE)
-            return true;
-
-        for (FaceEntry face : _player.getLostFaces()) {
-            if (face == aFace)
-                break;
-            if (face.getView().getBounds().intersectsRect(rect))
-                return true;
-        }
-        return false;
     }
 }

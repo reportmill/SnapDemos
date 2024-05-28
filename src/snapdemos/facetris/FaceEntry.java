@@ -44,10 +44,6 @@ public class FaceEntry {
         // Get name
         _name = aFileName.replace(".jpg", "");
         _name = _name.replace(".jpeg","");
-        _name = _name.replace(".JPG","");
-        _name = _name.replace("_GmbH", "");
-        _name = _name.replace("_Athens", "");
-        _name = _name.replace("_Spain", "");
         _name = _name.replace("_", " ");
 
         int parenIndex = _name.indexOf('(');
@@ -84,6 +80,7 @@ public class FaceEntry {
      */
     public void setStatus(Status aStatus)
     {
+        if (aStatus == getStatus()) return;
         _status = aStatus;
 
         switch (_status) {
@@ -98,25 +95,14 @@ public class FaceEntry {
     public boolean inPlay()  { return _status == Status.InPlay; }
 
     /**
-     * Returns whether is won.
-     */
-    public boolean isWon()  { return _status == Status.Won; }
-
-    /**
-     * Returns whether is lost.
-     */
-    public boolean isLost()  { return _status == Status.Lost; }
-
-    /**
      * Returns the image.
      */
     public Image getImage()
     {
-        if (_image!=null) return _image;
-        String urls = FaceIndex.ROOT + '/' + _filename;
-        WebURL url = WebURL.getURL(urls);
-        Image img = Image.getImageForSource(url);
-        return _image = img;
+        if (_image != null) return _image;
+        String imageUrlAddress = FaceIndex.ROOT + '/' + _filename;
+        WebURL imageUrl = WebURL.getURL(imageUrlAddress);
+        return _image = Image.getImageForSource(imageUrl);
     }
 
     /**
@@ -124,12 +110,8 @@ public class FaceEntry {
      */
     public FaceView getView()
     {
-        // If already set, just return
-        if (_view!=null) return _view;
-
-        // Create view
-        FaceView view = new FaceView(this);
-        return _view = view;
+        if (_view != null) return _view;
+        return _view = new FaceView(this);
     }
 
     /**
@@ -138,24 +120,20 @@ public class FaceEntry {
     public ImageView getMiniView()
     {
         // If already set, just return
-        if (_miniView!=null) return _miniView;
+        if (_miniView != null) return _miniView;
 
         // Create image and image view
-        Image img = getImage();
-        ImageView iview = new ImageView(img);
-        iview.setEffect(new ShadowEffect());
+        Image image = getImage();
+        ImageView imageView = new ImageView(image);
+        imageView.setMaxSize(100, 100);
+        imageView.setEffect(new ShadowEffect());
 
         // If not loaded, set to resize when loaded
-        if (!img.isLoaded())
-            img.addLoadListener(() -> imageLoaded(iview, img));
-        else iview.setPrefSize(img.getWidth()/2, img.getHeight()/2);
+        if (!image.isLoaded())
+            image.addLoadListener(imageView::setSizeToBestSize);
+        else imageView.setSizeToBestSize();
 
         // Return image view
-        return _miniView = iview;
-    }
-
-    void imageLoaded(ImageView iview, Image img)
-    {
-        iview.setPrefSize(img.getWidth()/2, img.getHeight()/2);
+        return _miniView = imageView;
     }
 }

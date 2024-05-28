@@ -14,10 +14,10 @@ public class StartPane extends ViewOwner {
     /**
      * Constructor.
      */
-    public StartPane(FacetrisApp aFactris)
+    public StartPane(FacetrisApp aFacetris)
     {
         super();
-        _facetris = aFactris;
+        _facetris = aFacetris;
     }
 
     /**
@@ -30,7 +30,7 @@ public class StartPane extends ViewOwner {
         ui.setFill(ViewUtils.getBackFill());
         ui.setManaged(false);
         ui.setEffect(new ShadowEffect(20, Color.BLACK, 0, 0));
-        ui.setSize(ui.getPrefSize());
+        ui.setSizeToPrefSize();
         if (!firstTime) {
             ui.setOpacity(1);
             setViewValue("TopLabel", "Game Over");

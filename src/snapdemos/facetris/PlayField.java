@@ -53,10 +53,7 @@ public class PlayField {
     /**
      * Returns the falling faces.
      */
-    public List<FaceEntry> getFallFaces()
-    {
-        return _fallFaces;
-    }
+    public List<FaceEntry> getFallFaces()  { return _fallFaces; }
 
     /**
      * Removes a face.

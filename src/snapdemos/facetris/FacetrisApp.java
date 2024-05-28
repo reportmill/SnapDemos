@@ -65,6 +65,18 @@ public class FacetrisApp extends ViewOwner {
         title.setEffect(SHADOW);
     }
 
+    /**
+     * Called when UI is showing.
+     */
+    @Override
+    protected void initShowing()
+    {
+        runLater(this::showStartPane);
+    }
+
+    /**
+     * Reset UI.
+     */
     @Override
     protected void resetUI()
     {
@@ -79,7 +91,7 @@ public class FacetrisApp extends ViewOwner {
     /**
      * Reset ComingSoonView.
      */
-    void resetComingSoonView()
+    private void resetComingSoonView()
     {
         // Update coming faces
         ColView comingSoonView = getView("ComingSoonView", ColView.class);
@@ -107,7 +119,7 @@ public class FacetrisApp extends ViewOwner {
     /**
      * Reset FamiliarFacesView.
      */
-    void resetFamiliarFacesView()
+    private void resetFamiliarFacesView()
     {
         // Update coming faces
         ColView familiarView = getView("FamiliarFacesView", ColView.class);
@@ -128,6 +140,9 @@ public class FacetrisApp extends ViewOwner {
         }
     }
 
+    /**
+     * Respond UI.
+     */
     @Override
     protected void respondUI(ViewEvent anEvent)
     {
@@ -148,33 +163,20 @@ public class FacetrisApp extends ViewOwner {
     }
 
     /**
-     * Called when UI is showing.
-     */
-    @Override
-    protected void initShowing()
-    {
-        FaceEntry face = FaceIndex.getShared().getNextQueue().peek();
-        Image img = face.getImage();
-        if (img.isLoaded())
-            runLater(() -> showStartPane());
-        else img.addLoadListener(() -> runLater(() -> showStartPane()));
-    }
-
-    /**
      * Called to start game.
      */
-    void playGame()
+    protected void playGame()
     {
         _playView.play();
         requestFocus("NameText");
     }
 
-    void showStartPane()
+    private void showStartPane()
     {
         _startPane.show();
     }
 
-    void gameOver()
+    protected void gameOver()
     {
         showStartPane();
     }
@@ -182,7 +184,7 @@ public class FacetrisApp extends ViewOwner {
     /**
      * Called to check a guess.
      */
-    void handleGuess(ViewEvent anEvent)
+    private void handleGuess(ViewEvent anEvent)
     {
         if (_startPane.isShowing()) {
             _startPane.handlePlayButton();
@@ -199,23 +201,32 @@ public class FacetrisApp extends ViewOwner {
     protected void textFieldKeyTyped(ViewEvent anEvent)
     {
         // Get prefix text and current selection
-        String text = _nameText.getText();
+        String typedChars = _nameText.getText();
         int selStart = _nameText.getSelStart();
-        if (text==null || text.length()==0)
+        if (typedChars == null || typedChars.length() == 0)
             return;
 
         // Look for possible completion
-        String item = null;
-        FaceEntry face = _playView.getField().getMainFace();
-        if (face!=null && face.getName().toLowerCase().startsWith(text.toLowerCase()))
-            item = face.getName();
-        else if (face!=null && face.getFirstName().toLowerCase().startsWith(text.toLowerCase()))
-            item = face.getFirstName();
-        else item = FaceIndex.getShared().getNameForPrefix(selStart>0? text : "");
+        String item = getCompletionForTypedChars(typedChars.toLowerCase(), selStart);
 
         // If completion available, set completion text
-        if (item!=null)
+        if (item != null)
             _nameText.setCompletionText(item);
+    }
+
+    /**
+     * Returns a possible completion for given typed chars.
+     */
+    private String getCompletionForTypedChars(String typedChars, int selStart)
+    {
+        FaceEntry faceEntry = _playView.getField().getMainFace();
+        if (faceEntry != null && faceEntry.getName().toLowerCase().startsWith(typedChars))
+            return faceEntry.getName();
+
+        if (faceEntry != null && faceEntry.getFirstName().toLowerCase().startsWith(typedChars))
+            return faceEntry.getFirstName();
+
+        return FaceIndex.getShared().getNameForPrefix(selStart > 0 ? typedChars : "");
     }
 
     /**
