@@ -110,19 +110,8 @@ public class FaceIndex {
         String indexText = getIndexText();
         String[] entryStrings = indexText.split("\n");
 
-        // Iterate over entries and add to list
-        List<FaceEntry> facesList = new ArrayList<>();
-        for (String entryStr : entryStrings)
-        {
-            String filename = entryStr.trim();
-            if (filename.length()>0) {
-                FaceEntry face = new FaceEntry(filename);
-                facesList.add(face);
-            }
-        }
-
-        // Return array
-        return _faceEntries = facesList.toArray(new FaceEntry[0]);
+        // Map to FaceEntries, set and return
+        return _faceEntries = ArrayUtils.mapNonNull(entryStrings, estr -> createFaceEntryForEntryString(estr), FaceEntry.class);
     }
 
     /**
@@ -132,7 +121,7 @@ public class FaceIndex {
     {
         if (_names != null) return _names;
         FaceEntry[] faces = getFaceInfos();
-        return ArrayUtils.map(faces, face -> face.getName(), String.class);
+        return _names = ArrayUtils.map(faces, face -> face.getName(), String.class);
     }
 
     /**
@@ -162,5 +151,14 @@ public class FaceIndex {
     {
         if (_shared != null) return _shared;
         return _shared = new FaceIndex();
+    }
+
+    /**
+     * Creates and returns a FaceEntry for entry string (or null if invalid string).
+     */
+    private static FaceEntry createFaceEntryForEntryString(String entryStr)
+    {
+        String filename = entryStr.trim();
+        return filename.length() > 0 ? new FaceEntry(filename) : null;
     }
 }

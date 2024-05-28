@@ -35,17 +35,18 @@ public class FaceView extends StackView {
         setBorder(new Color(.98), 1);
         setEffect(new ShadowEffect());
 
-        Image img = aFace.getImage();
-        _imageView = new ImageView(img);
+        Image faceImage = aFace.getImage();
+        _imageView = new ImageView(faceImage);
         _imageView.setBorder(new Color(.9), 1);
+        _imageView.setMaxSize(120, 120);
         addChild(_imageView);
 
         setShowName(FacetrisApp._cheat);
 
         // If not loaded, set to resize when loaded
-        if (!img.isLoaded())
-            img.addLoadListener(() -> imageDidLoad());
-        else imageDidLoad();
+        if (!faceImage.isLoaded())
+            faceImage.addLoadListener(this::setSizeToBestSize);
+        else setSizeToBestSize();
     }
 
     /**
@@ -56,10 +57,7 @@ public class FaceView extends StackView {
     /**
      * Returns whether face is lost.
      */
-    public boolean isLost()
-    {
-        return _lost;
-    }
+    public boolean isLost()  { return _lost; }
 
     /**
      * Sets whether face is lost.
@@ -85,7 +83,7 @@ public class FaceView extends StackView {
      */
     public boolean isShowName()
     {
-        return _nameLabel1!=null;
+        return _nameLabel1 != null;
     }
 
     /**
@@ -93,7 +91,7 @@ public class FaceView extends StackView {
      */
     public void setShowName(boolean aValue)
     {
-        if (aValue==isShowName()) return;
+        if (aValue == isShowName()) return;
 
         if (aValue) {
             _nameLabel1 = new Label(_faceEntry.getName());
@@ -114,16 +112,5 @@ public class FaceView extends StackView {
             removeChild(_nameLabel2);
             _nameLabel1 = _nameLabel2 = null;
         }
-    }
-
-    /**
-     * Called when image is loaded.
-     */
-    private void imageDidLoad()
-    {
-        double w = Math.round(_imageView.getPrefWidth()*.8);
-        double h = Math.round(_imageView.getPrefHeight()*.8);
-        _imageView.setPrefSize(w, h);
-        setSize(getPrefSize());
     }
 }

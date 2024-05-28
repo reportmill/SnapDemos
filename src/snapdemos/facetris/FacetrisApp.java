@@ -35,6 +35,17 @@ public class FacetrisApp extends ViewOwner {
     public Player getPlayer()  { return _playView.getPlayer(); }
 
     /**
+     * Create UI.
+     */
+    @Override
+    protected View createUI()
+    {
+        if (SnapUtils.isWebVM)
+            return new ScaleBox(super.createUI(), true, true);
+        return super.createUI();
+    }
+
+    /**
      * Initialize UI.
      */
     @Override
