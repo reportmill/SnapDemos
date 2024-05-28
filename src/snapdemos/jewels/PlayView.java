@@ -54,48 +54,49 @@ public class PlayView extends ParentView {
     }
 
     /**
-     * Returns the gem at given x/y.
+     * Returns the gem at given grid x/y.
      */
-    private Gem getGem(int aCol, int aRow)
+    private Gem getGemAtGridXY(int gridX, int gridY)
     {
-        if (aCol < 0 || aCol >= GRID_WIDTH || aRow < 0 || aRow >= GRID_HEIGHT)
+        if (gridX < 0 || gridX >= GRID_WIDTH || gridY < 0 || gridY >= GRID_HEIGHT)
             return null;
-        return _gems[aCol][aRow];
+        return _gems[gridX][gridY];
     }
 
     /**
-     * Sets the gem at given x/y.
+     * Sets the gem at given grid X/Y.
      */
-    private Gem setGem(Gem aGem, int aCol, int aRow)
+    private void setGemAtGridXY(Gem aGem, int gridX, int gridY)
     {
-        Gem oldGem = _gems[aCol][aRow];
-        _gems[aCol][aRow] = aGem;
-
-        // Handle null
-        if (aGem == null) {
-            return oldGem;
-        }
+        // Set gem at grid X/Y (just return if null)
+        _gems[gridX][gridY] = aGem;
+        if (aGem == null)
+            return;
 
         // Handle setting new gem
-        aGem.setColRow(aCol, aRow);
-        Point pnt = gridToLocal(aCol, aRow);
-        aGem.setXY(pnt.x, pnt.y);
+        aGem.setGridXY(gridX, gridY);
+        Point viewXY = gridToLocal(gridX, gridY);
+        aGem.setXY(viewXY.x, viewXY.y);
         aGem.setTransX(0);
         aGem.setTransY(0);
-        return oldGem;
     }
 
     /**
      * Sets the gem at given x/y.
      */
-    private void setGemAnimated(Gem aGem, int aCol, int aRow, int aDelay)
+    private void setGemAtGridXYAnimated(Gem aGem, int gridX, int gridY, int aDelay)
     {
-        // Sets gem
-        double x0 = aGem != null ? aGem.getX() + aGem.getTransX() : 0;
-        double y0 = aGem != null ? aGem.getY() + aGem.getTransY() : 0;
-        Gem oldGem = setGem(aGem, aCol, aRow);
+        // If gem already set, just return
+        Gem oldGem = getGemAtGridXY(gridX, gridY);
         if (aGem == oldGem)
             return;
+
+        // Cache old gem X/Y
+        double oldX = aGem != null ? aGem.getX() + aGem.getTransX() : 0;
+        double oldY = aGem != null ? aGem.getY() + aGem.getTransY() : 0;
+
+        // Set gem at grid X/Y
+        setGemAtGridXY(aGem, gridX, gridY);
 
         // If replacing with null, animate out and remove
         if (aGem == null) {
@@ -103,16 +104,16 @@ public class PlayView extends ParentView {
             return;
         }
 
-        // Animate new gem into place
-        double x1 = aGem.getX() + aGem.getTransX();
-        double y1 = aGem.getY() + aGem.getTransY();
-        double dx = x1 - x0;
-        double dy = y1 - y0;
-        double dist = Math.max(Math.abs(dx), Math.abs(dy));
-        aGem.setTransX(-dx);
-        aGem.setTransY(-dy);
-        int time = (int) Math.round(dist * GEM_SPEED / TILE_SIZE);
-        aGem.getAnimCleared(aDelay).getAnim(aDelay + time).setTransX(0).setTransY(0).setLinear().play();
+        // Calculate and set translation X/Y so gem appears to be at old X/Y
+        double transX = oldX - aGem.getX();
+        double transY = oldY - aGem.getY();
+        aGem.setTransX(transX);
+        aGem.setTransY(transY);
+
+        // Calculate the time to travel to new XY and animate translation back to zero
+        double dist = Math.max(Math.abs(transX), Math.abs(transY));
+        int travelTime = (int) Math.round(dist * GEM_SPEED / TILE_SIZE);
+        aGem.getAnimCleared(aDelay).getAnim(aDelay + travelTime).setTransX(0).setTransY(0).setLinear().play();
     }
 
     /**
@@ -120,8 +121,9 @@ public class PlayView extends ParentView {
      */
     private Gem getGemAtXY(double aX, double aY)
     {
-        GridXY gridXY = localToGrid(aX, aY);
-        return getGem(gridXY.x, gridXY.y);
+        int gridX = localToGridX(aX);
+        int gridY = localToGridY(aY);
+        return getGemAtGridXY(gridX, gridY);
     }
 
     /**
@@ -135,14 +137,14 @@ public class PlayView extends ParentView {
     }
 
     /**
-     * Return the point in view coords for point in grid coords.
+     * Return the grid X value for given view X.
      */
-    public GridXY localToGrid(double aX, double aY)
-    {
-        int gridX = (int) Math.floor((aX - BORDER_SIZE) / TILE_SIZE);
-        int gridY = (int) Math.floor((aY - BORDER_SIZE) / TILE_SIZE);
-        return new GridXY(gridX, gridY);
-    }
+    public int localToGridX(double aX)  { return (int) Math.floor((aX - BORDER_SIZE) / TILE_SIZE); }
+
+    /**
+     * Return the grid Y value for given view Y.
+     */
+    public int localToGridY(double aY)  { return (int) Math.floor((aY - BORDER_SIZE) / TILE_SIZE); }
 
     /**
      * Reloads the gems.
@@ -170,7 +172,7 @@ public class PlayView extends ParentView {
 
             // Iterate over column rows and clear gems
             for (int j = aRow0; j <= aRow1; j++) {
-                setGemAnimated(null, i, j, ViewUtils.isAltDown() ? 0 : 200);
+                setGemAtGridXYAnimated(null, i, j, ViewUtils.isAltDown() ? 0 : 200);
             }
 
             // Copy gems for column from source row
@@ -189,7 +191,7 @@ public class PlayView extends ParentView {
 
         // Get source gems (create/position/add if above bounds)
         for (int i = 0; i < aLen; i++) {
-            Gem gem = getGem(aCol, srcRow + i);
+            Gem gem = getGemAtGridXY(aCol, srcRow + i);
             if (gem == null) {
                 gem = new Gem();
                 Point gemXY = gridToLocal(aCol, srcRow + i);
@@ -201,7 +203,7 @@ public class PlayView extends ParentView {
 
         // Set gems
         for (int i = 0; i < aLen; i++) {
-            setGemAnimated(columnGems[i], aCol, dstRow + i, ViewUtils.isAltDown() ? 0 : 400);
+            setGemAtGridXYAnimated(columnGems[i], aCol, dstRow + i, ViewUtils.isAltDown() ? 0 : 400);
         }
     }
 
@@ -222,12 +224,12 @@ public class PlayView extends ParentView {
         else if (_pressGem != null && anEvent.isMouseDrag()) {
             Size move = getDragChange(anEvent);
             if (Math.abs(move.width) > 5 || Math.abs(move.height) > 5) {
-                int col = _pressGem.getCol();
-                int row = _pressGem.getRow();
+                int gridX = _pressGem.getGridX();
+                int gridY = _pressGem.getGridY();
                 if (Math.abs(move.width) > Math.abs(move.height))
-                    col += move.width > 0 ? 1 : -1;
-                else row += move.height > 0 ? 1 : -1;
-                Gem gem2 = getGem(col, row);
+                    gridX += move.width > 0 ? 1 : -1;
+                else gridY += move.height > 0 ? 1 : -1;
+                Gem gem2 = getGemAtGridXY(gridX, gridY);
                 if (gem2 == null)
                     return;
 
@@ -245,13 +247,15 @@ public class PlayView extends ParentView {
     {
         // Handle MouseRelease
         if (anEvent.isMouseRelease() && _pressGem != null) {
-            GridXY pnt0 = new GridXY(_pressGem.getCol(), _pressGem.getRow());
-            GridXY pnt1 = localToGrid(anEvent.getX(), anEvent.getY());
-            int col0 = Math.min(pnt0.x, pnt1.x);
-            int row0 = Math.min(pnt0.y, pnt1.y);
-            int col1 = Math.max(pnt0.x, pnt1.x);
-            int row1 = Math.max(pnt0.y, pnt1.y);
-            clearGems(col0, row0, col1, row1);
+            int pressGridX = _pressGem.getGridX();
+            int pressGridY = _pressGem.getGridY();
+            int mouseGridX = localToGridX(anEvent.getX());
+            int mouseGridY = localToGridY(anEvent.getY());
+            int gridX0 = Math.min(pressGridX, mouseGridX);
+            int gridY0 = Math.min(pressGridY, mouseGridY);
+            int gridX1 = Math.max(pressGridX, mouseGridX);
+            int gridY1 = Math.max(pressGridY, mouseGridY);
+            clearGems(gridX0, gridY0, gridX1, gridY1);
         }
     }
 
@@ -261,12 +265,12 @@ public class PlayView extends ParentView {
     public void swapGems(Gem aGem1, Gem aGem2, boolean isSwapBack)
     {
         // Swap the two gems
-        int col1 = aGem1.getCol();
-        int row1 = aGem1.getRow();
-        int col2 = aGem2.getCol();
-        int row2 = aGem2.getRow();
-        setGemAnimated(aGem1, col2, row2, isSwapBack ? 100 : 0);
-        setGemAnimated(aGem2, col1, row1, isSwapBack ? 100 : 0);
+        int col1 = aGem1.getGridX();
+        int row1 = aGem1.getGridY();
+        int col2 = aGem2.getGridX();
+        int row2 = aGem2.getGridY();
+        setGemAtGridXYAnimated(aGem1, col2, row2, isSwapBack ? 100 : 0);
+        setGemAtGridXYAnimated(aGem2, col1, row1, isSwapBack ? 100 : 0);
 
         // If original swap, register for swap done
         if (!isSwapBack)
@@ -278,8 +282,8 @@ public class PlayView extends ParentView {
      */
     private void swapAnimDone(Gem aGem1, Gem aGem2)
     {
-        Match match1 = getMatch(aGem1.getCol(), aGem1.getRow());
-        Match match2 = getMatch(aGem2.getCol(), aGem2.getRow());
+        Match match1 = getMatchForGemAtGridXY(aGem1.getGridX(), aGem1.getGridY());
+        Match match2 = getMatchForGemAtGridXY(aGem2.getGridX(), aGem2.getGridY());
         if (match1 == null && match2 == null) {
             ViewUtils.runLater(() -> swapGems(aGem1, aGem2, true));
             return;
@@ -311,7 +315,7 @@ public class PlayView extends ParentView {
         // Iterate over grid and check/clear any matches at each point
         for (int i = 0; i < GRID_WIDTH; i++) {
             for (int j = 0; j < GRID_HEIGHT; j++) {
-                boolean found = checkAndClearMatchAt(i, j);
+                boolean found = checkAndClearMatchAtGridXY(i, j);
                 if (found) {
                     checkAndClearAllMatchesLater(300);
                     return;
@@ -321,12 +325,12 @@ public class PlayView extends ParentView {
     }
 
     /**
-     * Checks for matches on given gem and clears them.
+     * Checks for matches on gem at given grid X/Y and clears them.
      */
-    private boolean checkAndClearMatchAt(int aCol, int aRow)
+    private boolean checkAndClearMatchAtGridXY(int gridX, int gridY)
     {
         // Get match at col/row (just return if null)
-        Match match = getMatch(aCol, aRow);
+        Match match = getMatchForGemAtGridXY(gridX, gridY);
         if (match == null)
             return false;
         clearMatch(match);
@@ -338,19 +342,19 @@ public class PlayView extends ParentView {
      */
     private void clearMatch(Match aMatch)
     {
-        if (aMatch.dx >= 2)
-            clearGems(aMatch.col0, aMatch.row, aMatch.col1, aMatch.row);
-        if (aMatch.dy >= 2)
-            clearGems(aMatch.col, aMatch.row0, aMatch.col, aMatch.row1);
+        if (aMatch.width() >= 2)
+            clearGems(aMatch.gridStartX, aMatch.gridY, aMatch.gridEndX, aMatch.gridY);
+        if (aMatch.height() >= 2)
+            clearGems(aMatch.gridX, aMatch.gridStartY, aMatch.gridX, aMatch.gridEndY);
     }
 
     /**
-     * Returns any match found at given grid xy.
+     * Returns any match found for gem at given grid X/Y.
      */
-    public Match getMatch(int aCol, int aRow)
+    public Match getMatchForGemAtGridXY(int aCol, int aRow)
     {
         // Get gem at col/row and gem info (just return if null)
-        Gem gem = getGem(aCol, aRow);
+        Gem gem = getGemAtGridXY(aCol, aRow);
         if (gem == null)
             return null;
         int gemId = gem.getId();
@@ -394,7 +398,7 @@ public class PlayView extends ParentView {
      */
     private int getGemId(int aCol, int aRow)
     {
-        Gem gem = getGem(aCol, aRow);
+        Gem gem = getGemAtGridXY(aCol, aRow);
         return gem != null ? gem.getId() : -1;
     }
 
@@ -403,28 +407,9 @@ public class PlayView extends ParentView {
      */
     private Size getDragChange(ViewEvent anEvent)
     {
-        Point pnt1 = anEvent.getPoint();
         Point pnt0 = ViewUtils.getMouseDown().getPoint(anEvent.getView());
-        Size move = new Size(pnt1.x - pnt0.x, pnt1.y - pnt0.y);
-        return move;
-    }
-
-    /**
-     * A class to represent Grid x/y.
-     */
-    private static class GridXY {
-        public int x, y;
-
-        public GridXY(int aX, int aY)
-        {
-            x = aX;
-            y = aY;
-        }
-
-        public String toString()
-        {
-            return "GridXY: " + x + ',' + y;
-        }
+        Point pnt1 = anEvent.getPoint();
+        return new Size(pnt1.x - pnt0.x, pnt1.y - pnt0.y);
     }
 
     /**
@@ -432,22 +417,26 @@ public class PlayView extends ParentView {
      */
     private static class Match {
 
-        // The match col/row and extents
-        int col, row, col0, row0, col1, row1, dx, dy;
+        // The match grid X/Y
+        int gridX, gridY;
+
+        // The match extents
+        int gridStartX, gridStartY, gridEndX, gridEndY;
 
         /**
          * Creates a Match for given col/row and extents.
          */
-        public Match(int aCol, int aRow, int aCol0, int aRow0, int aCol1, int aRow1)
+        public Match(int aGridX, int aGridY, int aGridStartX, int aGridStartY, int aGridEndX, int aGridEndY)
         {
-            col = aCol;
-            row = aRow;
-            col0 = aCol0;
-            row0 = aRow0;
-            col1 = aCol1;
-            row1 = aRow1;
-            dx = col1 - col0;
-            dy = row1 - row0;
+            gridX = aGridX;
+            gridY = aGridY;
+            gridStartX = aGridStartX;
+            gridStartY = aGridStartY;
+            gridEndX = aGridEndX;
+            gridEndY = aGridEndY;
         }
+
+        int width() { return gridEndX - gridStartX; }
+        int height() { return gridEndY - gridStartY; }
     }
 }

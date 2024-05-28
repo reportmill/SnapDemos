@@ -10,8 +10,8 @@ public class Gem extends ImageView {
     // The Gem id
     private int _gemId;
     
-    // The gem col/row
-    private int _col, _row;
+    // The gem grid X/Y
+    private int _gridX, _gridY;
     
     // Constants
     static int TILE_SIZE = PlayView.TILE_SIZE;
@@ -24,7 +24,7 @@ public class Gem extends ImageView {
     static Image RED_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/RedGem.png");
     static Image WHITE_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/WhiteGem.png");
     static Image YELLOW_GEM = Image.getImageForClassResource(Gem.class, "pkg.images/YellowGem.png");
-    static Image ALL[] = new Image[] { BLUE_GEM, GREEN_GEM, ORANGE_GEM, PURPLE_GEM, RED_GEM, WHITE_GEM, YELLOW_GEM };
+    static Image[] ALL_GEMS = new Image[] { BLUE_GEM, GREEN_GEM, ORANGE_GEM, PURPLE_GEM, RED_GEM, WHITE_GEM, YELLOW_GEM };
 
     /**
      * Create new Gem.
@@ -32,7 +32,7 @@ public class Gem extends ImageView {
     public Gem()
     {
         _gemId = (int) Math.floor(Math.random() * 7);
-        setImage(ALL[_gemId]);
+        setImage(ALL_GEMS[_gemId]);
         setSize(TILE_SIZE, TILE_SIZE);
         setPrefSize(TILE_SIZE, TILE_SIZE);
     }
@@ -43,17 +43,17 @@ public class Gem extends ImageView {
     public int getId()  { return _gemId; }
 
     /**
-     * Returns the column of gem.
+     * Returns the grid X of gem.
      */
-    public int getCol()  { return _col; }
+    public int getGridX()  { return _gridX; }
 
     /**
-     * Returns the row of gem.
+     * Returns the grid Y of gem.
      */
-    public int getRow()  { return _row; }
+    public int getGridY()  { return _gridY; }
 
     /**
-     * Sets the gem col/row.
+     * Sets the gem grid X/Y
      */
-    public void setColRow(int aCol, int aRow)  { _col = aCol; _row = aRow; }
+    public void setGridXY(int gridX, int gridY)  { _gridX = gridX; _gridY = gridY; }
 }
