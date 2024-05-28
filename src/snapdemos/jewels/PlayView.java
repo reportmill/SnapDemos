@@ -27,7 +27,7 @@ public class PlayView extends ParentView {
     public PlayView()
     {
         // Set background texture
-        Image backgroundImage = Image.getImageForClassResource(PlayView.class, "pkg.images/Cloth.jpg");
+        Image backgroundImage = Image.getImageForClassResource(PlayView.class, "pkg.images/Cloth.jpg"); assert (backgroundImage != null);
         ImagePaint imagePaint = new ImagePaint(backgroundImage, BORDER_SIZE, BORDER_SIZE, 64, 64, false);
         backgroundImage.addLoadListener(() -> setFill(imagePaint));
 
@@ -165,40 +165,43 @@ public class PlayView extends ParentView {
      */
     private void clearGems(int aCol0, int aRow0, int aCol1, int aRow1)
     {
-        int delay = ViewUtils.isAltDown() ? 0 : 200;
+        // Iterate over columns
         for (int i = aCol0; i <= aCol1; i++) {
+
+            // Iterate over column rows and clear gems
             for (int j = aRow0; j <= aRow1; j++) {
-                setGemAnimated(null, i, j, delay);
+                setGemAnimated(null, i, j, ViewUtils.isAltDown() ? 0 : 200);
             }
-            int delCount = aRow1 - aRow0 + 1;
+
+            // Copy gems for column from source row
+            int srcRow = -(aRow1 - aRow0 + 1);
             int len = aRow1 + 1;
-            copyGems(i, -delCount, 0, len);
+            copyColumnGems(i, srcRow, 0, len);
         }
     }
 
     /**
-     * Clears the gems in rect from given col/row to second col/row.
+     * Copies the gems in rect from given col/row to second col/row.
      */
-    private void copyGems(int aCol, int srcRow, int dstRow, int aLen)
+    private void copyColumnGems(int aCol, int srcRow, int dstRow, int aLen)
     {
+        Gem[] columnGems = new Gem[aLen];
+
         // Get source gems (create/position/add if above bounds)
-        Gem[] gems = new Gem[aLen];
         for (int i = 0; i < aLen; i++) {
             Gem gem = getGem(aCol, srcRow + i);
             if (gem == null) {
                 gem = new Gem();
-                Point pnt = gridToLocal(aCol, srcRow + i);
-                gem.setXY(pnt.x, pnt.y);
+                Point gemXY = gridToLocal(aCol, srcRow + i);
+                gem.setXY(gemXY.x, gemXY.y);
                 addChild(gem);
             }
-            gems[i] = gem;
+            columnGems[i] = gem;
         }
 
         // Set gems
-        int delay = ViewUtils.isAltDown() ? 0 : 400;
         for (int i = 0; i < aLen; i++) {
-            Gem gem = gems[i];
-            setGemAnimated(gem, aCol, dstRow + i, delay);
+            setGemAnimated(columnGems[i], aCol, dstRow + i, ViewUtils.isAltDown() ? 0 : 400);
         }
     }
 
@@ -211,11 +214,11 @@ public class PlayView extends ParentView {
         if (anEvent.isMousePress())
             _pressGem = getGemAtXY(anEvent.getX(), anEvent.getY());
 
-            // Handle alt events
+        // Handle alt events
         else if (anEvent.isAltDown())
             processEventAlt(anEvent);
 
-            // Handle MouseDrag
+        // Handle MouseDrag
         else if (_pressGem != null && anEvent.isMouseDrag()) {
             Size move = getDragChange(anEvent);
             if (Math.abs(move.width) > 5 || Math.abs(move.height) > 5) {
@@ -267,26 +270,26 @@ public class PlayView extends ParentView {
 
         // If original swap, register for swap done
         if (!isSwapBack)
-            aGem2.getAnim(0).setOnFinish(() -> swapDone(aGem1, aGem2));
+            aGem2.getAnim(0).setOnFinish(() -> swapAnimDone(aGem1, aGem2));
     }
 
     /**
      * Called when a swap is done.
      */
-    private void swapDone(Gem aGem1, Gem aGem2)
+    private void swapAnimDone(Gem aGem1, Gem aGem2)
     {
-        Match m1 = getMatch(aGem1.getCol(), aGem1.getRow());
-        Match m2 = getMatch(aGem2.getCol(), aGem2.getRow());
-        if (m1 == null && m2 == null) {
+        Match match1 = getMatch(aGem1.getCol(), aGem1.getRow());
+        Match match2 = getMatch(aGem2.getCol(), aGem2.getRow());
+        if (match1 == null && match2 == null) {
             ViewUtils.runLater(() -> swapGems(aGem1, aGem2, true));
             return;
         }
 
         // Clear matches
-        if (m1 != null)
-            clearMatch(m1);
-        if (m2 != null)
-            clearMatch(m2);
+        if (match1 != null)
+            clearMatch(match1);
+        if (match2 != null)
+            clearMatch(match2);
 
         // Check and clear all matches
         checkAndClearAllMatchesLater(300);
@@ -323,22 +326,22 @@ public class PlayView extends ParentView {
     private boolean checkAndClearMatchAt(int aCol, int aRow)
     {
         // Get match at col/row (just return if null)
-        Match m = getMatch(aCol, aRow);
-        if (m == null)
+        Match match = getMatch(aCol, aRow);
+        if (match == null)
             return false;
-        clearMatch(m);
+        clearMatch(match);
         return true;
     }
 
     /**
      * Clear gems for match.
      */
-    private void clearMatch(Match m)
+    private void clearMatch(Match aMatch)
     {
-        if (m.dx >= 2)
-            clearGems(m.col0, m.row, m.col1, m.row);
-        if (m.dy >= 2)
-            clearGems(m.col, m.row0, m.col, m.row1);
+        if (aMatch.dx >= 2)
+            clearGems(aMatch.col0, aMatch.row, aMatch.col1, aMatch.row);
+        if (aMatch.dy >= 2)
+            clearGems(aMatch.col, aMatch.row0, aMatch.col, aMatch.row1);
     }
 
     /**
@@ -350,7 +353,7 @@ public class PlayView extends ParentView {
         Gem gem = getGem(aCol, aRow);
         if (gem == null)
             return null;
-        int gid = gem.getId();
+        int gemId = gem.getId();
         int col0 = aCol;
         int row0 = aRow;
         int col1 = aCol;
@@ -358,27 +361,31 @@ public class PlayView extends ParentView {
 
         // Iterate left/right and up/down to find matching gem extents
         for (int i = aCol - 1; i >= 0; i--)
-            if (getGemId(i, aRow) == gid) col0--;
+            if (getGemId(i, aRow) == gemId)
+                col0--;
             else break;
         for (int i = aCol + 1; i < GRID_WIDTH; i++)
-            if (getGemId(i, aRow) == gid)
+            if (getGemId(i, aRow) == gemId)
                 col1++;
             else break;
         for (int i = aRow - 1; i >= 0; i--)
-            if (getGemId(aCol, i) == gid)
+            if (getGemId(aCol, i) == gemId)
                 row0--;
             else break;
         for (int i = aRow + 1; i < GRID_HEIGHT; i++)
-            if (getGemId(aCol, i) == gid)
+            if (getGemId(aCol, i) == gemId)
                 row1++;
             else break;
 
         // If extends exceed 2 in either direction, return match
         int dx = col1 - col0;
-        if (dx < 2) col0 = col1 = aCol;
+        if (dx < 2)
+            col0 = col1 = aCol;
         int dy = row1 - row0;
-        if (dy < 2) row0 = row1 = aRow;
-        if (dx < 2 && dy < 2) return null;
+        if (dy < 2)
+            row0 = row1 = aRow;
+        if (dx < 2 && dy < 2)
+            return null;
         return new Match(aCol, aRow, col0, row0, col1, row1);
     }
 
@@ -387,8 +394,8 @@ public class PlayView extends ParentView {
      */
     private int getGemId(int aCol, int aRow)
     {
-        Gem g = getGem(aCol, aRow);
-        return g != null ? g.getId() : -1;
+        Gem gem = getGem(aCol, aRow);
+        return gem != null ? gem.getId() : -1;
     }
 
     /**
