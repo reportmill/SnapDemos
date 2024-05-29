@@ -15,8 +15,8 @@ import java.util.Random;
  */
 public class PuzzleView extends RowView {
 
-    // The PuzzlePane
-    private PuzzlePane _puzzlePane;
+    // The PuzzleApp
+    private PuzzleApp _puzzleApp;
 
     // The puzzle
     private Puzzle _puzzle;
@@ -35,10 +35,10 @@ public class PuzzleView extends RowView {
     /**
      * Constructor.
      */
-    public PuzzleView(PuzzlePane puzzlePane)
+    public PuzzleView(PuzzleApp puzzleApp)
     {
         super();
-        _puzzlePane = puzzlePane;
+        _puzzleApp = puzzleApp;
         setSpacing(DEFAULT_SPACING);
         setFont(DEFAULT_FONT);
         setPadding(DEFAULT_PADDING);
@@ -226,8 +226,8 @@ public class PuzzleView extends RowView {
         pieceView1.setSelected(false);
         _selPieceViews.clear();
 
-        // Bump PuzzlePane.Score by one
-        _puzzlePane.setScore(_puzzlePane.getScore() + 1);
+        // Bump PuzzleApp.Score by one
+        _puzzleApp.setScore(_puzzleApp.getScore() + 1);
 
         // If Solved, run Explode
         if (isSolved())
