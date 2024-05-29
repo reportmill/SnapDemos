@@ -10,7 +10,7 @@
   <RowView GrowHeight="true" FillHeight="true">
     <ColView GrowWidth="true" GrowHeight="true" FillWidth="true">
       <Box Padding="8" GrowHeight="true" FillHeight="true">
-        <View Name="PlayView" PrefWidth="800" PrefHeight="700" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.PlayView" >
+        <View Name="PlayView" PrefWidth="800" PrefHeight="700" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.FacetrisView" >
           <fill color="#F8FCFF" />
         </View>
       </Box>

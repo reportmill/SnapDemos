@@ -387,11 +387,11 @@ public class PhysicsRunner {
             View viewB = (View) contact.getFixtureB().getBody().getUserData();
             if (viewA instanceof FaceView) {
                 FaceView faceView = (FaceView) viewA;
-                ((PlayView) _view).handleFaceCollide(faceView.getFace());
+                ((FacetrisView) _view).handleFaceCollide(faceView.getFace());
             }
             if (viewB instanceof FaceView) {
                 FaceView faceView = (FaceView) viewB;
-                ((PlayView) _view).handleFaceCollide(faceView.getFace());
+                ((FacetrisView) _view).handleFaceCollide(faceView.getFace());
             }
         }
 

@@ -2,45 +2,51 @@ package snapdemos.facetris;
 import org.jbox2d.dynamics.Body;
 import snap.gfx.Border;
 import snap.gfx.Color;
+import snap.util.ListUtils;
 import snap.view.ParentView;
 import snap.view.View;
 import snap.view.ViewTimer;
 import snap.view.ViewUtils;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
  * A View subclass to handle the real gameplay.
  */
-public class PlayView extends ParentView {
+public class FacetrisView extends ParentView {
 
     // The player
     private Player  _player = new Player();
 
-    // The Faces
-    private PlayField  _faces = new PlayField();
-
-    // Constants
-    private int BORDER_SIZE = 2;
+    // The Faces on the field
+    private List<FaceEntry> _fieldFaces = new ArrayList<>();
 
     // The Timer
     private ViewTimer _newFaceTimer;
 
-    // The Random
-    private Random  _random = new Random();
-
     // The PhysicsRunner
     private PhysicsRunner _physRunner;
+
+    // Constants
+    private static final int BORDER_SIZE = 2;
+
+    // The Random
+    private static final Random  _random = new Random();
 
     /**
      * Creates PlayView.
      */
-    public PlayView()
+    public FacetrisView()
     {
+        super();
         setFill(new Color("#F0F8FF"));
         setBorder(Color.BLACK, BORDER_SIZE);
         setBorder(getBorder().copyFor(Border.PaintAbove_Prop, true));
-        _newFaceTimer = new ViewTimer(this::addFace, 3500);
         setClipToBounds(true);
+
+        // Create timer
+        _newFaceTimer = new ViewTimer(this::addFace, 3500);
     }
 
     /**
@@ -49,9 +55,28 @@ public class PlayView extends ParentView {
     public Player getPlayer()  { return _player; }
 
     /**
-     * Returns the PlayField.
+     * Returns the first face still in play.
      */
-    public PlayField getField()  { return _faces; }
+    public FaceEntry getMainFace()
+    {
+        return ListUtils.findMatch(_fieldFaces, face -> face.inPlay());
+    }
+
+    /**
+     * Adds a face.
+     */
+    protected void addFieldFace(FaceEntry aFace)
+    {
+        _fieldFaces.add(aFace);
+    }
+
+    /**
+     * Removes a face.
+     */
+    protected void removeFieldFace(FaceEntry aFace)
+    {
+        _fieldFaces.remove(aFace);
+    }
 
     /**
      * Starts the play.
@@ -60,18 +85,18 @@ public class PlayView extends ParentView {
     {
         // Remove faces/views
         _player.reset();
-        _faces.reset();
+        _fieldFaces.clear();
         removeChildren();
+        if (_physRunner != null)
+            _physRunner.setRunning(false);
 
         // Start timers
         _newFaceTimer.start(0);
 
-        if (_physRunner != null)
-            _physRunner.setRunning(false);
-
+        // Reset physics runner
         ParentView worldView = this;
         _physRunner = new PhysicsRunner(worldView);
-        _physRunner.setViewToWorldMeters(getHeight()/5);
+        _physRunner.setViewToWorldMeters(getHeight() / 5);
         _physRunner.addWalls();
         _physRunner.addPhysForViews();
         _physRunner.setRunning(true);
@@ -84,7 +109,8 @@ public class PlayView extends ParentView {
     {
         _newFaceTimer.stop();
 
-        ((FacetrisApp)getOwner()).gameOver();
+        FacetrisApp facetrisApp = getOwner(FacetrisApp.class);
+        facetrisApp.gameOver();
     }
 
     /**
@@ -96,7 +122,7 @@ public class PlayView extends ParentView {
 
         _newFaceTimer.stop();
 
-        ViewUtils.runDelayed(() -> stop(), 2500);
+        ViewUtils.runDelayed(this::stop, 2500);
     }
 
     /**
@@ -106,24 +132,24 @@ public class PlayView extends ParentView {
     {
         // Get next face and view
         FaceEntry face = FaceIndex.getShared().getNextFaceFromQueue();
-        _faces.addFieldFace(face);
+        addFieldFace(face);
 
-        View view = face.getView();
-        addChild(view);
+        View faceView = face.getView();
+        addChild(faceView);
 
-        view.setRotate(10 - _random.nextInt(20));
+        faceView.setRotate(10 - _random.nextInt(20));
 
         // Set location
-        double pw = getWidth();
-        double vw = view.getWidth();
-        double vh = view.getHeight();
-        int xRange = (int)(pw - vw);
-        int x = 10 + _random.nextInt(xRange - 20);
-        view.setXY(x, -vh);
+        double viewW = getWidth();
+        double faceW = faceView.getWidth();
+        double faceH = faceView.getHeight();
+        int xRange = (int) (viewW - faceW);
+        int faceX = 10 + _random.nextInt(xRange - 20);
+        faceView.setXY(faceX, -faceH);
         getOwner().resetLater();
 
         if (_physRunner != null)
-            _physRunner.addPhysForView(view);
+            _physRunner.addPhysForView(faceView);
     }
 
     /**
@@ -132,24 +158,24 @@ public class PlayView extends ParentView {
     public void handleGuessFace(String aName)
     {
         // Get main face and name
-        FaceEntry face = _faces.getMainFace();
-        if (face == null)
+        FaceEntry mainFace = getMainFace();
+        if (mainFace == null)
             return;
-        String name = face.getName().toLowerCase();
-        String first = face.getFirstName().toLowerCase();
+        String name = mainFace.getName().toLowerCase();
+        String first = mainFace.getFirstName().toLowerCase();
 
         // If mace matches
         String guessName = aName.toLowerCase();
         boolean match = guessName.length() > 0 && (name.startsWith(guessName) || first.startsWith(guessName));
         if (match)
-            handleFaceWin(face);
-        else handleFaceLose(face);
+            handleFaceWin(mainFace);
+        else handleFaceLose(mainFace);
     }
 
     /**
      * Add win face.
      */
-    void handleFaceWin(FaceEntry aFace)
+    private void handleFaceWin(FaceEntry aFace)
     {
         _player.addWonFace(aFace);
 
@@ -161,9 +187,9 @@ public class PlayView extends ParentView {
     /**
      * Called when addWinFace anim is finished.
      */
-    void handleFaceWinAnimDone(FaceEntry aFace)
+    private void handleFaceWinAnimDone(FaceEntry aFace)
     {
-        _faces.removeFieldFace(aFace);
+        removeFieldFace(aFace);
 
         View view = aFace.getView();
         removeChild(view);
@@ -176,7 +202,7 @@ public class PlayView extends ParentView {
     /**
      * Called to add a lose face.
      */
-    void handleFaceLose(FaceEntry aFace)
+    private void handleFaceLose(FaceEntry aFace)
     {
         _player.addLostFace(aFace);
         getOwner().resetLater();
@@ -191,11 +217,10 @@ public class PlayView extends ParentView {
     /**
      * Add lost face.
      */
-    void handleFaceCollide(FaceEntry aFace)
+    protected void handleFaceCollide(FaceEntry aFace)
     {
         if (aFace.inPlay())
             handleFaceLose(aFace);
-
-        _faces.removeFallFace(aFace);
+        removeFieldFace(aFace);
     }
 }

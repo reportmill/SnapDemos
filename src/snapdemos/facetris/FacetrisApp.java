@@ -1,7 +1,6 @@
 package snapdemos.facetris;
 import snap.gfx.Color;
 import snap.gfx.Effect;
-import snap.gfx.Image;
 import snap.gfx.ShadowEffect;
 import snap.util.SnapUtils;
 import snap.view.*;
@@ -15,7 +14,7 @@ import java.util.List;
 public class FacetrisApp extends ViewOwner {
 
     // The PlayView
-    private PlayView  _playView;
+    private FacetrisView _facetrisView;
 
     // The TextField
     private TextField  _nameText;
@@ -30,9 +29,17 @@ public class FacetrisApp extends ViewOwner {
     private Effect SHADOW = new ShadowEffect();
 
     /**
+     * Constructor.
+     */
+    public FacetrisApp()
+    {
+        super();
+    }
+
+    /**
      * Returns the player.
      */
-    public Player getPlayer()  { return _playView.getPlayer(); }
+    public Player getPlayer()  { return _facetrisView.getPlayer(); }
 
     /**
      * Create UI.
@@ -52,7 +59,7 @@ public class FacetrisApp extends ViewOwner {
     protected void initUI()
     {
         // Get PlayView
-        _playView = getView("PlayView", PlayView.class);
+        _facetrisView = getView("PlayView", FacetrisView.class);
 
         // Get NameText
         _nameText = getView("NameText", TextField.class);
@@ -167,7 +174,7 @@ public class FacetrisApp extends ViewOwner {
      */
     protected void playGame()
     {
-        _playView.play();
+        _facetrisView.play();
         requestFocus("NameText");
     }
 
@@ -191,7 +198,7 @@ public class FacetrisApp extends ViewOwner {
             return;
         }
 
-        _playView.handleGuessFace(anEvent.getStringValue());
+        _facetrisView.handleGuessFace(anEvent.getStringValue());
         _nameText.setText("");
     }
 
@@ -219,7 +226,7 @@ public class FacetrisApp extends ViewOwner {
      */
     private String getCompletionForTypedChars(String typedChars, int selStart)
     {
-        FaceEntry faceEntry = _playView.getField().getMainFace();
+        FaceEntry faceEntry = _facetrisView.getMainFace();
         if (faceEntry != null && faceEntry.getName().toLowerCase().startsWith(typedChars))
             return faceEntry.getName();
 
