@@ -268,6 +268,8 @@ public class FacetrisApp extends ViewOwner {
 
         // Add StartPane to main view and animate in
         ParentView topView = getUI(ParentView.class);
+        if (topView instanceof ScaleBox)
+            topView = (ParentView) ((ScaleBox) topView).getContent();
         ViewUtils.addChild(topView, _startPane);
         _startPane.setXY(200, -_startPane.getHeight());
         _startPane.getAnimCleared(1000).setY(200).play();
