@@ -155,11 +155,12 @@ public class FacetrisApp extends ViewOwner {
         // Add Familiar faces
         while (familiarView.getChildCount() < familiarFaces.length) {
             FaceEntry face = familiarFaces[familiarView.getChildCount()];
-            View view = face.getMiniView();
-            familiarView.addChild(view, 0);
-            double height = face.getImage().getHeight() / 2;
-            view.setPrefHeight(0);
-            view.getAnimCleared(500).setPrefHeight(height).setOnFinish(() -> view.setEffect(SHADOW)).play();
+            View faceView = face.getMiniView();
+            familiarView.addChild(faceView, 0);
+            faceView.setPrefHeight(-1);
+            double faceH = faceView.getBestHeight(-1);
+            faceView.setPrefHeight(0);
+            faceView.getAnimCleared(500).setPrefHeight(faceH).setOnFinish(() -> faceView.setEffect(SHADOW)).play();
         }
     }
 
@@ -253,10 +254,13 @@ public class FacetrisApp extends ViewOwner {
         // Otherwise do some updating
         else {
             _startPane.setOpacity(1);
-            setViewValue("TopLabel", "Game Over");
-            int count = _facetrisView.getWonFaces().size();
-            setViewValue("Label2", "You recognized " + count + " faces.");
-            setViewValue("Label3", "");
+            Label topLabel = (Label) _startPane.getChildForName("TopLabel");
+            topLabel.setText("Game Over");
+            int wonFacesCount = _facetrisView.getWonFaces().size();
+            Label label2 = (Label) _startPane.getChildForName("Label2");
+            label2.setText("You recognized " + wonFacesCount + " faces.");
+            Label label3 = (Label) _startPane.getChildForName("Label3");
+            label3.setText("");
         }
 
         // More config
@@ -285,13 +289,13 @@ public class FacetrisApp extends ViewOwner {
      */
     public static void main(String[] args)
     {
-        ViewUtils.runLater(FacetrisApp::mainLater);
+        ViewUtils.runLater(FacetrisApp::showFacetrisApp);
     }
 
     /**
-     * Standard Main implementation.
+     * Shows the Facetris app.
      */
-    private static void mainLater()
+    private static void showFacetrisApp()
     {
         FacetrisApp facetrisApp = new FacetrisApp();
         facetrisApp.getWindow().setMaximized(SnapUtils.isWebVM);
