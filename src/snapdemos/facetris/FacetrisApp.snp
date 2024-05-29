@@ -48,4 +48,25 @@
       </Box>
     </ColView>
   </RowView>
+  <ColView Name="StartPane" PrefWidth="500" PrefHeight="300" Padding="10" Spacing="8" FillWidth="true">
+    <RowView Padding="4" GrowWidth="true" Spacing="4">
+      <EtchBorder />
+      <Label Name="TopLabel" text="Instructions:">
+        <font name="Arial" size="37" />
+      </Label>
+    </RowView>
+    <ColView Padding="4" GrowHeight="true" Spacing="15">
+      <Label Name="Label2" text="As faces fall, type their names.">
+        <font name="Arial" size="16" />
+      </Label>
+      <Label Name="Label3" text="If start characters are correct, name will auto-complete">
+        <font name="Arial" size="16" />
+      </Label>
+    </ColView>
+    <RowView Padding="4" GrowWidth="true" Spacing="4">
+      <Button Name="PlayButton" PrefWidth="125" Padding="6" LeanX="RIGHT" text="Play">
+        <font name="Arial" size="24" />
+      </Button>
+    </RowView>
+  </ColView>
 </ColView>

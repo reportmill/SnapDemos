@@ -20,7 +20,7 @@ public class FacetrisApp extends ViewOwner {
     private TextField  _nameText;
 
     // StartPane
-    private StartPane _startPane = new StartPane(this);
+    private ParentView _startPane;
 
     // Whether to cheat
     public static boolean  _cheat;
@@ -34,6 +34,23 @@ public class FacetrisApp extends ViewOwner {
     public FacetrisApp()
     {
         super();
+    }
+
+    /**
+     * Called to start game.
+     */
+    protected void playGame()
+    {
+        _facetrisView.play();
+        requestFocus("NameText");
+    }
+
+    /**
+     * Called to end game.
+     */
+    protected void gameOver()
+    {
+        showStartPane();
     }
 
     /**
@@ -65,6 +82,10 @@ public class FacetrisApp extends ViewOwner {
         Label title = getView("TitleLabel", Label.class);
         title.setTextFill(Color.WHITE);
         title.setEffect(SHADOW);
+
+        // Get StartPane and remove from UI
+        _startPane = getView("StartPane", ParentView.class);
+        ViewUtils.removeChild(getUI(ParentView.class), _startPane);
     }
 
     /**
@@ -148,39 +169,21 @@ public class FacetrisApp extends ViewOwner {
     @Override
     protected void respondUI(ViewEvent anEvent)
     {
-        // Handle PlayButton
-        if (anEvent.equals("PlayButton"))
-            playGame();
+        switch (anEvent.getName()) {
 
-        // Handle NameText
-        if (anEvent.equals("NameText"))
-            handleGuess(anEvent);
+            // Handle PlayButton
+            case "PlayButton": playGame(); break;
 
-        // Handle CheatCheckBox
-        if (anEvent.equals("CheatCheckBox")) {
-            _cheat = anEvent.getBoolValue();
-            FaceIndex.getShared().getNextQueue().forEach(i -> i.getView().setShowName(_cheat));
-            playGame();
+            // Handle NameText
+            case "NameText": handleGuess(anEvent); break;
+
+            // Handle CheatCheckBox
+            case "CheatCheckBox":
+                _cheat = anEvent.getBoolValue();
+                FaceIndex.getShared().getNextQueue().forEach(i -> i.getView().setShowName(_cheat));
+                playGame();
+                break;
         }
-    }
-
-    /**
-     * Called to start game.
-     */
-    protected void playGame()
-    {
-        _facetrisView.play();
-        requestFocus("NameText");
-    }
-
-    private void showStartPane()
-    {
-        _startPane.show();
-    }
-
-    protected void gameOver()
-    {
-        showStartPane();
     }
 
     /**
@@ -189,7 +192,7 @@ public class FacetrisApp extends ViewOwner {
     private void handleGuess(ViewEvent anEvent)
     {
         if (_startPane.isShowing()) {
-            _startPane.handlePlayButton();
+            hideStartPane();
             return;
         }
 
@@ -229,6 +232,52 @@ public class FacetrisApp extends ViewOwner {
             return faceEntry.getFirstName();
 
         return FaceIndex.getShared().getNameForPrefix(selStart > 0 ? typedChars : "");
+    }
+
+    /**
+     * Shows the start pane.
+     */
+    private void showStartPane()
+    {
+        // If first time, do some init
+        boolean firstTime = _startPane.getOpacity() == 1;
+        if (firstTime) {
+            _startPane.setFill(ViewUtils.getBackFill());
+            _startPane.setManaged(false);
+            _startPane.setSizeToPrefSize();
+            Button playButton = (Button) _startPane.getChildForName("PlayButton");
+            playButton.setDefaultButton(true);
+            playButton.addEventHandler(e -> hideStartPane(), Action);
+        }
+
+        // Otherwise do some updating
+        else {
+            _startPane.setOpacity(1);
+            setViewValue("TopLabel", "Game Over");
+            int count = _facetrisView.getWonFaces().size();
+            setViewValue("Label2", "You recognized " + count + " faces.");
+            setViewValue("Label3", "");
+        }
+
+        // More config
+        _startPane.setEffect(new ShadowEffect(20, Color.BLACK, 0, 0));
+
+        // Add StartPane to main view and animate in
+        ParentView topView = getUI(ParentView.class);
+        ViewUtils.addChild(topView, _startPane);
+        _startPane.setXY(200, -_startPane.getHeight());
+        _startPane.getAnimCleared(1000).setY(200).play();
+    }
+
+    /**
+     * Hides the start pane.
+     */
+    private void hideStartPane()
+    {
+        _startPane.setEffect(null);
+        Runnable removeStartPaneRun = () -> ViewUtils.removeChild(_startPane.getParent(), _startPane);
+        _startPane.getAnimCleared(500).setOpacity(0).setOnFinish(removeStartPaneRun).play();
+        playGame();
     }
 
     /**
