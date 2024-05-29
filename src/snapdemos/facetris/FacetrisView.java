@@ -16,11 +16,14 @@ import java.util.Random;
  */
 public class FacetrisView extends ParentView {
 
-    // The player
-    private Player  _player = new Player();
-
     // The Faces on the field
     private List<FaceEntry> _fieldFaces = new ArrayList<>();
+
+    // The Won faces
+    private List<FaceEntry> _wonFaces = new ArrayList<>();
+
+    // The Lost Faces
+    private List<FaceEntry> _lostFaces = new ArrayList<>();
 
     // The Timer
     private ViewTimer _newFaceTimer;
@@ -50,11 +53,6 @@ public class FacetrisView extends ParentView {
     }
 
     /**
-     * Returns the player.
-     */
-    public Player getPlayer()  { return _player; }
-
-    /**
      * Returns the first face still in play.
      */
     public FaceEntry getMainFace()
@@ -79,13 +77,42 @@ public class FacetrisView extends ParentView {
     }
 
     /**
+     * Returns the faces we've won.
+     */
+    public List<FaceEntry> getWonFaces()  { return _wonFaces; }
+
+    /**
+     * Add familiar face.
+     */
+    public void addWonFace(FaceEntry aFace)
+    {
+        _wonFaces.add(aFace);
+        aFace.setStatus(FaceEntry.Status.Won);
+    }
+
+    /**
+     * Returns the faces we've lost.
+     */
+    public List<FaceEntry> getLostFaces()  { return _lostFaces; }
+
+    /**
+     * Add lost face.
+     */
+    public void addLostFace(FaceEntry aFace)
+    {
+        _lostFaces.add(aFace);
+        aFace.setStatus(FaceEntry.Status.Lost);
+    }
+
+    /**
      * Starts the play.
      */
     public void play()
     {
         // Remove faces/views
-        _player.reset();
         _fieldFaces.clear();
+        _lostFaces.clear();
+        _wonFaces.clear();
         removeChildren();
         if (_physRunner != null)
             _physRunner.setRunning(false);
@@ -177,7 +204,7 @@ public class FacetrisView extends ParentView {
      */
     private void handleFaceWin(FaceEntry aFace)
     {
-        _player.addWonFace(aFace);
+        addWonFace(aFace);
 
         View view = aFace.getView();
         view.getAnim(500).setOpacity(0).setOnFinish(() -> handleFaceWinAnimDone(aFace)).play();
@@ -204,13 +231,13 @@ public class FacetrisView extends ParentView {
      */
     private void handleFaceLose(FaceEntry aFace)
     {
-        _player.addLostFace(aFace);
+        addLostFace(aFace);
         getOwner().resetLater();
 
         Body body = (Body) aFace.getView().getPhysics().getNative();
         body.setGravityScale(2.5f);
 
-        if (_player.getLostFaces().size() >= 3)
+        if (getLostFaces().size() >= 3)
             stopNewFaces();
     }
 

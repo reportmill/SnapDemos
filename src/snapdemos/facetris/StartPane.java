@@ -34,7 +34,7 @@ public class StartPane extends ViewOwner {
         if (!firstTime) {
             ui.setOpacity(1);
             setViewValue("TopLabel", "Game Over");
-            int count = _facetris.getPlayer().getWonFaces().size();
+            int count = _facetris._facetrisView.getWonFaces().size();
             setViewValue("Label2", "You recognized " + count + " faces.");
             setViewValue("Label3", "");
         }

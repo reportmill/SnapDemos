@@ -14,7 +14,7 @@ import java.util.List;
 public class FacetrisApp extends ViewOwner {
 
     // The PlayView
-    private FacetrisView _facetrisView;
+    protected FacetrisView _facetrisView;
 
     // The TextField
     private TextField  _nameText;
@@ -35,11 +35,6 @@ public class FacetrisApp extends ViewOwner {
     {
         super();
     }
-
-    /**
-     * Returns the player.
-     */
-    public Player getPlayer()  { return _facetrisView.getPlayer(); }
 
     /**
      * Create UI.
@@ -88,7 +83,7 @@ public class FacetrisApp extends ViewOwner {
     protected void resetUI()
     {
         // Reset UI
-        setViewValue("FamFacesLabel", "Familiar Faces: " + getPlayer().getWonFaces().size());
+        setViewValue("FamFacesLabel", "Familiar Faces: " + _facetrisView.getWonFaces().size());
 
         // Reset image views
         resetComingSoonView();
@@ -130,7 +125,7 @@ public class FacetrisApp extends ViewOwner {
     {
         // Update coming faces
         ColView familiarView = getView("FamiliarFacesView", ColView.class);
-        FaceEntry[] familiarFaces = getPlayer().getWonFaces().toArray(new FaceEntry[0]);
+        FaceEntry[] familiarFaces = _facetrisView.getWonFaces().toArray(new FaceEntry[0]);
         if (familiarFaces.length == 0) {
             familiarView.removeChildren();
             return;
