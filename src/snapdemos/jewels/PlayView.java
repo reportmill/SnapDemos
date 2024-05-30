@@ -2,6 +2,7 @@ package snapdemos.jewels;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.view.*;
+import snap.viewx.Explode;
 
 /**
  * A View to hold the play area for a match 3 game.
@@ -100,7 +101,10 @@ public class PlayView extends ParentView {
 
         // If replacing with null, animate out and remove
         if (aGem == null) {
-            snapdemos.shared.Explode.explode(oldGem, oldGem.getImage(), 8, 8, aDelay);
+            Explode explode = new Explode(oldGem, 8, 8);
+            explode.setImage(oldGem.getImage());
+            explode.removeOnDone();
+            explode.playDelayed(aDelay);
             return;
         }
 

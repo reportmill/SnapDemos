@@ -230,8 +230,11 @@ public class PuzzleView extends RowView {
         _puzzleApp.setScore(_puzzleApp.getScore() + 1);
 
         // If Solved, run Explode
-        if (isSolved())
-            new Explode(this, 30, 30, null).playAndRestore();
+        if (isSolved()) {
+            Explode explode = new Explode(this, 30, 30);
+            explode.restoreOnDone();
+            explode.play();
+        }
     }
 
     /**

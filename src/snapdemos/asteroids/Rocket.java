@@ -98,9 +98,19 @@ public class Rocket extends ActorView
         if (hitAsteroid != null) {
             _exploding = true;
             new Explode(this, 30, 30, () -> explosionFinished()).setRunTime(4000).play();
-            ViewUtils.runDelayed(() -> new Explode(this, 30, 30, null).setRunTime(2000).play(), 100);
+            ViewUtils.runDelayed(this::explodeRocket, 100);
             hitAsteroid.hit(100);
         }
+    }
+
+    /**
+     * Called to explode rocket.
+     */
+    public void explodeRocket()
+    {
+        Explode explode = new Explode(this, 30, 30);
+        explode.setRunTime(2000);
+        explode.play();
     }
 
     /**

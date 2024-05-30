@@ -240,7 +240,7 @@ public class PlayView extends ParentView {
     {
         // Cache row index, explode row and remove from Rows list
         int rowIndex = _stackRows.indexOf(aRow);
-        new Explode(aRow, 20, 5, null).play();
+        new Explode(aRow, 20, 5).play();
         _stackRows.remove(aRow);
         removeChild(aRow);
 
@@ -311,7 +311,7 @@ public class PlayView extends ParentView {
         // Explode rows
         for (int i = 0; i < _stackRows.size(); i++) {
             StackRow row = _stackRows.get(_stackRows.size() - i - 1);
-            new Explode(row, 20, 5, null).playDelayed(i * 150);
+            new Explode(row, 20, 5).playDelayed(i * 150);
         }
 
         addBlockToRows();

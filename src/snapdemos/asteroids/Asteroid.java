@@ -87,7 +87,7 @@ public class Asteroid extends ActorView
         EXPLOSION_SOUND.play();
 
         // Explode
-        new Explode(this, 20, 20, null).play();
+        new Explode(this, 20, 20).play();
         
         // Remove this asteroid
         GameView scene = getScene();
