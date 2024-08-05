@@ -16,7 +16,7 @@ public class SlideView extends ChildView {
     private SlidePane _slidePane;
 
     // The header view
-    private TextArea _headerView;
+    private TextArea _headerText;
 
     // The body view
     private BodyView _bodyView;
@@ -56,19 +56,18 @@ public class SlideView extends ChildView {
         rectView.setBounds(36, 18, 720, 150);
         addChild(rectView);
 
-        // Create HeaderView
-        _headerView = new TextArea();
-        _headerView.setWrapLines(true);
-        _headerView.setAlignY(VPos.CENTER);
-        _headerView.setDefaultStyle(_headerView.getDefaultStyle().copyFor(TITLE_FONT, Color.WHITE));
-        _headerView.getTextBlock().setAlignX(HPos.CENTER);
-        _headerView.setBorderRadius(10);
-        _headerView.setFont(TITLE_FONT); //_headerView.setFill(Color.LIGHTBLUE);
-        _headerView.setTextFill(Color.WHITE);
-        _headerView.setEffect(new ShadowEffect(15, Color.BLACK, 2, 2));
-        _headerView.setPadding(5, 5, 15, 5);
-        _headerView.setBounds(36, 18, 720, 150);
-        addChild(_headerView);
+        // Create HeaderTextArea
+        _headerText = new TextArea();
+        _headerText.setWrapLines(true);
+        _headerText.setFont(TITLE_FONT); //_headerView.setFill(Color.LIGHTBLUE);
+        _headerText.setTextColor(Color.WHITE);
+        _headerText.setBorderRadius(10);
+        _headerText.setEffect(new ShadowEffect(15, Color.BLACK, 2, 2));
+        _headerText.setAlignY(VPos.CENTER);
+        _headerText.getTextBlock().setAlignX(HPos.CENTER);
+        _headerText.setPadding(5, 5, 15, 5);
+        _headerText.setBounds(36, 18, 720, 150);
+        addChild(_headerText);
 
         // Create BodyView
         _bodyView = new BodyView();
@@ -104,8 +103,8 @@ public class SlideView extends ChildView {
      */
     public void setHeaderText(String aValue)
     {
-        _headerView.addChars(aValue);
-        _headerView.scaleTextToFit();
+        _headerText.addChars(aValue);
+        _headerText.scaleTextToFit();
     }
 
     /**
@@ -207,9 +206,10 @@ public class SlideView extends ChildView {
             // Create TextView
             TextArea textArea = new TextArea();
             textArea.setWrapLines(true);
+            textArea.setFont(itemFont);
             textArea.setMargin(0, 0, 0, leftMargin);
             textArea.setDefaultLineStyle(textArea.getDefaultLineStyle().copyFor(TextLineStyle.LEFT_INDENT_KEY, 20));
-            textArea.addChars(string, itemFont);
+            textArea.addChars(string);
             addChild(textArea);
         }
     }
