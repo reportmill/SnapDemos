@@ -102,7 +102,7 @@ public class FaceView extends StackView {
 
             _nameLabel2 = new Label(_faceEntry.getName());
             _nameLabel2.setFont(Font.Arial12.getBold());
-            _nameLabel2.setTextFill(Color.WHITE);
+            _nameLabel2.setTextColor(Color.WHITE);
             _nameLabel2.setLean(Pos.BOTTOM_CENTER);
             _nameLabel2.setPadding(2, 4, 11, 2);
             addChild(_nameLabel2);

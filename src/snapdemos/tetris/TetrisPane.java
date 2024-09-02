@@ -46,7 +46,7 @@ public class TetrisPane extends ViewOwner {
      */
     protected void initUI()
     {
-        getView("TitleLabel", Label.class).setTextFill(Color.WHITE);
+        getView("TitleLabel", Label.class).setTextColor(Color.WHITE);
 
         // Get/configure NextBlockBox
         _nextBlockBox = getView("NextBlockBox", BoxView.class);

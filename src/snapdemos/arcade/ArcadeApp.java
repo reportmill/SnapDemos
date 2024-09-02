@@ -20,7 +20,7 @@ public class ArcadeApp extends ViewOwner {
     @Override
     protected void initUI()
     {
-        getView("TitleLabel", Label.class).setTextFill(Color.WHITE);
+        getView("TitleLabel", Label.class).setTextColor(Color.WHITE);
     }
 
     /**

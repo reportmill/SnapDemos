@@ -80,7 +80,7 @@ public class FacetrisApp extends ViewOwner {
 
         // Configure TitleLabel
         Label title = getView("TitleLabel", Label.class);
-        title.setTextFill(Color.WHITE);
+        title.setTextColor(Color.WHITE);
         title.setEffect(SHADOW);
 
         // Get StartPane and remove from UI

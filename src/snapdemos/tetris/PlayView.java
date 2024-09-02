@@ -319,7 +319,7 @@ public class PlayView extends ParentView {
         // Create 'Game Over' label and animate
         Label label = new Label("Game Over");
         label.setFont(new Font("Arial Bold", 36));
-        label.setTextFill(Color.MAGENTA);
+        label.setTextColor(Color.MAGENTA);
         label.setSize(label.getPrefSize());
         label.setScale(.1);
         label.setOpacity(0);
