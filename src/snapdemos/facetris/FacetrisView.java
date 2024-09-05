@@ -1,6 +1,5 @@
 package snapdemos.facetris;
 import org.jbox2d.dynamics.Body;
-import snap.gfx.Border;
 import snap.gfx.Color;
 import snap.util.ListUtils;
 import snap.view.ParentView;
@@ -45,7 +44,6 @@ public class FacetrisView extends ParentView {
         super();
         setFill(new Color("#F0F8FF"));
         setBorder(Color.BLACK, BORDER_SIZE);
-        setBorder(getBorder().copyFor(Border.PaintAbove_Prop, true));
         setClipToBounds(true);
 
         // Create timer
