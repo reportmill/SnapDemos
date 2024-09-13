@@ -9,11 +9,11 @@
   </RowView>
   <RowView GrowHeight="true" FillHeight="true">
     <ColView GrowWidth="true" GrowHeight="true" FillWidth="true">
-      <Box Padding="8" GrowHeight="true" FillHeight="true">
+      <BoxView Padding="8" GrowHeight="true" FillHeight="true">
         <View Name="PlayView" PrefWidth="800" PrefHeight="700" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.FacetrisView" >
           <fill color="#F8FCFF" />
         </View>
-      </Box>
+      </BoxView>
       <RowView Padding="8" Spacing="8">
         <font name="Arial Bold" size="24" />
         <Label text="Enter Name:" />
@@ -41,11 +41,11 @@
           </ColView>
         </ScrollView>
       </ColView>
-      <Box PrefHeight="60" Align="Center">
+      <BoxView PrefHeight="60" Align="Center">
         <Button Name="PlayButton" Text="Play" PrefWidth="120" PrefHeight="40">
           <font name="Arial Bold" size="24"/>
         </Button>
-      </Box>
+      </BoxView>
     </ColView>
   </RowView>
   <ColView Name="StartPane" PrefWidth="500" PrefHeight="300" Padding="10" Spacing="8" FillWidth="true">
