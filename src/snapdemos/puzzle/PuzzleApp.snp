@@ -2,16 +2,12 @@
 <ColView Padding="10" FillWidth="true">
   <RowView Padding="0,4,0,4" Spacing="4">
     <Label Text="Goal  " />
-    <Label Name="GoalText" Text="10">
-      <Font Name="Arial" Size="24" />
-    </Label>
-    <Button Name="InfoButton" PrefWidth="36" PrefHeight="36" Padding="2" LeanX="RIGHT" ToolTip="Information" image="Info.png" ShowArea="false" />
+    <Label Name="GoalText" Font="Arial 24" Text="10" />
+    <Button Name="InfoButton" PrefWidth="36" PrefHeight="36" Padding="2" LeanX="RIGHT" ToolTip="Information" ImageName="Info.png" ShowArea="false" />
   </RowView>
   <RowView Padding="0,80,0,30" Spacing="4">
     <Label Text="Score  " />
-    <Label Name="ScoreText" Text="0">
-      <Font Name="Arial" Size="30" />
-    </Label>
+    <Label Name="ScoreText" Font="Arial 30" Text="0" />
   </RowView>
   <RowView>
     <Label LeanX="CENTER" Text="Tap a square to select it" />

@@ -1,35 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ColView Align="TOP_CENTER">
-  <RowView Margin="20">
-    <Font Name="Arial Bold" Size="72" />
-    <Label Name="TitleLabel" LeanX="CENTER" Text="SnapKit Arcade">
-      <ShadowEffect Color="#00" Radius="10" DX="5" DY="5" />
-    </Label>
+  <RowView Margin="20" Font="Arial Bold 72">
+    <Label Name="TitleLabel" Effect="shadow(10 5 5 #00)" LeanX="CENTER" Text="SnapKit Arcade" />
   </RowView>
   <RowView MinHeight="300" Margin="20" Spacing="10">
-    <ColView PrefWidth="200" Spacing="4" Align="TOP_CENTER">
-      <Font Name="Arial" Size="25" />
-      <Button Name="AsteroidsButton" Image="pkg.images/Asteroids.jpg" />
+    <ColView PrefWidth="200" Align="TOP_CENTER" Spacing="4" Font="Arial 25">
+      <Button Name="AsteroidsButton" ImageName="pkg.images/Asteroids.jpg" />
       <Label Text="Asteroids" />
     </ColView>
-    <ColView PrefWidth="200" Spacing="4" Align="TOP_CENTER">
-      <Font Name="Arial" Size="25" />
-      <Button Name="SnaptrisButton" Image="pkg.images/Snaptris.jpg" />
+    <ColView PrefWidth="200" Align="TOP_CENTER" Spacing="4" Font="Arial 25">
+      <Button Name="SnaptrisButton" ImageName="pkg.images/Snaptris.jpg" />
       <Label Text="Snaptris" />
     </ColView>
-    <ColView PrefWidth="200" Spacing="4" Align="TOP_CENTER">
-      <Font Name="Arial" Size="25" />
-      <Button Name="SnappyBirdButton" Image="pkg.images/SnappyBird.jpg" />
+    <ColView PrefWidth="200" Align="TOP_CENTER" Spacing="4" Font="Arial 25">
+      <Button Name="SnappyBirdButton" ImageName="pkg.images/SnappyBird.jpg" />
       <Label Text="SnappyBird" />
     </ColView>
-    <ColView PrefWidth="200" Spacing="4" Align="TOP_CENTER">
-      <Font Name="Arial" Size="25" />
-      <Button Name="JewelsButton" Image="pkg.images/Jewels.jpg" />
+    <ColView PrefWidth="200" Align="TOP_CENTER" Spacing="4" Font="Arial 25">
+      <Button Name="JewelsButton" ImageName="pkg.images/Jewels.jpg" />
       <Label Text="Jewels" />
     </ColView>
   </RowView>
-  <RowView Margin="20" GrowWidth="true">
-    <Font Name="Arial" Size="20" />
-    <Button Name="SnapShowButton" Text="Snap Show" PrefWidth="150" PrefHeight="30" />
+  <RowView Margin="20" Font="Arial 20" GrowWidth="true">
+    <Button Name="SnapShowButton" PrefWidth="150" PrefHeight="30" Text="Snap Show" />
   </RowView>
 </ColView>

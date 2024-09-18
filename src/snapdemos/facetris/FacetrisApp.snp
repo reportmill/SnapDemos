@@ -1,72 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ColView FillWidth="true">
-  <RowView Padding="5" Align="CENTER" >
-    <LineBorder color="#000000" width="2" />
-    <Label Name="TitleLabel" Align="CENTER" text="Celebrity Facetris">
-      <font name="Arial Bold" size="40" />
-    </Label>
-    <CheckBox Name="CheatCheckBox" Text="Cheat" Padding="8" LeanX="RIGHT" />
+  <RowView Align="CENTER" Padding="5" Border="#00 2">
+    <Label Name="TitleLabel" Align="CENTER" Font="Arial Bold 40" Text="Celebrity Facetris" />
+    <CheckBox Name="CheatCheckBox" Padding="8" LeanX="RIGHT" Text="Cheat" />
   </RowView>
   <RowView GrowHeight="true" FillHeight="true">
     <ColView GrowWidth="true" GrowHeight="true" FillWidth="true">
       <BoxView Padding="8" GrowHeight="true" FillHeight="true">
-        <View Name="PlayView" PrefWidth="800" PrefHeight="700" GrowWidth="true" GrowHeight="true" class="snapdemos.facetris.FacetrisView" >
-          <fill color="#F8FCFF" />
-        </View>
+        <View Name="PlayView" PrefWidth="800" PrefHeight="700" Fill="#F8FCFF" GrowWidth="true" GrowHeight="true" Class="snapdemos.facetris.FacetrisView" />
       </BoxView>
-      <RowView Padding="8" Spacing="8">
-        <font name="Arial Bold" size="24" />
-        <Label text="Enter Name:" />
+      <RowView Padding="8" Spacing="8" Font="Arial Bold 24">
+        <Label Text="Enter Name:" />
         <TextField Name="NameText" PrefHeight="40" GrowWidth="true" />
       </RowView>
     </ColView>
     <ColView PrefWidth="200" Padding="8,8,8,0" FillWidth="true">
       <ColView GrowHeight="true" FillWidth="true">
-        <Label Name="TitleLabel" Padding="4" Align="CENTER" text="Coming Soon">
-          <font name="Arial Bold" size="18" />
-        </Label>
+        <Label Name="TitleLabel" Align="CENTER" Padding="4" Font="Arial Bold 18" Text="Coming Soon" />
         <ScrollView PrefHeight="200" GrowHeight="true" ShowVBar="false">
-          <ColView Name="ComingSoonView" Padding="8" Spacing="8" Align="TOP_CENTER" >
-            <fill color="#F8FCFF" />
-          </ColView>
+          <ColView Name="ComingSoonView" Align="TOP_CENTER" Padding="8" Spacing="8" Fill="#F8FCFF" />
         </ScrollView>
       </ColView>
       <ColView GrowHeight="true" FillWidth="true">
-        <Label Name="FamFacesLabel" Padding="4" Align="CENTER" text="Familiar Faces">
-          <font name="Arial Bold" size="18" />
-        </Label>
+        <Label Name="FamFacesLabel" Align="CENTER" Padding="4" Font="Arial Bold 18" Text="Familiar Faces" />
         <ScrollView PrefHeight="200" GrowHeight="true" BarSize="10">
-          <ColView Name="FamiliarFacesView" Padding="8" Spacing="8" Align="TOP_CENTER">
-            <fill color="#F8FCFF" />
-          </ColView>
+          <ColView Name="FamiliarFacesView" Align="TOP_CENTER" Padding="8" Spacing="8" Fill="#F8FCFF" />
         </ScrollView>
       </ColView>
-      <BoxView PrefHeight="60" Align="Center">
-        <Button Name="PlayButton" Text="Play" PrefWidth="120" PrefHeight="40">
-          <font name="Arial Bold" size="24"/>
-        </Button>
+      <BoxView PrefHeight="60">
+        <Button Name="PlayButton" PrefWidth="120" PrefHeight="40" Font="Arial Bold 24" Text="Play" />
       </BoxView>
     </ColView>
   </RowView>
   <ColView Name="StartPane" PrefWidth="500" PrefHeight="300" Padding="10" Spacing="8" FillWidth="true">
-    <RowView Padding="4" GrowWidth="true" Spacing="4">
-      <EtchBorder />
-      <Label Name="TopLabel" text="Instructions:">
-        <font name="Arial" size="37" />
-      </Label>
+    <RowView Padding="4" Spacing="4" Border="etch" GrowWidth="true">
+      <Label Name="TopLabel" Font="Arial 37" Text="Instructions:" />
     </RowView>
-    <ColView Padding="4" GrowHeight="true" Spacing="15">
-      <Label Name="Label2" text="As faces fall, type their names.">
-        <font name="Arial" size="16" />
-      </Label>
-      <Label Name="Label3" text="If start characters are correct, name will auto-complete">
-        <font name="Arial" size="16" />
-      </Label>
+    <ColView Padding="4" Spacing="15" GrowHeight="true">
+      <Label Name="Label2" Font="Arial 16" Text="As faces fall, type their names." />
+      <Label Name="Label3" Font="Arial 16" Text="If start characters are correct, name will auto-complete" />
     </ColView>
-    <RowView Padding="4" GrowWidth="true" Spacing="4">
-      <Button Name="PlayButton" PrefWidth="125" Padding="6" LeanX="RIGHT" text="Play">
-        <font name="Arial" size="24" />
-      </Button>
+    <RowView Padding="4" Spacing="4" GrowWidth="true">
+      <Button Name="PlayButton" PrefWidth="125" Padding="6" Font="Arial 24" LeanX="RIGHT" Text="Play" />
     </RowView>
   </ColView>
 </ColView>
