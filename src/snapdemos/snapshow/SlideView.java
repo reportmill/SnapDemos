@@ -208,7 +208,7 @@ public class SlideView extends ChildView {
             textArea.setWrapLines(true);
             textArea.setFont(itemFont);
             textArea.setMargin(0, 0, 0, leftMargin);
-            textArea.setDefaultLineStyle(textArea.getDefaultLineStyle().copyFor(TextLineStyle.LEFT_INDENT_KEY, 20));
+            textArea.setDefaultLineStyle(textArea.getDefaultLineStyle().copyForPropKeyValue(TextLineStyle.LeftIndent_Prop, 20));
             textArea.addChars(string);
             addChild(textArea);
         }
