@@ -125,7 +125,7 @@ public class FacetrisApp extends ViewOwner {
         }
 
         // Remove uses faces
-        List<View> children = new ArrayList<>(Arrays.asList(comingSoonView.getChildren()));
+        List<View> children = new ArrayList<>(comingSoonView.getChildren());
         while (children.size() > 0 && comingFaces[0].getMiniView() != children.get(0)) {
             View view = children.remove(0);
             view.setEffect(null);

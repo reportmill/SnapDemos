@@ -187,7 +187,7 @@ public class SnappyBird extends ViewOwner {
         _flappyView.setRotate(_flappySpeedY / 80 * 30);
 
         // If flappy hit pipe, explode and reset attributes
-        ViewList viewList = _mainView.getViewList();
+        ViewList viewList = _mainView.getChildren();
         View viewHitByFlappyView = viewList.getHitView(_flappyView, null, 8);
         if (viewHitByFlappyView != null) {
             new Explode(_flappyView, 20, 20, () -> explodeDone()).play();

@@ -129,7 +129,7 @@ public class GameView extends ChildView {
      */
     public <T> T[] getActorsForClass(Class<T> aClass)
     {
-        View[] children = getChildren();
+        View[] children = getChildrenArray();
         return ArrayUtils.mapNonNull(children, child -> aClass.isInstance(child) ? (T) child : null, aClass);
     }
 
@@ -219,8 +219,7 @@ public class GameView extends ChildView {
     {
         act();
 
-        View[] children = getChildren();
-        for (View child : children) {
+        for (View child : getChildren()) {
             if (child instanceof ActorView && child.getParent() != null)
                 ((ActorView) child).act();
         }
