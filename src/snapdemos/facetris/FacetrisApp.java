@@ -2,10 +2,9 @@ package snapdemos.facetris;
 import snap.gfx.Color;
 import snap.gfx.Effect;
 import snap.gfx.ShadowEffect;
-import snap.util.SnapUtils;
+import snap.util.SnapEnv;
 import snap.view.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,7 +58,7 @@ public class FacetrisApp extends ViewOwner {
     @Override
     protected View createUI()
     {
-        if (SnapUtils.isWebVM)
+        if (SnapEnv.isWebVM)
             return new ScaleBox(super.createUI(), true, true);
         return super.createUI();
     }
@@ -300,7 +299,7 @@ public class FacetrisApp extends ViewOwner {
     private static void showFacetrisApp()
     {
         FacetrisApp facetrisApp = new FacetrisApp();
-        facetrisApp.getWindow().setMaximized(SnapUtils.isWebVM);
+        facetrisApp.getWindow().setMaximized(SnapEnv.isWebVM);
         facetrisApp.setWindowVisible(true);
     }
 }

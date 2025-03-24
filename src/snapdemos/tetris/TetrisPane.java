@@ -1,6 +1,6 @@
 package snapdemos.tetris;
 import snap.gfx.Color;
-import snap.util.SnapUtils;
+import snap.util.SnapEnv;
 import snap.view.*;
 
 /**
@@ -104,7 +104,7 @@ public class TetrisPane extends ViewOwner {
     static void appThreadMain()
     {
         TetrisPane tetrisPane = new TetrisPane();
-        tetrisPane.getWindow().setMaximized(SnapUtils.isWebVM);
+        tetrisPane.getWindow().setMaximized(SnapEnv.isWebVM);
         tetrisPane.setWindowVisible(true);
     }
 }

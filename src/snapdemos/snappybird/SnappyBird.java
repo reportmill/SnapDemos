@@ -2,7 +2,7 @@ package snapdemos.snappybird;
 import java.util.Random;
 import snap.geom.*;
 import snap.gfx.*;
-import snap.util.SnapUtils;
+import snap.util.SnapEnv;
 import snap.view.*;
 import snap.viewx.Explode;
 
@@ -219,7 +219,7 @@ public class SnappyBird extends ViewOwner {
     public static void mainLater()
     {
         SnappyBird snappyBird = new SnappyBird();
-        snappyBird.getWindow().setMaximized(SnapUtils.isWebVM);
+        snappyBird.getWindow().setMaximized(SnapEnv.isWebVM);
         snappyBird.setWindowVisible(true);
     }
 }

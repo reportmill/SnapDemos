@@ -4,7 +4,7 @@ import snap.gfx.Color;
 import snap.gfx.GradientPaint;
 import snap.gfx.Image;
 import snap.gfx.ShadowEffect;
-import snap.util.SnapUtils;
+import snap.util.SnapEnv;
 import snap.view.*;
 
 /**
@@ -50,7 +50,7 @@ public class PuzzleApp extends ViewOwner {
     protected View createUI()
     {
         View mainView = super.createUI();
-        if (SnapUtils.isWebVM)
+        if (SnapEnv.isWebVM)
             mainView = new ScaleBox(mainView, true, true);
         return mainView;
     }
@@ -81,7 +81,7 @@ public class PuzzleApp extends ViewOwner {
         getUI().addEventFilter(e -> { if (_infoView != null) hideInfoPanel(); }, ViewEvent.Type.MousePress);
 
         // If TeaVM, maximize window
-        if (SnapUtils.isTeaVM) {
+        if (SnapEnv.isTeaVM) {
             getWindow().setMaximized(true);
             _puzzleView.setMargin(4, 100, 20, 100);
         }

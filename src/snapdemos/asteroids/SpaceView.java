@@ -4,7 +4,7 @@ import snap.geom.Pos;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.Painter;
-import snap.util.SnapUtils;
+import snap.util.SnapEnv;
 import snap.view.Label;
 import snap.view.ScaleBox;
 import snap.view.ViewOwner;
@@ -153,7 +153,7 @@ public class SpaceView extends GameView
         ScaleBox scaleBox = new ScaleBox(spaceView, true, true);
         ViewOwner viewOwner = new ViewOwner(scaleBox);
         viewOwner.setFirstFocus(spaceView);
-        viewOwner.getWindow().setMaximized(SnapUtils.isWebVM);
+        viewOwner.getWindow().setMaximized(SnapEnv.isWebVM);
         viewOwner.setWindowVisible(true);
     }
 }

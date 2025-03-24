@@ -3,6 +3,7 @@ import java.util.*;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.util.ArrayUtils;
+import snap.util.SnapEnv;
 import snap.util.SnapUtils;
 import snap.view.*;
 import snap.viewx.TransitionPane;
@@ -157,7 +158,7 @@ public class SlidePane extends ViewOwner {
     public static void main(String[] args)
     {
         SlidePane slidePane = new SlidePane(SNAPCODE_PRES);
-        slidePane.getWindow().setMaximized(SnapUtils.isWebVM);
+        slidePane.getWindow().setMaximized(SnapEnv.isWebVM);
         slidePane.setWindowVisible(true);
     }
 }

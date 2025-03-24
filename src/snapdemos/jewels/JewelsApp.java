@@ -1,5 +1,5 @@
 package snapdemos.jewels;
-import snap.util.SnapUtils;
+import snap.util.SnapEnv;
 import snap.view.*;
 
 /**
@@ -17,7 +17,7 @@ public class JewelsApp extends ViewOwner {
     {
         super();
 
-        getWindow().setMaximized(SnapUtils.isWebVM);
+        getWindow().setMaximized(SnapEnv.isWebVM);
         setWindowVisible(true);
         runLater(_playView::startGame);
     }
