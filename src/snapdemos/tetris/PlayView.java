@@ -2,6 +2,7 @@ package snapdemos.tetris;
 import java.util.*;
 import snap.geom.*;
 import snap.gfx.*;
+import snap.util.ListUtils;
 import snap.util.MathUtils;
 import snap.view.*;
 import snap.viewx.Explode;
@@ -247,7 +248,7 @@ public class PlayView extends ParentView {
         // Iterate over rows above and configure to move down
         for (int i = rowIndex; i < _stackRows.size(); i++) {
             StackRow row = _stackRows.get(i);
-            row.setY(getHeight() - (i + 1) * TILE_SIZE);
+            row.setY(getHeight() - (i + 1) * TILE_SIZE - BORDER_WIDTH);
             row.setTransY(row.getTransY() - TILE_SIZE);
             row.getAnimCleared(500).setTransY(0).play();
         }
@@ -284,20 +285,17 @@ public class PlayView extends ParentView {
     /**
      * Returns the top row.
      */
-    StackRow getTopRow()
+    private StackRow getTopRow()
     {
-        return _stackRows.size() > 0 ? _stackRows.get(_stackRows.size() - 1) : null;
+        return !_stackRows.isEmpty() ? _stackRows.get(_stackRows.size() - 1) : null;
     }
 
     /**
      * Returns the row for y value.
      */
-    StackRow getRowForY(double aY)
+    private StackRow getRowForY(double aY)
     {
-        for (StackRow row : _stackRows)
-            if (row.contains(row.getWidth() / 2, aY - row.getY()))
-                return row;
-        return null;
+        return ListUtils.findMatch(_stackRows, row -> row.contains(row.getWidth() / 2, aY - row.getY()));
     }
 
     /**
