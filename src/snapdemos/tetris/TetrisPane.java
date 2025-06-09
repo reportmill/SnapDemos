@@ -24,6 +24,7 @@ public class TetrisPane extends ViewOwner {
     /**
      * Initialize UI.
      */
+    @Override
     protected void initUI()
     {
         // Create PlayView and add to pane
@@ -35,21 +36,30 @@ public class TetrisPane extends ViewOwner {
         _nextBlockBox = getView("NextBlockBox", BoxView.class);
         _nextBlockBox.setScale(.6);
 
-        // Add PlayView listener to call playViewNextBlockChanged()
+        // Add PlayView listener to Score, NextBlock changes
+        _playView.addPropChangeListener(pc -> resetLater(), PlayView.Score_Prop);
         _playView.addPropChangeListener(pc -> handlePlayViewNextBlockChange(), PlayView.NextBlock_Prop);
     }
 
     /**
      * Initialize showing.
      */
-    protected void initShowing()
+    @Override
+    protected void initShowing()  { runLater(_playView::startGame); }
+
+    /**
+     * Reset UI.
+     */
+    @Override
+    protected void resetUI()
     {
-        runLater(_playView::startGame);
+        setViewValue("ScoreLabel", _playView.getScore());
     }
 
     /**
      * Respond to UI.
      */
+    @Override
     protected void respondUI(ViewEvent anEvent)
     {
         // Handle LeftButton, RightButton, DropButton, RotateButton

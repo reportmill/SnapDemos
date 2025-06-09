@@ -2,6 +2,7 @@ package snapdemos.tetris;
 import java.util.*;
 import snap.geom.*;
 import snap.gfx.*;
+import snap.util.Convert;
 import snap.util.ListUtils;
 import snap.util.MathUtils;
 import snap.view.*;
@@ -24,6 +25,9 @@ public class PlayView extends ParentView {
     
     // Whether user has requested block to drop faster
     private boolean _dropFast;
+
+    // The current score
+    private int _score;
     
     // Whether game is over
     private boolean _gameOver;
@@ -36,6 +40,7 @@ public class PlayView extends ParentView {
     private static int GRID_HEIGHT = 20;
 
     // Constants
+    static final String Score_Prop = "Score";
     static final String NextBlock_Prop = "NextBlock";
 
     /**
@@ -80,6 +85,20 @@ public class PlayView extends ParentView {
     public void pauseGame()
     {
         setTimerRunning(!isTimerRunning());
+    }
+
+    /**
+     * Returns the score.
+     */
+    public int getScore()  { return _score; }
+
+    /**
+     * Sets the score.
+     */
+    public void setScore(int aValue)
+    {
+        if (aValue == getScore()) return;
+        firePropChange(Score_Prop, _score, _score = aValue);
     }
 
     /**
@@ -268,6 +287,14 @@ public class PlayView extends ParentView {
         // Remove block
         removeChild(_block);
 
+        // If full rows, update score
+        int fullRowCount = ListUtils.count(_stackRows, StackRow::isFull);
+        if (fullRowCount > 0) {
+            int points = switch (fullRowCount) { case 1 -> 300; case 2 -> 500; case 3 -> 500; default -> 800; };
+            int newScore = getScore() + points;
+            getAnimCleared(500).setValue(Score_Prop, newScore).play();
+        }
+
         // Remove full rows
         for (int i = _stackRows.size() - 1; i >= 0; i--) {
             StackRow row = _stackRows.get(i);
@@ -347,10 +374,40 @@ public class PlayView extends ParentView {
     /**
      * Drop block.
      */
-    public void dropBlock()  { _dropFast = true; }
+    public void dropBlock()
+    {
+        _dropFast = true;
+
+        // Add 2 points for every row dropped
+        int rowsLeft = (int) Math.round((getHeight() - _block.getMaxY()) / TILE_SIZE);
+        int newScore = getScore() + rowsLeft * 2;
+        getAnimCleared(300).setValue(Score_Prop, newScore).play();
+    }
 
     /**
      * Rotate block.
      */
     public void rotateBlock()  { _block.rotateRight(); }
+
+    /**
+     * Override to support props for this class.
+     */
+    @Override
+    public Object getPropValue(String propName)
+    {
+        if (propName == Score_Prop)
+            return getScore();
+        return super.getPropValue(propName);
+    }
+
+    /**
+     * Override to support props for this class.
+     */
+    @Override
+    public void setPropValue(String propName, Object aValue)
+    {
+        if (propName == Score_Prop)
+            setScore(Convert.intValue(aValue));
+        else super.setPropValue(propName, aValue);
+    }
 }

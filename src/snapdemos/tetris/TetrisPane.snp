@@ -3,7 +3,11 @@
   <RowView Padding="20" Spacing="10" GrowWidth="true">
     <BoxView Name="PlayViewBox" Border="#00 2" />
     <ColView MinWidth="200" Padding="4" Spacing="4" GrowHeight="true">
-      <Label Name="TitleLabel" Margin="0,0,20,0" Effect="shadow(8 3 3 #00)" Font="Arial Bold 50" TextColor="#FF" LeanX="CENTER" Text="Snaptris" />
+      <Label Name="TitleLabel" Margin="0,0,10,0" Effect="shadow(8 3 3 #00)" Font="Arial Bold 50" TextColor="#FF" LeanX="CENTER" Text="Snaptris" />
+      <RowView Fill="#FF" Border="#CA" BorderRadius="10" Margin="10" LeanX="CENTER">
+        <Label Margin="10" Font="Arial Bold 22" Text="Score:" />
+        <Label Name="ScoreLabel" Margin="10" Font="Arial Bold 22" />
+      </RowView>
       <BoxView PrefWidth="160" PrefHeight="100" Padding="4" Spacing="4" Border="bevel" GrowHeight="true" LeanX="CENTER" FillWidth="true" FillHeight="true">
         <BoxView Name="NextBlockBox" />
       </BoxView>
