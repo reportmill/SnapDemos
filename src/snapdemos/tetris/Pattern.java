@@ -17,35 +17,26 @@ public class Pattern {
     // Array of packed (col,row) pairs of tiles for pattern
     public int[] fill;
     
-    // The color of pattern
-    private Color _color;
+    // The color of pattern tile
+    private Color _tileColor;
     
-    // The pattern image
-    private Image _image;
+    // An image of pattern tile
+    private Image _tileImage;
 
     // Pattern constants
-    public static Pattern SQUARE, STICK, BOAT, L1, L2, S1, S2;
-    public static Pattern[] ALL_PATTERNS;
+    public static Pattern SQUARE = new Pattern(2, 2, Color.BLUE.brighter().brighter(), new int[] { 0, 0, 0, 1, 1, 0, 1, 1 });
+    public static Pattern STICK = new Pattern(4, 1, Color.MAGENTA, new int[] { 0, 0, 0, 1, 0, 2, 0, 3 });
+    public static Pattern BOAT = new Pattern(2, 3, Color.GREEN, new int[] { 0, 0, 1, 0, 2, 0, 1, 1 });
+    public static Pattern L1 = new Pattern(3, 2, Color.YELLOW, new int[] { 0, 0, 0, 1, 0, 2, 1, 2 });
+    public static Pattern L2 = new Pattern(3, 2, Color.ORANGE, new int[] { 1, 0, 1, 1, 0, 2, 1, 2 });
+    public static Pattern S1 = new Pattern(2, 3, Color.PINK, new int[] { 0, 0, 1, 0, 1, 1, 2, 1 });
+    public static Pattern S2 = new Pattern(2, 3, Color.CYAN, new int[] { 1, 0, 2, 0, 0, 1, 1, 1 });
+    public static Pattern[] ALL_PATTERNS = new Pattern[] { SQUARE, STICK, BOAT, L1, L2, S1, S2 };
 
     // Tile constants
     public static final int TILE_SIZE = 32;
-    public static final Effect TILE_EFFECT = new EmbossEffect(60, 120, 4);
+    private static final Effect TILE_EFFECT = new EmbossEffect(60, 120, 4);
     private static final int TILE_OFFSET = 4; // Due to EmbossEffect radius
-
-    /**
-     * Creates Patterns.
-     */
-    static
-    {
-        SQUARE = new Pattern(2, 2, Color.BLUE.brighter().brighter(), new int[] { 0, 0, 0, 1, 1, 0, 1, 1 });
-        STICK = new Pattern(4, 1, Color.MAGENTA, new int[] { 0, 0, 0, 1, 0, 2, 0, 3 });
-        BOAT = new Pattern(2, 3, Color.GREEN, new int[] { 0, 0, 1, 0, 2, 0, 1, 1 });
-        L1 = new Pattern(3, 2, Color.YELLOW, new int[] { 0, 0, 0, 1, 0, 2, 1, 2 });
-        L2 = new Pattern(3, 2, Color.ORANGE, new int[] { 1, 0, 1, 1, 0, 2, 1, 2 });
-        S1 = new Pattern(2, 3, Color.PINK, new int[] { 0, 0, 1, 0, 1, 1, 2, 1 });
-        S2 = new Pattern(2, 3, Color.CYAN, new int[] { 1, 0, 2, 0, 0, 1, 1, 1 });
-        ALL_PATTERNS = new Pattern[] { SQUARE, STICK, BOAT, L1, L2, S1, S2 };
-    }
 
     /**
      * Constructor for row/col count, color and tile coords array.
@@ -54,15 +45,15 @@ public class Pattern {
     {
         rowCount = aRowCount;
         colCount = aColCount;
-        _color = aColor;
+        _tileColor = aColor;
         fill = fillArray;
-        tileCount = fill.length/2;
+        tileCount = fill.length / 2;
     }
 
     /**
      * Paints the pattern to given painter.
      */
-    public void paint(Painter aPntr)
+    public void paintPattern(Painter aPntr)
     {
         // Iterate over fill col/row pairs
         for (int i = 0; i < fill.length; i++) {
@@ -77,8 +68,8 @@ public class Pattern {
      */
     public void paintTile(Painter aPntr, double tileX, double tileY)
     {
-        if (_image == null) _image = getImage(_color);
-        aPntr.drawImage(_image, tileX - TILE_OFFSET, tileY - TILE_OFFSET);
+        if (_tileImage == null) _tileImage = getTileImageForColor(_tileColor);
+        aPntr.drawImage(_tileImage, tileX - TILE_OFFSET, tileY - TILE_OFFSET);
     }
 
     /**
@@ -87,7 +78,7 @@ public class Pattern {
     public Pattern getRotateRight()
     {
         int[] rotatedFillArray = getRotatedFillArray();
-        return new Pattern(colCount, rowCount, _color, rotatedFillArray);
+        return new Pattern(colCount, rowCount, _tileColor, rotatedFillArray);
     }
 
     /**
@@ -109,9 +100,9 @@ public class Pattern {
         // Get rotated fill array
         int[] rotatedFillArray = new int[fill.length];
         for (int i = 0; i < fill.length; i += 2) {
-            Point p = rotateTransform.transformXY(fill[i] + .5, fill[i+1] + .5);
-            rotatedFillArray[i] = (int) Math.round(p.x - .5);
-            rotatedFillArray[i + 1] = (int) Math.round(p.y - .5);
+            Point rotatedPoint = rotateTransform.transformXY(fill[i] + .5, fill[i+1] + .5);
+            rotatedFillArray[i] = (int) Math.round(rotatedPoint.x - .5);
+            rotatedFillArray[i + 1] = (int) Math.round(rotatedPoint.y - .5);
         }
 
         // Return
@@ -121,7 +112,7 @@ public class Pattern {
     /**
      * Creates an image of a tile for given color.
      */
-    private static Image getImage(Color aColor)
+    private static Image getTileImageForColor(Color aColor)
     {
         View view = new BoxView();
         view.setSize(TILE_SIZE, TILE_SIZE);

@@ -75,9 +75,9 @@ public class StackRow extends View {
     }
 
     /**
-     * Adds block tiles.
+     * Adds block tiles to this row.
      */
-    public void addBlockTiles(Block aBlock)
+    public void addBlockTilesToRow(Block aBlock)
     {
         for(int i = 0; i < aBlock.getTileCount(); i++) {
             Rect tileBounds = aBlock.getTileRectInParent(i);

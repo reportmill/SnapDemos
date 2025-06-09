@@ -44,6 +44,33 @@ public class Block extends View {
     }
 
     /**
+     * Move Left.
+     */
+    public void moveLeft()
+    {
+        if(getX() <= getParent().getInsetsAll().left) return;
+
+        setX(getX() - TILE_SIZE);
+
+        setTransX(TILE_SIZE);
+        getAnimCleared(300).setTransX(0).play();
+    }
+
+    /**
+     * Move Right.
+     */
+    public void moveRight()
+    {
+        double parentMaxX = getParent().getWidth() - getParent().getInsetsAll().right;
+        if(getMaxX() >= parentMaxX)
+            return;
+
+        setX(getX() + TILE_SIZE);
+        setTransX(-TILE_SIZE);
+        getAnimCleared(300).setTransX(0).play();
+    }
+
+    /**
      * Rotate right.
      */
     public void rotateRight()
@@ -68,7 +95,7 @@ public class Block extends View {
      */
     protected void paintFront(Painter aPntr)
     {
-        _pattern.paint(aPntr);
+        _pattern.paintPattern(aPntr);
     }
 
     /**

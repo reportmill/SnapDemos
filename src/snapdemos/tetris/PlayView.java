@@ -71,7 +71,7 @@ public class PlayView extends ParentView {
 
         // Start timer, add piece
         setTimerRunning(true);
-        addPiece();
+        addNewBlock();
         requestFocus();
         getRootView().repaint();
     }
@@ -98,7 +98,7 @@ public class PlayView extends ParentView {
 
         // Start timer
         if (_timerFiredRun == null) {
-            _timerFiredRun = this::timerFired;
+            _timerFiredRun = this::handleTimerFired;
             getEnv().runIntervals(_timerFiredRun, 20);
         }
 
@@ -110,14 +110,14 @@ public class PlayView extends ParentView {
     }
 
     /**
-     * Adds a piece.
+     * Adds a new block to play view.
      */
-    public void addPiece()
+    public void addNewBlock()
     {
         // Create block
         _block = getNextBlock(true);
 
-        // Set block XY
+        // Center block
         double blockX = (getWidth() - _block.getWidth()) / 2;
         blockX = MathUtils.round(blockX, TILE_SIZE) + BORDER_WIDTH;
         double blockY = BORDER_WIDTH;
@@ -146,77 +146,75 @@ public class PlayView extends ParentView {
     /**
      * Called when timer fires.
      */
-    void timerFired()
+    private void handleTimerFired()
     {
         // If no block, return
         if(_block == null) return;
 
         // Update block position
-        int dy = 3;
-        if (_dropFast)
-            dy += 15;
+        int dy = _dropFast ? 18 : 3;
         _block.setY(_block.getY() + dy);
 
-        // If block stopped,
-        if(intersectsBlock())
-            blockDidHit();
+        // If block stopped, add to stack and start new
+        if(isBlockObstructed())
+            handleBlockStopped();
     }
 
     /**
-     * Returns whether block has hit something.
+     * Returns whether block is obstructed by stack or bottom.
      */
-    boolean intersectsBlock()
+    private boolean isBlockObstructed()
     {
-        double blockMaxY = _block.getMaxY();
-
+        // If block intersects stack row, return true
         for (int i = _stackRows.size() - 1; i >= 0; i--) {
             StackRow row = _stackRows.get(i);
-            if (MathUtils.lt(blockMaxY, row.getY()))
-                return false;
             if (row.intersectsBlock(_block))
                 return true;
         }
 
-        if (MathUtils.lt(blockMaxY, getHeight()))
-            return false;
-        return true;
+        // If block intersects bottom, return true
+        if (MathUtils.gte(_block.getMaxY(), getHeight() - BORDER_WIDTH))
+            return true;
+
+        // Return block not obstructed
+        return false;
     }
 
     /**
-     * Called when block hits something.
+     * Called when block hits stack tile or bottom.
      */
-    void blockDidHit()
+    private void handleBlockStopped()
     {
         // Back block up
-        while (intersectsBlock() && _block.getY() > BORDER_WIDTH)
+        while (isBlockObstructed() && _block.getY() > BORDER_WIDTH)
             _block.setY(_block.getY() - 1);
 
-        // Add rows to accommodate piece
-        addRows();
+        // Add stack rows to accommodate piece
+        topOffStackRowsList();
         if (_gameOver)
             return;
         addBlockToRows();
 
         // Add new piece
-        addPiece();
+        addNewBlock();
     }
 
     /**
-     * Adds a row.
+     * Makes sure there are enough stack rows to reach current block y.
      */
-    void addRows()
+    private void topOffStackRowsList()
     {
-        while (_stackRows.size() == 0 || _block.getY() + TILE_SIZE / 2 < getTopRow().getY()) {
-            addRow();
+        while (_stackRows.isEmpty() || _block.getY() + TILE_SIZE / 2 < getTopRow().getY()) {
+            addStackRow();
             if (_gameOver)
                 return;
         }
     }
 
     /**
-     * Adds a row.
+     * Adds a stack row.
      */
-    void addRow()
+    private void addStackRow()
     {
         // If all rows full, it's GameOver
         if (_stackRows.size() >= GRID_HEIGHT - 1) {
@@ -268,7 +266,7 @@ public class PlayView extends ParentView {
             StackRow row = getRowForY(blockY);
             if (row == null)
                 continue;
-            row.addBlockTiles(_block);
+            row.addBlockTilesToRow(_block);
         }
 
         // Remove block
@@ -314,18 +312,20 @@ public class PlayView extends ParentView {
 
         addBlockToRows();
 
-        // Create 'Game Over' label and animate
-        Label label = new Label("Game Over");
-        label.setFont(new Font("Arial Bold", 36));
-        label.setTextColor(Color.MAGENTA);
-        label.setSize(label.getPrefSize());
-        label.setScale(.1);
-        label.setOpacity(0);
-        addChild(label);
-        label.setManaged(false);
-        label.setLean(Pos.CENTER);
+        // Create 'Game Over' label and add
+        Label gameOverLabel = new Label("Game Over");
+        gameOverLabel.setFont(new Font("Arial Bold", 36));
+        gameOverLabel.setTextColor(Color.MAGENTA);
+        gameOverLabel.setScale(.1);
+        gameOverLabel.setOpacity(0);
+        gameOverLabel.setManaged(false);
+        gameOverLabel.setLean(Pos.CENTER);
+        gameOverLabel.setSizeToPrefSize();
+        addChild(gameOverLabel);
+
+        // Animate label
         int time = _stackRows.size() * 150;
-        label.getAnim(time).getAnim(time + 1200).setScale(1).setOpacity(1).setRotate(360).play();
+        gameOverLabel.getAnim(time).getAnim(time + 1200).setScale(1).setOpacity(1).setRotate(360).play();
     }
 
     /**
@@ -333,41 +333,23 @@ public class PlayView extends ParentView {
      */
     protected void processEvent(ViewEvent anEvent)
     {
-        // Handle LeftArrow, RightArrow, DownArrow, Space
-        if (anEvent.isLeftArrow())
-            moveLeft();
-        else if (anEvent.isRightArrow())
-            moveRight();
-        else if (anEvent.isDownArrow())
-            dropBlock();
-        else if (anEvent.isUpArrow() || anEvent.getKeyString().equals(" "))
-            rotateBlock();
+        switch (anEvent.getKeyCode()) {
+            case KeyCode.LEFT -> moveLeft();
+            case KeyCode.RIGHT -> moveRight();
+            case KeyCode.DOWN -> dropBlock();
+            case KeyCode.UP, KeyCode.SPACE -> rotateBlock();
+        }
     }
 
     /**
      * Move Left.
      */
-    public void moveLeft()
-    {
-        if(_block.getX() <= BORDER_WIDTH) return;
-
-        _block.setX(_block.getX() - TILE_SIZE);
-
-        _block.setTransX(TILE_SIZE);
-        _block.getAnimCleared(300).setTransX(0).play();
-    }
+    public void moveLeft()  { _block.moveLeft(); }
 
     /**
      * Move Right.
      */
-    public void moveRight()
-    {
-        if(_block.getMaxX() >= getWidth() - BORDER_WIDTH) return;
-
-        _block.setX(_block.getX() + TILE_SIZE);
-        _block.setTransX(-TILE_SIZE);
-        _block.getAnimCleared(300).setTransX(0).play();
-    }
+    public void moveRight()  { _block.moveRight();}
 
     /**
      * Drop block.
