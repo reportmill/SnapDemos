@@ -4,6 +4,7 @@ import snap.gfx.*;
 import snap.util.ArrayUtils;
 import snap.util.MathUtils;
 import snap.view.*;
+import static snapdemos.tetris.Pattern.TILE_SIZE;
 
 /**
  * A class to represent row of block tiles at bottom of PlayView.
@@ -11,21 +12,18 @@ import snap.view.*;
 public class StackRow extends View {
 
     // The array of filled tiles
-    private Pattern[] _cols = new Pattern[GRID_WIDTH];
+    private Pattern[] _cols;
     
     // The row number
     protected int _rowNum;
     
-    // Constants
-    private static int TILE_SIZE = Block.TILE_SIZE;
-    private static int GRID_WIDTH = PlayView.GRID_WIDTH;
-
     /**
      * Constructor.
      */
     public StackRow()
     {
         super();
+        _cols = new Pattern[PlayView.GRID_WIDTH];
         double rowW = PlayView.GRID_WIDTH * TILE_SIZE;
         double rowH = TILE_SIZE;
         setSize(rowW, rowH);

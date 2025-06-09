@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RowView Padding="20" Spacing="10" GrowWidth="true">
-  <ColView PrefWidth="200" PrefHeight="400" Padding="4" Spacing="4" Fill="#FF" GrowHeight="true" />
-  <ColView MinWidth="200" Padding="4" Spacing="4" GrowHeight="true">
-    <Label Name="TitleLabel" Margin="0,0,20,0" Effect="shadow(8 3 3 #00)" Font="Arial Bold 50" LeanX="CENTER" Text="Snaptris" />
-    <BoxView PrefWidth="160" PrefHeight="100" Padding="4" Spacing="4" Border="bevel" GrowHeight="true" LeanX="CENTER" FillWidth="true" FillHeight="true">
-      <BoxView Name="NextBlockBox" />
-    </BoxView>
-    <RowView MinWidth="0" Padding="9" Spacing="4" GrowWidth="true">
-      <Button Name="LeftButton" PrefWidth="60" PrefHeight="30" Padding="2" Text="Left" />
-      <Button Name="RotateButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="CENTER" Text="Rotate" />
-      <Button Name="RightButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="RIGHT" Text="Right" />
-    </RowView>
-    <RowView MinWidth="0" Padding="9" Spacing="4" GrowWidth="true">
-      <Button Name="DropButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="CENTER" Text="Drop" />
-    </RowView>
-    <ColView Align="CENTER" Padding="15" Spacing="4" Border="bevel" LeanX="CENTER" LeanY="CENTER">
-      <Label Text="Left  -  left arrow" />
-      <Label Text="Right  -  right arrow" />
-      <Label Text="Rotate  - up arrow / space" />
-      <Label Text="Drop  -  down arrow" />
+<ScaleBox FillWidth="true" FillHeight="true">
+  <RowView Padding="20" Spacing="10" GrowWidth="true">
+    <BoxView Name="PlayViewBox" Border="#00 2" />
+    <ColView MinWidth="200" Padding="4" Spacing="4" GrowHeight="true">
+      <Label Name="TitleLabel" Margin="0,0,20,0" Effect="shadow(8 3 3 #00)" Font="Arial Bold 50" TextColor="#FF" LeanX="CENTER" Text="Snaptris" />
+      <BoxView PrefWidth="160" PrefHeight="100" Padding="4" Spacing="4" Border="bevel" GrowHeight="true" LeanX="CENTER" FillWidth="true" FillHeight="true">
+        <BoxView Name="NextBlockBox" />
+      </BoxView>
+      <RowView MinWidth="0" Padding="9" Spacing="4" GrowWidth="true">
+        <Button Name="LeftButton" PrefWidth="60" PrefHeight="30" Padding="2" Text="Left" />
+        <Button Name="RotateButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="CENTER" Text="Rotate" />
+        <Button Name="RightButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="RIGHT" Text="Right" />
+      </RowView>
+      <RowView MinWidth="0" Padding="9" Spacing="4" GrowWidth="true">
+        <Button Name="DropButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="CENTER" Text="Drop" />
+      </RowView>
+      <ColView Align="CENTER" Padding="15" Spacing="4" Border="bevel" LeanX="CENTER" LeanY="CENTER">
+        <Label Text="Left  -  left arrow" />
+        <Label Text="Right  -  right arrow" />
+        <Label Text="Rotate  - up arrow / space" />
+        <Label Text="Drop  -  down arrow" />
+      </ColView>
+      <RowView MinWidth="0" Padding="9" Spacing="4" GrowWidth="true" LeanY="BOTTOM">
+        <Button Name="PauseButton" PrefWidth="60" PrefHeight="30" Padding="2" Text="Pause" />
+        <Button Name="RestartButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="RIGHT" Text="Restart" />
+      </RowView>
     </ColView>
-    <RowView MinWidth="0" Padding="9" Spacing="4" GrowWidth="true" LeanY="BOTTOM">
-      <Button Name="PauseButton" PrefWidth="60" PrefHeight="30" Padding="2" Text="Pause" />
-      <Button Name="RestartButton" PrefWidth="60" PrefHeight="30" Padding="2" LeanX="RIGHT" Text="Restart" />
-    </RowView>
-  </ColView>
-</RowView>
+  </RowView>
+</ScaleBox>

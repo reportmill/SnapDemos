@@ -1,5 +1,4 @@
 package snapdemos.tetris;
-import snap.gfx.Color;
 import snap.util.SnapEnv;
 import snap.view.*;
 
@@ -23,37 +22,21 @@ public class TetrisPane extends ViewOwner {
     }
 
     /**
-     * Create UI.
-     */
-    protected View createUI()
-    {
-        // Do normal version
-        RowView mainRowView = (RowView) super.createUI();
-
-        // Swap out placeholder with PlayView
-        _playView = new PlayView();
-        ViewUtils.replaceView(mainRowView.getChild(0), _playView);
-
-        // Create ScaleBox to work with small window sizes
-        ScaleBox scaleBox = new ScaleBox(mainRowView, true, true);
-
-        // Return
-        return scaleBox;
-    }
-
-    /**
      * Initialize UI.
      */
     protected void initUI()
     {
-        getView("TitleLabel", Label.class).setTextColor(Color.WHITE);
+        // Create PlayView and add to pane
+        _playView = new PlayView();
+        BoxView playViewBox = getView("PlayViewBox", BoxView.class);
+        playViewBox.setContent(_playView);
 
         // Get/configure NextBlockBox
         _nextBlockBox = getView("NextBlockBox", BoxView.class);
         _nextBlockBox.setScale(.6);
 
         // Add PlayView listener to call playViewNextBlockChanged()
-        _playView.addPropChangeListener(pc -> playViewNextBlockChanged(), PlayView.NextBlock_Prop);
+        _playView.addPropChangeListener(pc -> handlePlayViewNextBlockChange(), PlayView.NextBlock_Prop);
     }
 
     /**
@@ -61,7 +44,7 @@ public class TetrisPane extends ViewOwner {
      */
     protected void initShowing()
     {
-        runLater(() -> _playView.startGame());
+        runLater(_playView::startGame);
     }
 
     /**
@@ -83,7 +66,7 @@ public class TetrisPane extends ViewOwner {
     /**
      * Called when PlayView.NextBlock changes.
      */
-    private void playViewNextBlockChanged()
+    private void handlePlayViewNextBlockChange()
     {
         Block nextBlock = _playView.getNextBlock(false);
         Block nextBlockCopy = nextBlock.getCopy();
@@ -93,15 +76,12 @@ public class TetrisPane extends ViewOwner {
     /**
      * Standard main method.
      */
-    public static void main(String[] args)
-    {
-        ViewUtils.runLater(() -> appThreadMain());
-    }
+    public static void main(String[] args)  { ViewUtils.runLater(TetrisPane::appThreadMain); }
 
     /**
      * Standard main method.
      */
-    static void appThreadMain()
+    private static void appThreadMain()
     {
         TetrisPane tetrisPane = new TetrisPane();
         tetrisPane.getWindow().setMaximized(SnapEnv.isWebVM);

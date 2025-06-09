@@ -2,6 +2,7 @@ package snapdemos.tetris;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.view.*;
+import static snapdemos.tetris.Pattern.TILE_SIZE;
 
 /**
  * A class to represent a tetris block.
@@ -12,7 +13,6 @@ public class Block extends View {
     protected Pattern _pattern;
     
     // Constants
-    static int TILE_SIZE = Pattern.TILE_SIZE;
     static Effect BLOCK_EFFECT = new ShadowEffect(8, Color.BLACK,0,0);
 
     /**
@@ -48,7 +48,8 @@ public class Block extends View {
      */
     public void moveLeft()
     {
-        if(getX() <= getParent().getInsetsAll().left) return;
+        if(getX() <= 0)
+            return;
 
         setX(getX() - TILE_SIZE);
 
@@ -61,8 +62,7 @@ public class Block extends View {
      */
     public void moveRight()
     {
-        double parentMaxX = getParent().getWidth() - getParent().getInsetsAll().right;
-        if(getMaxX() >= parentMaxX)
+        if(getMaxX() >= getParent().getWidth())
             return;
 
         setX(getX() + TILE_SIZE);

@@ -6,6 +6,7 @@ import snap.util.ListUtils;
 import snap.util.MathUtils;
 import snap.view.*;
 import snap.viewx.Explode;
+import static snapdemos.tetris.Pattern.TILE_SIZE;
 
 /**
  * This class is the main game view.
@@ -31,11 +32,9 @@ public class PlayView extends ParentView {
     private Runnable _timerFiredRun;
     
     // The size of the field
-    private static int TILE_SIZE = Block.TILE_SIZE;
     protected static int GRID_WIDTH = 10;
     private static int GRID_HEIGHT = 20;
-    private static int BORDER_WIDTH = 2;
-    
+
     // Constants
     static final String NextBlock_Prop = "NextBlock";
 
@@ -46,13 +45,12 @@ public class PlayView extends ParentView {
     {
         super();
         setFill(Color.WHITE);
-        setBorder(Color.BLACK, 2);
         enableEvents(KeyPress);
         setFocusable(true);
 
         // Set size
-        double viewW = GRID_WIDTH * TILE_SIZE + BORDER_WIDTH * 2;
-        double viewH = GRID_HEIGHT * TILE_SIZE + BORDER_WIDTH * 2;
+        double viewW = GRID_WIDTH * TILE_SIZE;
+        double viewH = GRID_HEIGHT * TILE_SIZE;
         setPrefSize(viewW, viewH);
 
         // Get starting  block
@@ -118,10 +116,8 @@ public class PlayView extends ParentView {
         _block = getNextBlock(true);
 
         // Center block
-        double blockX = (getWidth() - _block.getWidth()) / 2;
-        blockX = MathUtils.round(blockX, TILE_SIZE) + BORDER_WIDTH;
-        double blockY = BORDER_WIDTH;
-        _block.setXY(blockX, blockY);
+        double blockX = MathUtils.round((getWidth() - _block.getWidth()) / 2, TILE_SIZE);
+        _block.setXY(blockX, 0);
 
         // Add block
         addChild(_block);
@@ -173,7 +169,7 @@ public class PlayView extends ParentView {
         }
 
         // If block intersects bottom, return true
-        if (MathUtils.gte(_block.getMaxY(), getHeight() - BORDER_WIDTH))
+        if (MathUtils.gte(_block.getMaxY(), getHeight()))
             return true;
 
         // Return block not obstructed
@@ -186,7 +182,7 @@ public class PlayView extends ParentView {
     private void handleBlockStopped()
     {
         // Back block up
-        while (isBlockObstructed() && _block.getY() > BORDER_WIDTH)
+        while (isBlockObstructed() && _block.getY() > 0)
             _block.setY(_block.getY() - 1);
 
         // Add stack rows to accommodate piece
@@ -225,17 +221,17 @@ public class PlayView extends ParentView {
         // Create new row, position above TopRow and add
         StackRow newRow = new StackRow();
         StackRow topRow = getTopRow();
-        double rowY = topRow != null ? topRow.getY() : (getHeight() - BORDER_WIDTH);
+        double rowY = topRow != null ? topRow.getY() : getHeight();
         rowY -= TILE_SIZE;
-        newRow.setXY(BORDER_WIDTH, rowY);
+        newRow.setY(rowY);
         newRow._rowNum = _stackRows.size();
         _stackRows.add(newRow); addChild(newRow);
     }
 
     /**
-     * Removes row (with explosion) and moves rows above down.
+     * Removes stack row (with explosion) and moves rows above down.
      */
-    void removeRow(StackRow aRow)
+    void removeStackRow(StackRow aRow)
     {
         // Cache row index, explode row and remove from Rows list
         int rowIndex = _stackRows.indexOf(aRow);
@@ -246,7 +242,7 @@ public class PlayView extends ParentView {
         // Iterate over rows above and configure to move down
         for (int i = rowIndex; i < _stackRows.size(); i++) {
             StackRow row = _stackRows.get(i);
-            row.setY(getHeight() - (i + 1) * TILE_SIZE - BORDER_WIDTH);
+            row.setY(getHeight() - (i + 1) * TILE_SIZE);
             row.setTransY(row.getTransY() - TILE_SIZE);
             row.getAnimCleared(500).setTransY(0).play();
         }
@@ -276,17 +272,14 @@ public class PlayView extends ParentView {
         for (int i = _stackRows.size() - 1; i >= 0; i--) {
             StackRow row = _stackRows.get(i);
             if (row.isFull())
-                removeRow(row);
+                removeStackRow(row);
         }
     }
 
     /**
      * Returns the top row.
      */
-    private StackRow getTopRow()
-    {
-        return !_stackRows.isEmpty() ? _stackRows.get(_stackRows.size() - 1) : null;
-    }
+    private StackRow getTopRow()  { return !_stackRows.isEmpty() ? _stackRows.get(_stackRows.size() - 1) : null; }
 
     /**
      * Returns the row for y value.
@@ -299,7 +292,7 @@ public class PlayView extends ParentView {
     /**
      * Called when game is over.
      */
-    void gameOver()
+    private void gameOver()
     {
         _gameOver = true;
         setTimerRunning(false);
@@ -323,7 +316,7 @@ public class PlayView extends ParentView {
         gameOverLabel.setSizeToPrefSize();
         addChild(gameOverLabel);
 
-        // Animate label
+        // Animate game over label spin in
         int time = _stackRows.size() * 150;
         gameOverLabel.getAnim(time).getAnim(time + 1200).setScale(1).setOpacity(1).setRotate(360).play();
     }
