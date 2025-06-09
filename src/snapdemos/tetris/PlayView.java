@@ -71,8 +71,9 @@ public class PlayView extends ParentView {
         _stackRows.clear();
         removeChildren();
         _gameOver = false;
+        _score = 0;
 
-        // Start timer, add piece
+        // Start timer, add block
         setTimerRunning(true);
         addNewBlock();
         requestFocus();
@@ -204,13 +205,13 @@ public class PlayView extends ParentView {
         while (isBlockObstructed() && _block.getY() > 0)
             _block.setY(_block.getY() - 1);
 
-        // Add stack rows to accommodate piece
+        // Add stack rows to accommodate block
         topOffStackRowsList();
         if (_gameOver)
             return;
         addBlockToRows();
 
-        // Add new piece
+        // Add new block
         addNewBlock();
     }
 
