@@ -2,7 +2,6 @@ package snapdemos.tetris;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.view.*;
-import static snapdemos.tetris.Pattern.TILE_SIZE;
 
 /**
  * A class to represent a tetris block.
@@ -13,7 +12,8 @@ public class Block extends View {
     protected Pattern _pattern;
     
     // Constants
-    static Effect BLOCK_EFFECT = new ShadowEffect(8, Color.BLACK,0,0);
+    public static final int TILE_SIZE = 32;
+    protected static Effect BLOCK_EFFECT = new ShadowEffect(8, Color.BLACK,0,0);
 
     /**
      * Constructor for given pattern.
@@ -34,9 +34,9 @@ public class Block extends View {
     public int getTileCount()  { return _pattern.tileCount; }
 
     /**
-     * Returns the tile rect at given index in parent view coords.
+     * Returns the tile bounds at given index in parent view coords.
      */
-    public Rect getTileRectInParent(int anIndex)
+    public Rect getTileBoundsInParent(int anIndex)
     {
         double tileX = _pattern.fill[anIndex * 2] * TILE_SIZE;
         double tileY = _pattern.fill[anIndex * 2 + 1] * TILE_SIZE;

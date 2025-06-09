@@ -4,7 +4,6 @@ import snap.gfx.*;
 import snap.util.ArrayUtils;
 import snap.util.MathUtils;
 import snap.view.*;
-import static snapdemos.tetris.Pattern.TILE_SIZE;
 
 /**
  * A class to represent row of block tiles at bottom of PlayView.
@@ -24,8 +23,8 @@ public class StackRow extends View {
     {
         super();
         _cols = new Pattern[PlayView.GRID_WIDTH];
-        double rowW = PlayView.GRID_WIDTH * TILE_SIZE;
-        double rowH = TILE_SIZE;
+        double rowW = PlayView.GRID_WIDTH * Block.TILE_SIZE;
+        double rowH = Block.TILE_SIZE;
         setSize(rowW, rowH);
         setEffect(Block.BLOCK_EFFECT);
     }
@@ -41,9 +40,9 @@ public class StackRow extends View {
 
         // Iterate over block tiles and see if any intersect row tiles
         for(int i = 0; i < aBlock.getTileCount(); i++) {
-            Rect blockTileRect = aBlock.getTileRectInParent(i);
-            Rect blockTileRect2 = blockTileRect.getInsetRect(2, 2);
-            if (intersectsRect(blockTileRect2))
+            Rect blockTileBounds = aBlock.getTileBoundsInParent(i);
+            Rect blockTileBounds2 = blockTileBounds.getInsetRect(2, 2);
+            if (intersectsRect(blockTileBounds2))
                 return true;
         }
 
@@ -63,7 +62,7 @@ public class StackRow extends View {
                 continue;
 
             // If tile rect intersects given rect, return true
-            Rect tileRect = new Rect(getX() + i * TILE_SIZE, getY(), TILE_SIZE, TILE_SIZE);
+            Rect tileRect = new Rect(getX() + i * Block.TILE_SIZE, getY(), Block.TILE_SIZE, Block.TILE_SIZE);
             if (tileRect.intersectsRect(aRect))
                 return true;
         }
@@ -78,11 +77,11 @@ public class StackRow extends View {
     public void addBlockTilesToRow(Block aBlock)
     {
         for(int i = 0; i < aBlock.getTileCount(); i++) {
-            Rect tileBounds = aBlock.getTileRectInParent(i);
+            Rect tileBounds = aBlock.getTileBoundsInParent(i);
             double tileX = tileBounds.getMidX() - getX();
             if(!contains(tileX, tileBounds.getMidY() - getY()))
                 continue;
-            int colIndex = (int) Math.floor(tileX / TILE_SIZE);
+            int colIndex = (int) Math.floor(tileX / Block.TILE_SIZE);
             _cols[colIndex] = aBlock._pattern;
         }
 
@@ -103,7 +102,7 @@ public class StackRow extends View {
         for (int i = 0; i < _cols.length; i++) {
             Pattern pattern = _cols[i];
             if (pattern != null)
-                pattern.paintTile(aPntr, i * TILE_SIZE, 0);
+                pattern.paintTile(aPntr, i * Block.TILE_SIZE, 0);
         }
     }
 }

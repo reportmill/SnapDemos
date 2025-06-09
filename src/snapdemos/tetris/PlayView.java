@@ -7,7 +7,6 @@ import snap.util.ListUtils;
 import snap.util.MathUtils;
 import snap.view.*;
 import snap.viewx.Explode;
-import static snapdemos.tetris.Pattern.TILE_SIZE;
 
 /**
  * This class is the main game view.
@@ -38,6 +37,7 @@ public class PlayView extends ParentView {
     // The size of the field
     protected static int GRID_WIDTH = 10;
     private static int GRID_HEIGHT = 20;
+    private static final int TILE_SIZE = Block.TILE_SIZE;
 
     // Constants
     static final String Score_Prop = "Score";

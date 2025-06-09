@@ -34,7 +34,6 @@ public class Pattern {
     public static Pattern[] ALL_PATTERNS = new Pattern[] { SQUARE, STICK, BOAT, L1, L2, S1, S2 };
 
     // Tile constants
-    public static final int TILE_SIZE = 32;
     private static final Effect TILE_EFFECT = new EmbossEffect(60, 120, 4);
     private static final int TILE_OFFSET = 4; // Due to EmbossEffect radius
 
@@ -57,8 +56,8 @@ public class Pattern {
     {
         // Iterate over fill col/row pairs
         for (int i = 0; i < fill.length; i++) {
-            double tileX = fill[i++] * TILE_SIZE;
-            double tileY = fill[i] * TILE_SIZE;
+            double tileX = fill[i++] * Block.TILE_SIZE;
+            double tileY = fill[i] * Block.TILE_SIZE;
             paintTile(aPntr, tileX, tileY);
         }
     }
@@ -115,8 +114,8 @@ public class Pattern {
     private static Image getTileImageForColor(Color aColor)
     {
         View view = new BoxView();
-        view.setSize(TILE_SIZE, TILE_SIZE);
-        view.setPrefSize(TILE_SIZE, TILE_SIZE);
+        view.setSize(Block.TILE_SIZE, Block.TILE_SIZE);
+        view.setPrefSize(Block.TILE_SIZE, Block.TILE_SIZE);
         view.setBorder(aColor.blend(Color.BLACK,.1), 1);
         view.setFill(aColor);
         view.setEffect(TILE_EFFECT);
