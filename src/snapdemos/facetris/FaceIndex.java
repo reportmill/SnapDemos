@@ -140,7 +140,7 @@ public class FaceIndex {
     public String getIndexText()
     {
         String indexUrlAddress = ROOT + "/index.txt";
-        WebURL indexUrl = WebURL.getURL(indexUrlAddress); assert (indexUrl != null);
+        WebURL indexUrl = WebURL.getUrl(indexUrlAddress); assert (indexUrl != null);
         return indexUrl.getText();
     }
 

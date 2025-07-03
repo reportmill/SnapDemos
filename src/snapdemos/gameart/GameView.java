@@ -32,7 +32,7 @@ public class GameView extends View {
         super();
 
         String assetUrlString = "/Users/jeff/Downloads/adventure_girl.zip";
-        WebURL assetSourceURL = WebURL.getURL(assetUrlString);
+        WebURL assetSourceURL = WebURL.getUrl(assetUrlString);
         _assetFile = new AssetFile(assetSourceURL);
 
         // Set initial ImageSet

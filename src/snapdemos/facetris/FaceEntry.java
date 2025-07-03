@@ -101,7 +101,7 @@ public class FaceEntry {
     {
         if (_image != null) return _image;
         String imageUrlAddress = FaceIndex.ROOT + '/' + _filename;
-        WebURL imageUrl = WebURL.getURL(imageUrlAddress);
+        WebURL imageUrl = WebURL.getUrl(imageUrlAddress);
         return _image = Image.getImageForSource(imageUrl);
     }
 
