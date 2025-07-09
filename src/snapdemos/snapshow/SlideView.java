@@ -64,7 +64,7 @@ public class SlideView extends ChildView {
         _headerText.setBorderRadius(10);
         _headerText.setEffect(new ShadowEffect(15, Color.BLACK, 2, 2));
         _headerText.setAlignY(VPos.CENTER);
-        _headerText.getTextBlock().setAlignX(HPos.CENTER);
+        _headerText.getTextModel().setAlignX(HPos.CENTER);
         _headerText.setPadding(5, 5, 15, 5);
         _headerText.setBounds(36, 18, 720, 150);
         addChild(_headerText);
