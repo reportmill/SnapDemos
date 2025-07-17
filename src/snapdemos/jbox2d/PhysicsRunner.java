@@ -45,6 +45,9 @@ public class PhysicsRunner {
     private int INTERVAL_MILLIS = 25;
     private float INTERVL_SECS = INTERVAL_MILLIS/1000f;
 
+    // Constant for default gravity in world
+    private static final float DEFAULT_GRAVITY = -9.8f;
+
     /**
      * Constructor for given world view.
      */
@@ -54,7 +57,7 @@ public class PhysicsRunner {
         _worldView = worldView;
 
         // Create world
-        _world = new World(new Vec2(0, -9.8f));
+        _world = new World(new Vec2(0, DEFAULT_GRAVITY));
 
         // Create Builder
         _builder = new PhysicsBuilder(this);
@@ -246,8 +249,9 @@ public class PhysicsRunner {
         double rot0 = body.getAngle();
         double rot1 = Math.toRadians(-aView.getRotate());
         double dr = rot1 - rot0;
-        if(dr>Math.PI || dr<-Math.PI) dr = MathUtils.mod(dr + Math.PI, Math.PI*2) - Math.PI;
-        body.setAngularVelocity((float)dr*25);
+        if(dr > Math.PI || dr < -Math.PI)
+            dr = MathUtils.mod(dr + Math.PI, Math.PI * 2) - Math.PI;
+        body.setAngularVelocity((float) dr * 25);
     }
 
     /**

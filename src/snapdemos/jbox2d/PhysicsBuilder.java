@@ -59,8 +59,9 @@ public class PhysicsBuilder {
         for (org.jbox2d.collision.shapes.Shape jboxShape : jboxShapes) {
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = jboxShape;
-            fixtureDef.restitution = .25f;
-            fixtureDef.density = (float)phys.getDensity();
+            fixtureDef.density = (float) phys.getDensity();
+            fixtureDef.friction = .3f;
+            fixtureDef.restitution = .5f;
             fixtureDef.filter.groupIndex = phys.getGroupIndex();
             body.createFixture(fixtureDef);
         }
