@@ -6,6 +6,7 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
 import snap.geom.*;
+import snap.util.ListUtils;
 import snap.view.ChildView;
 import snap.view.ParentView;
 import snap.view.View;
@@ -21,7 +22,7 @@ public class PhysicsBuilder {
     // The Runner
     private PhysicsRunner _runner;
 
-    private World  _world;
+    private World _world;
 
     /**
      * Creates Builder.
@@ -35,13 +36,13 @@ public class PhysicsBuilder {
     /**
      * Returns a body for a view.
      */
-    public Body createBody(View aView)
+    public Body createJboxBodyForView(View aView)
     {
         // Create BodyDef
         ViewPhysics<Body> phys = aView.getPhysics();
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = phys.isDynamic() ? BodyType.DYNAMIC : BodyType.KINEMATIC;
-        bodyDef.position.set(viewToBox(aView.getMidX(), aView.getMidY()));
+        bodyDef.position.set(convertViewXYToJbox(aView.getMidX(), aView.getMidY()));
         bodyDef.angle = (float) Math.toRadians(-aView.getRotate());
         bodyDef.linearDamping = 10;
         bodyDef.angularDamping = 10;
@@ -51,7 +52,7 @@ public class PhysicsBuilder {
 
         // Create PolygonShape
         Shape viewShape = aView.getBoundsShape();
-        org.jbox2d.collision.shapes.Shape[] jboxShapes = createJboxShapesForShape(viewShape);
+        List<org.jbox2d.collision.shapes.Shape> jboxShapes = createJboxShapesForShape(viewShape);
 
         // Create FixtureDef
         for (org.jbox2d.collision.shapes.Shape jboxShape : jboxShapes) {
@@ -72,41 +73,38 @@ public class PhysicsBuilder {
     /**
      * Creates a Box2D shape for given snap shape.
      */
-    public org.jbox2d.collision.shapes.Shape[] createJboxShapesForShape(Shape aShape)
+    public List<org.jbox2d.collision.shapes.Shape> createJboxShapesForShape(Shape aShape)
     {
         // Handle Rect (simple case)
-        if (aShape instanceof Rect) {
-            Rect rect = (Rect) aShape;
+        if (aShape instanceof Rect rect) {
             PolygonShape polygonShape = new PolygonShape();
-            float pw = viewToBox(rect.width / 2);
-            float ph = viewToBox(rect.height / 2);
+            float pw = convertViewCoordToJbox(rect.width / 2);
+            float ph = convertViewCoordToJbox(rect.height / 2);
             polygonShape.setAsBox(pw, ph);
-            return new org.jbox2d.collision.shapes.Shape[] { polygonShape };
+            return List.of(polygonShape);
         }
 
         // Handle Ellipse
-        if (aShape instanceof Ellipse && aShape.getWidth()==aShape.getHeight()) {
-            Ellipse ellipse = (Ellipse) aShape;
+        if (aShape instanceof Ellipse ellipse && aShape.getWidth() == aShape.getHeight()) {
             CircleShape circleShape = new CircleShape();
-            circleShape.setRadius(viewToBox(ellipse.getWidth() / 2));
-            return new org.jbox2d.collision.shapes.Shape[] { circleShape };
+            circleShape.setRadius(convertViewCoordToJbox(ellipse.getWidth() / 2));
+            return List.of(circleShape);
         }
 
         // Handle Arc
-        if (aShape instanceof Arc && aShape.getWidth()==aShape.getHeight()) {
-            Arc arc = (Arc) aShape;
+        if (aShape instanceof Arc arc && aShape.getWidth() == aShape.getHeight()) {
             if (arc.getSweepAngle() == 360) {
                 CircleShape cshape = new CircleShape();
-                cshape.setRadius(viewToBox(arc.getWidth()/2));
-                return new org.jbox2d.collision.shapes.Shape[] { cshape };
+                cshape.setRadius(convertViewCoordToJbox(arc.getWidth()/2));
+                return List.of(cshape);
             }
         }
 
         // Handle Polygon if Simple, Convex and less than 8 points
-        if (aShape instanceof Polygon) {
-            Polygon poly = (Polygon) aShape;
-            org.jbox2d.collision.shapes.Shape pshape = createShape(poly);
-            if(pshape!=null) return new org.jbox2d.collision.shapes.Shape[] { pshape };
+        if (aShape instanceof Polygon poly) {
+            org.jbox2d.collision.shapes.Shape pshape = createJboxShapeForPolygon(poly);
+            if(pshape != null)
+                return List.of(pshape);
         }
 
         // Get shape centered around shape midpoint
@@ -114,27 +112,14 @@ public class PhysicsBuilder {
         Shape shape = aShape.copyFor(new Transform(-shapeBounds.width / 2, -shapeBounds.height / 2));
 
         // Get convex Polygons for shape
-        Polygon[] convexPolys = Polygon.getConvexPolygonsWithMaxSideCount(shape, 8);
-        List<org.jbox2d.collision.shapes.Shape> pshapes = new ArrayList<>();
-
-        // Iterate over polygons
-        for (Polygon convexPoly : convexPolys) {
-
-            // Try simple case
-            org.jbox2d.collision.shapes.Shape pshp = createShape(convexPoly);
-            if (pshp != null)
-                pshapes.add(pshp);
-            else System.err.println("PhysicsRunner.createShape: failure");
-        }
-
-        // Return Box2D shapes array
-        return pshapes.toArray(new org.jbox2d.collision.shapes.Shape[0]);
+        List<Polygon> convexPolys = Polygon.getConvexPolygonsWithMaxSideCount(shape, 8);
+        return ListUtils.mapNonNull(convexPolys, this::createJboxShapeForPolygon);
     }
 
     /**
      * Creates a Box2D shape for given snap shape.
      */
-    public org.jbox2d.collision.shapes.Shape createShape(Polygon aPoly)
+    public org.jbox2d.collision.shapes.Shape createJboxShapeForPolygon(Polygon aPoly)
     {
         // If invalid, just return null
         if (aPoly.isSelfIntersecting() || !aPoly.isConvex() || aPoly.getPointCount() > 8) return null;
@@ -143,29 +128,32 @@ public class PhysicsBuilder {
         int pointCount = aPoly.getPointCount();
         Vec2[] vecs = new Vec2[pointCount];
         for (int i = 0; i < pointCount; i++)
-            vecs[i] = viewToBox(aPoly.getPointX(i), aPoly.getPointY(i));
+            vecs[i] = convertViewXYToJbox(aPoly.getPointX(i), aPoly.getPointY(i));
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.set(vecs, vecs.length);
         return polygonShape;
     }
 
     /**
-     * Creates a Joint.
+     * Creates a Joint for given joint view.
      */
-    public void createJoint(View aView)
+    public RevoluteJoint createJboxJointForView(View aView)
     {
         // Get shapes interesting joint view
         ParentView editor = aView.getParent();
-        List <View> hits = new ArrayList<>();
-        Rect bnds = aView.getBoundsParent();
+        Rect viewBoundsInParent = aView.getBoundsParent();
+        List<View> hits = new ArrayList<>();
         for (View v : editor.getChildren()) {
-            if(v != aView && v.getBoundsLocal().intersectsShape(v.parentToLocal(bnds)))
+            if(v != aView && v.getBoundsLocal().intersectsShape(v.parentToLocal(viewBoundsInParent)))
                 hits.add(v);
         }
 
         // if less than two, bail
         if (hits.size() < 2) {
-            System.out.println("PhysicsRunner.createJoint: 2 Bodies not found for joint: " + aView.getName()); return; }
+            System.out.println("PhysicsRunner.createJoint: 2 Bodies not found for joint: " + aView.getName());
+            return null;
+        }
+
         View viewA = hits.get(0);
         View viewB = hits.get(1);
 
@@ -179,9 +167,18 @@ public class PhysicsBuilder {
         Point jointPnt = aView.localToParent(aView.getWidth()/2, aView.getHeight()/2);
         Point jointPntA = viewA.parentToLocal(jointPnt.x, jointPnt.y);
         Point jointPntB = viewB.parentToLocal(jointPnt.x, jointPnt.y);
-        jointDef.localAnchorA = viewToBoxLocal(jointPntA.x, jointPntA.y, viewA);
-        jointDef.localAnchorB = viewToBoxLocal(jointPntB.x, jointPntB.y, viewB);
-        RevoluteJoint joint = (RevoluteJoint)_world.createJoint(jointDef);
+        jointDef.localAnchorA = convertViewXYToJboxLocal(jointPntA.x, jointPntA.y, viewA);
+        jointDef.localAnchorB = convertViewXYToJboxLocal(jointPntB.x, jointPntB.y, viewB);
+        return (RevoluteJoint) _world.createJoint(jointDef);
+    }
+
+    /**
+     * Creates a Joint.
+     */
+    public void createJboxJointForViewAndSet(View aView)
+    {
+        // Create joint and add to view
+        RevoluteJoint joint = createJboxJointForView(aView);
         aView.getPhysics(true).setNative(joint);
 
         // Remove view for joint
@@ -191,30 +188,30 @@ public class PhysicsBuilder {
     /**
      * Convert View coord to Box2D.
      */
-    public float viewToBox(double aValue)  { return _runner.viewToBox(aValue); }
+    public float convertViewCoordToJbox(double aValue)  { return _runner.convertViewCoordToJbox(aValue); }
 
     /**
      * Convert View coord to Box2D.
      */
-    public Vec2 viewToBox(double aX, double aY)  { return _runner.viewToBox(aX, aY); }
+    public Vec2 convertViewXYToJbox(double aX, double aY)  { return _runner.convertViewXYToJbox(aX, aY); }
 
     /**
      * Convert Box2D coord to View.
      */
-    public double boxToView(double aValue)  { return _runner.boxToView(aValue); }
+    public double convertJboxCoordToView(double aValue)  { return _runner.convertJboxCoordToView(aValue); }
 
     /**
      * Convert Box2D coord to View.
      */
-    public Point boxToView(double aX, double aY)  { return _runner.boxToView(aX, aY); }
+    public Point convertJboxXYToView(double aX, double aY)  { return _runner.convertJboxXYToView(aX, aY); }
 
     /**
      * Returns transform from View coords to Box coords.
      */
-    public Transform getViewToBox()  { return _runner.getViewToBox(); }
+    public Transform getViewToBoxTransform()  { return _runner.getViewToBoxTransform(); }
 
     /**
      * Returns point in view coords.
      */
-    private Vec2 viewToBoxLocal(double aX, double aY, View aView)  { return _runner.viewToBoxLocal(aX, aY, aView); }
+    private Vec2 convertViewXYToJboxLocal(double aX, double aY, View aView)  { return _runner.convertViewXYToJboxLocal(aX, aY, aView); }
 }

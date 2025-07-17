@@ -122,8 +122,8 @@ public class FacetrisView extends ParentView {
         ParentView worldView = this;
         _physRunner = new PhysicsRunner(worldView);
         _physRunner.setViewToWorldMeters(getHeight() / 5);
-        _physRunner.addWalls();
-        _physRunner.addPhysForViews();
+        _physRunner.addWallsToWorldView();
+        _physRunner.addPhysicsForWorldViewChildren();
         _physRunner.setRunning(true);
     }
 
@@ -174,7 +174,7 @@ public class FacetrisView extends ParentView {
         getOwner().resetLater();
 
         if (_physRunner != null)
-            _physRunner.addPhysForView(faceView);
+            _physRunner.addPhysicsForView(faceView);
     }
 
     /**

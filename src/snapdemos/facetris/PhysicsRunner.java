@@ -18,47 +18,44 @@ import snap.view.EventListener;
  */
 public class PhysicsRunner {
     
-    // The Snap View
-    ParentView     _view;
+    // The world view
+    private ParentView _worldView;
 
     // The Box2D World
-    World          _world;
+    protected World _world;
     
     // The ratio of screen points to Box2D world meters.
-    double         _scale = 720/10d;
+    private double _scale = 720/10d;
     
     // The Runner
-    Runnable       _runner;
+    private Runnable _runner;
     
-    // Transforms
-    Transform      _localToBox;
-
     // The builder
-    PhysicsBuilder  _builder;
+    private PhysicsBuilder _builder;
     
     // Listener to handle drags
-    EventListener  _dragFilter = e -> handleDrag(e);
+    private EventListener _viewDraggingEventLsnr;
     
-    // Ground Body
-    Body           _groundBody;
+    // Static Body used for dragging
+    private Body _leftWallBody;
     
     // MouseJoint used for dragging
-    MouseJoint     _dragJoint;
+    private MouseJoint _dragJoint;
 
     // Joints to be created
-    List<View>  _joints = new ArrayList<>();
+    private List<View> _jointViews = new ArrayList<>();
 
     // The speed
     private int INTERVAL_MILLIS = 25;
     private float INTERVL_SECS = INTERVAL_MILLIS/1000f;
 
     /**
-     * Create new PhysicsRunner.
+     * Constructor for given world view.
      */
-    public PhysicsRunner(ParentView aView)
+    public PhysicsRunner(ParentView worldView)
     {
         // Set View
-        _view = aView;
+        _worldView = worldView;
 
         // Create world
         _world = new World(new Vec2(0, -9.8f));
@@ -66,59 +63,59 @@ public class PhysicsRunner {
         // Create Builder
         _builder = new PhysicsBuilder(this);
 
+        // Set contact listener
         _world.setContactListener(new ViewContactListener());
     }
 
     /**
-     * addWalls.
+     * Adds walls to world view.
      */
-    public void addWalls()
+    public void addWallsToWorldView()
     {
-        // Add sidewalls
-        double vw = _view.getWidth();
-        double vh = _view.getHeight();
+        double viewW = _worldView.getWidth();
+        double viewH = _worldView.getHeight();
 
         // Create left wall
-        RectView r0 = new RectView(-1, -900, 1, vh+900);
-        r0.getPhysics(true);
-        _groundBody = _builder.createBody(r0);
+        RectView leftWallView = new RectView(-1, -900, 1, viewH + 900);
+        leftWallView.getPhysics(true);
+        _leftWallBody = _builder.createJboxBodyForView(leftWallView);
 
         // Create bottom wall
-        RectView r1 = new RectView(0, vh+1, vw, 1);
-        r1.getPhysics(true);
-        _builder.createBody(r1);
+        RectView bottomWallView = new RectView(0, viewH+1, viewW, 1);
+        bottomWallView.getPhysics(true);
+        _builder.createJboxBodyForView(bottomWallView);
 
         // Create right wall
-        RectView r2 = new RectView(vw, -900, 1, vh+900);
-        r2.getPhysics(true);
-        _builder.createBody(r2);
+        RectView rightWallView = new RectView(viewW, -900, 1, viewH + 900);
+        rightWallView.getPhysics(true);
+        _builder.createJboxBodyForView(rightWallView);
     }
 
     /**
-     * addPhysForViews.
+     * Adds physics to world view children.
      */
-    public void addPhysForViews()
+    public void addPhysicsForWorldViewChildren()
     {
-        // Add bodies for view children
-        for (View child : _view.getChildren())
-            addPhysForView(child);
-
-        // Add joints
+        _worldView.getChildren().forEach(this::addPhysicsForView);
         addJoints();
     }
 
     /**
-     * Adds physics for view.
+     * Adds physics to given view.
      */
-    public void addPhysForView(View aView)
+    public void addPhysicsForView(View aView)
     {
-        ViewPhysics phys = aView.getPhysics(true);
-        if(phys.isJoint() || "joint".equals(aView.getName()))
-            _joints.add(aView);
+        ViewPhysics<?> viewPhysics = aView.getPhysics(true);
+
+        // Handle Joint: Just add to list of joint views
+        if (viewPhysics.isJoint() || "joint".equals(aView.getName()))
+            _jointViews.add(aView);
+
+        // Handle Body: Create and set native jbox body in view physics
         else {
-            phys.setDynamic(true);
-            _builder.createBody(aView);
-            addDragger(aView);
+            viewPhysics.setDynamic(true);
+            _builder.createJboxBodyForView(aView);
+            enableViewDragging(aView);
         }
     }
 
@@ -127,7 +124,7 @@ public class PhysicsRunner {
      */
     public void removePhysForView(View aView)
     {
-        Body body = (Body)aView.getPhysics().getNative();
+        Body body = (Body) aView.getPhysics().getNative();
         _world.destroyBody(body);
     }
 
@@ -136,9 +133,8 @@ public class PhysicsRunner {
      */
     public void addJoints()
     {
-        for(View v : _joints)
-            _builder.createJoint(v);
-        _joints.clear();
+        _jointViews.forEach(view -> _builder.createJboxJointForViewAndSet(view));
+        _jointViews.clear();
     }
 
     /**
@@ -148,7 +144,6 @@ public class PhysicsRunner {
 
     /**
      * Sets the scale of the world in screen points to Box2D world meters.
-     *
      * If you want a 720 point tall view to be 10m, set scale to be 720/10d (the default).
      */
     public void setViewToWorldMeters(double aScale)  { _scale = aScale; }
@@ -164,48 +159,51 @@ public class PhysicsRunner {
     public void setRunning(boolean aValue)
     {
         // If already set, just return
-        if(aValue==isRunning()) return;
+        if(aValue == isRunning()) return;
 
         // Set timer to call timerFired 25 times a second
-        if(_runner==null)
-            ViewEnv.getEnv().runIntervals(_runner = () -> timerFired(), INTERVAL_MILLIS);
+        if(_runner == null)
+            ViewEnv.getEnv().runIntervals(_runner = this::handleTimerFired, INTERVAL_MILLIS);
+
         else {
-            ViewEnv.getEnv().stopIntervals(_runner); _runner = null; }
+            ViewEnv.getEnv().stopIntervals(_runner);
+            _runner = null;
+        }
     }
 
     /**
      * Called when world timer fires.
      */
-    void timerFired()
+    private void handleTimerFired()
     {
-        // Update Statics
-        for(int i=0,iMax=_view.getChildCount();i<iMax;i++)
-            updateBody(_view.getChild(i));
+        // Update jbox natives from world view child views (maybe one was dragged or updated externally)
+        _worldView.getChildren().forEach(this::updateJboxBodyFromView);
 
         // Update world
         _world.step(INTERVL_SECS,20,20);
 
-        // Update Dynamics
-        for(int i=0,iMax=_view.getChildCount();i<iMax;i++)
-            updateView(_view.getChild(i));
+        // Update world view children from jbox natives
+        _worldView.getChildren().forEach(this::updateViewFromJboxNative);
     }
 
     /**
      * Updates a view from a body.
      */
-    public void updateView(View aView)
+    private void updateViewFromJboxNative(View aView)
     {
         // Get ViewPhysics and body
-        ViewPhysics <Body> phys = aView.getPhysics(); if (phys==null) return;
-        Object ntv = phys.getNative();
+        ViewPhysics<?> phys = aView.getPhysics(); if (phys == null) return;
+        Object jboxNative = phys.getNative();
 
         // Handle Body
-        if (ntv instanceof Body) { Body body = (Body)ntv; if (!phys.isDynamic()) return;
+        if (jboxNative instanceof Body body) {
+            if (!phys.isDynamic())
+                return;
 
             // Get/set position
             Vec2 pos = body.getPosition();
-            Point posV = boxToView(pos.x, pos.y);
-            aView.setXY(posV.x-aView.getWidth()/2, posV.y-aView.getHeight()/2);
+            Point posV = convertJboxXYToView(pos.x, pos.y);
+            aView.setXY(posV.x - aView.getWidth() / 2, posV.y - aView.getHeight() / 2);
 
             // Get set rotation
             float angle = body.getAngle();
@@ -213,12 +211,12 @@ public class PhysicsRunner {
         }
 
         // Handle Joint
-        else if (ntv instanceof RevoluteJoint) { RevoluteJoint joint = (RevoluteJoint)ntv;
+        else if (jboxNative instanceof RevoluteJoint joint) {
 
             // Get/set position
             Vec2 pos = new Vec2(0,0); joint.getAnchorA(pos);
-            Point posV = boxToView(pos.x, pos.y);
-            aView.setXY(posV.x-aView.getWidth()/2, posV.y-aView.getHeight()/2);
+            Point posV = convertJboxXYToView(pos.x, pos.y);
+            aView.setXY(posV.x - aView.getWidth() / 2, posV.y - aView.getHeight() / 2);
 
             // Get set rotation
             //float angle = joint.getAngle(); aView.setRotate(-Math.toDegrees(angle));
@@ -228,16 +226,17 @@ public class PhysicsRunner {
     /**
      * Updates a body from a view.
      */
-    public void updateBody(View aView)
+    private void updateJboxBodyFromView(View aView)
     {
         // Get ViewPhysics and body
-        ViewPhysics <Body> phys = aView.getPhysics();
-        if (phys==null || phys.isDynamic() || phys.isJoint()) return;
+        ViewPhysics<Body> phys = aView.getPhysics();
+        if (phys == null || phys.isDynamic() || phys.isJoint())
+            return;
         Body body = phys.getNative();
 
         // Get/set position
         Vec2 pos0 = body.getPosition();
-        Vec2 pos1 = viewToBox(aView.getMidX(), aView.getMidY());
+        Vec2 pos1 = convertViewXYToJbox(aView.getMidX(), aView.getMidY());
         double vx = (pos1.x - pos0.x)*25;
         double vy = (pos1.y - pos0.y)*25;
         body.setLinearVelocity(new Vec2((float)vx, (float)vy));
@@ -251,133 +250,113 @@ public class PhysicsRunner {
     }
 
     /**
-     * Adds DragFilter to view.
+     * Enables user mouse dragging of given view.
      */
-    void addDragger(View aView)
+    public void enableViewDragging(View aView)
     {
-        aView.addEventFilter(_dragFilter, View.MousePress, View.MouseDrag, View.MouseRelease);
+        if (_viewDraggingEventLsnr == null) _viewDraggingEventLsnr = this::handleViewMouseEventForDragging;
+        aView.addEventFilter(_viewDraggingEventLsnr, View.MousePress, View.MouseDrag, View.MouseRelease);
     }
 
     /**
      * Called when View gets drag event.
      */
-    void handleDrag(ViewEvent anEvent)
+    private void handleViewMouseEventForDragging(ViewEvent anEvent)
     {
         // Get View, ViewPhysics, Body and Event point in page view
-        View view = anEvent.getView();
-        ViewPhysics <Body> phys = view.getPhysics();
-        Body body = phys.getNative();
-        Point pnt = anEvent.getPoint(view.getParent()); anEvent.consume();
+        View dragView = anEvent.getView();
+        ViewPhysics<Body> phys = dragView.getPhysics();
+        Body dragBody = phys.getNative();
+        Point dragPoint = anEvent.getPoint(dragView.getParent());
+        anEvent.consume();
 
         // Handle MousePress: Create & install drag MouseJoint
         if (anEvent.isMousePress()) {
             MouseJointDef jdef = new MouseJointDef();
-            jdef.bodyA = _groundBody;
-            jdef.bodyB = body;
+            jdef.bodyA = _leftWallBody;
+            jdef.bodyB = dragBody;
             jdef.collideConnected = true;
-            jdef.maxForce = 1000f*body.getMass();
-            jdef.target.set(viewToBox(pnt.x, pnt.y));
+            jdef.maxForce = 1000f * dragBody.getMass();
+            jdef.target.set(convertViewXYToJbox(dragPoint.x, dragPoint.y));
             _dragJoint = (MouseJoint)_world.createJoint(jdef);
-            body.setAwake(true);
+            dragBody.setAwake(true);
         }
 
         // Handle MouseDrag: Update drag MouseJoint
         else if (anEvent.isMouseDrag()) {
-            Vec2 target = viewToBox(pnt.x, pnt.y);
+            Vec2 target = convertViewXYToJbox(dragPoint.x, dragPoint.y);
             _dragJoint.setTarget(target);
         }
 
         // Handle MouseRelease: Remove drag MouseJoint
         else if (anEvent.isMouseRelease()) {
-            _world.destroyJoint(_dragJoint); _dragJoint = null; }
-    }
-
-    /** Called when View gets drag event. */
-    void handleDragOld(ViewEvent anEvent)
-    {
-        // Get View, ViewPhysics, Body and Event point in page view
-        View view = anEvent.getView(); ViewPhysics <Body> phys = view.getPhysics();
-        Body body = phys.getNative();
-        Point pnt = anEvent.getPoint(view.getParent()); anEvent.consume();
-
-        // Handle MousePress
-        if (anEvent.isMousePress()) { body.setType(BodyType.KINEMATIC); body.setAngularVelocity(0); }
-        else if (anEvent.isMouseDrag()) updateDrag(view, pnt.x, pnt.y);
-        else if (anEvent.isMouseRelease()) body.setType(phys.isDynamic()? BodyType.DYNAMIC : BodyType.KINEMATIC);
-    }
-
-    /** Updates drag view's body. */
-    void updateDrag(View aView, double dragX, double dragY)
-    {
-        ViewPhysics <Body> phys = aView.getPhysics();
-        Body body = phys.getNative();
-        Vec2 pos0 = body.getPosition();
-        Vec2 pos1 = viewToBox(dragX, dragY);
-        double dx = pos1.x - pos0.x;
-        double dy = pos1.y - pos0.y;
-        double vx = (pos1.x - pos0.x)*25;
-        double vy = (pos1.y - pos0.y)*25;
-        body.setLinearVelocity(new Vec2((float)vx, (float)vy));
+            _world.destroyJoint(_dragJoint);
+            _dragJoint = null;
+        }
     }
 
     /**
      * Convert View coord to Box2D.
      */
-    public float viewToBox(double aValue)  { return (float)(aValue/_scale); }
+    public float convertViewCoordToJbox(double aValue)  { return (float) (aValue / _scale); }
 
     /**
      * Convert View coord to Box2D.
      */
-    public Vec2 viewToBox(double aX, double aY)  { return getVec(getViewToBox().transformXY(aX, aY)); }
+    public Vec2 convertViewXYToJbox(double aX, double aY)  { return getVec(getViewToBoxTransform().transformXY(aX, aY)); }
 
     /**
      * Convert Box2D coord to View.
      */
-    public double boxToView(double aValue)  { return aValue*_scale; }
+    public double convertJboxCoordToView(double aValue)  { return aValue * _scale; }
 
     /**
      * Convert Box2D coord to View.
      */
-    public Point boxToView(double aX, double aY)  { return getBoxToView().transformXY(aX, aY); }
+    public Point convertJboxXYToView(double aX, double aY)  { return getBoxToViewTransform().transformXY(aX, aY); }
 
     /**
      * Returns transform from View coords to Box coords.
      */
-    public Transform getViewToBox()
+    public Transform getViewToBoxTransform()
     {
-        // If already set, just return
-        if(_localToBox != null) return _localToBox;
-
         // Create transform from WorldView bounds to World bounds
-        Rect r0 = _view.getBoundsLocal();
-        Rect r1 = new Rect(0, 0, r0.width/_scale, -r0.height/_scale);
-        double bw = r0.width, bh = r0.height;
-        double sx = bw!=0? r1.width/bw : 0, sy = bh!=0? r1.height/bh : 0;
+        Rect r0 = _worldView.getBoundsLocal();
+        Rect r1 = new Rect(0, 0, r0.width / _scale, -r0.height / _scale);
+        double bw = r0.width;
+        double bh = r0.height;
+        double sx = bw != 0 ? r1.width / bw : 0;
+        double sy = bh != 0 ? r1.height / bh : 0;
         Transform trans = Transform.getScale(sx, sy);
         trans.translate(r1.x - r0.x, r1.y - r0.y);
+
+        // Return
         return trans;
     }
 
     /**
      * Returns transform from Box coords to View coords.
      */
-    public Transform getBoxToView()  { return getViewToBox().getInverse(); }
+    public Transform getBoxToViewTransform()  { return getViewToBoxTransform().getInverse(); }
 
     /**
      * Converts from View to box coords.
      */
-    Vec2 viewToBoxLocal(double aX, double aY, View aView)
+    protected Vec2 convertViewXYToJboxLocal(double aX, double aY, View aView)
     {
-        float x = viewToBox(aX - aView.getWidth()/2);
-        float y = viewToBox(aView.getHeight()/2 - aY);
-        return new Vec2(x,y);
+        float x = convertViewCoordToJbox(aX - aView.getWidth() / 2);
+        float y = convertViewCoordToJbox(aView.getHeight() / 2 - aY);
+        return new Vec2(x, y);
     }
 
     /**
      * Return Vec2 for snap Point.
      */
-    Vec2 getVec(Point aPnt)  { return new Vec2((float) aPnt.x, (float) aPnt.y); }
+    private Vec2 getVec(Point aPnt)  { return new Vec2((float) aPnt.x, (float) aPnt.y); }
 
+    /**
+     * Contact listener to handle collisions.
+     */
     private class ViewContactListener implements ContactListener {
 
         @Override
@@ -385,14 +364,10 @@ public class PhysicsRunner {
         {
             View viewA = (View) contact.getFixtureA().getBody().getUserData();
             View viewB = (View) contact.getFixtureB().getBody().getUserData();
-            if (viewA instanceof FaceView) {
-                FaceView faceView = (FaceView) viewA;
-                ((FacetrisView) _view).handleFaceCollide(faceView.getFace());
-            }
-            if (viewB instanceof FaceView) {
-                FaceView faceView = (FaceView) viewB;
-                ((FacetrisView) _view).handleFaceCollide(faceView.getFace());
-            }
+            if (viewA instanceof FaceView faceView)
+                ((FacetrisView) _worldView).handleFaceCollide(faceView.getFace());
+            if (viewB instanceof FaceView faceView)
+                ((FacetrisView) _worldView).handleFaceCollide(faceView.getFace());
         }
 
         @Override

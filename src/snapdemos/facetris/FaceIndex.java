@@ -42,7 +42,7 @@ public class FaceIndex {
     private FaceEntry getNextFace()
     {
         List <FaceEntry> facePool = getFacePool();
-        if (facePool.size() == 0) return null;
+        if (facePool.isEmpty()) return null;
         int nextIndex = _random.nextInt(facePool.size());
         return facePool.remove(nextIndex);
     }
@@ -159,6 +159,6 @@ public class FaceIndex {
     private static FaceEntry createFaceEntryForEntryString(String entryStr)
     {
         String filename = entryStr.trim();
-        return filename.length() > 0 ? new FaceEntry(filename) : null;
+        return !filename.isEmpty() ? new FaceEntry(filename) : null;
     }
 }
