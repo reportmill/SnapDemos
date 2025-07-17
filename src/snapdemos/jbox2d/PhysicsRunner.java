@@ -1,4 +1,4 @@
-package snapdemos.facetris;
+package snapdemos.jbox2d;
 import java.util.*;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.common.Vec2;

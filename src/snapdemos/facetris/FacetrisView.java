@@ -10,6 +10,7 @@ import snap.view.ParentView;
 import snap.view.View;
 import snap.view.ViewTimer;
 import snap.view.ViewUtils;
+import snapdemos.jbox2d.PhysicsRunner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

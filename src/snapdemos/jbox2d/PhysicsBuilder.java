@@ -1,4 +1,4 @@
-package snapdemos.facetris;
+package snapdemos.jbox2d;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -22,10 +22,11 @@ public class PhysicsBuilder {
     // The Runner
     private PhysicsRunner _runner;
 
+    // The Jbox world
     private World _world;
 
     /**
-     * Creates Builder.
+     * Constructor for given runner.
      */
     public PhysicsBuilder(PhysicsRunner aRunner)
     {
