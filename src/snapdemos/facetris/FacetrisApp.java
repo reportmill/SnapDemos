@@ -74,7 +74,7 @@ public class FacetrisApp extends ViewOwner {
 
         // Get NameText
         _nameText = getView("NameText", TextField.class);
-        _nameText.addEventFilter(e -> ViewUtils.runLater(() -> textFieldKeyTyped(e)), KeyType);
+        _nameText.addEventFilter(e -> handleTextFieldKeyTypedEvent(), KeyType);
         setFirstFocus(_nameText);
 
         // Configure TitleLabel
@@ -125,7 +125,7 @@ public class FacetrisApp extends ViewOwner {
 
         // Remove uses faces
         List<View> children = new ArrayList<>(comingSoonView.getChildren());
-        while (children.size() > 0 && comingFaces[0].getMiniView() != children.get(0)) {
+        while (!children.isEmpty() && comingFaces[0].getMiniView() != children.get(0)) {
             View view = children.remove(0);
             view.setEffect(null);
             view.getAnim(500).setPrefHeight(0).setOnFinish(() -> comingSoonView.removeChild(view)).play();
@@ -172,17 +172,17 @@ public class FacetrisApp extends ViewOwner {
         switch (anEvent.getName()) {
 
             // Handle PlayButton
-            case "PlayButton": playGame(); break;
+            case "PlayButton" -> playGame();
 
             // Handle NameText
-            case "NameText": handleGuess(anEvent); break;
+            case "NameText" -> handleGuess(anEvent);
 
             // Handle CheatCheckBox
-            case "CheatCheckBox":
+            case "CheatCheckBox" -> {
                 _cheat = anEvent.getBoolValue();
                 FaceIndex.getShared().getNextQueue().forEach(i -> i.getView().setShowName(_cheat));
                 playGame();
-                break;
+            }
         }
     }
 
@@ -203,12 +203,17 @@ public class FacetrisApp extends ViewOwner {
     /**
      * Called after TextField has KeyType.
      */
-    protected void textFieldKeyTyped(ViewEvent anEvent)
+    private void handleTextFieldKeyTypedEvent()  { ViewUtils.runLater(this::handleTextFieldKeyTypedEventImpl); }
+
+    /**
+     * Called after TextField has KeyType.
+     */
+    private void handleTextFieldKeyTypedEventImpl()
     {
         // Get prefix text and current selection
         String typedChars = _nameText.getText();
         int selStart = _nameText.getSelStart();
-        if (typedChars == null || typedChars.length() == 0)
+        if (typedChars == null || typedChars.isEmpty())
             return;
 
         // Look for possible completion

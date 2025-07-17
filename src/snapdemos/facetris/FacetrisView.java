@@ -1,5 +1,9 @@
 package snapdemos.facetris;
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.contacts.Contact;
 import snap.gfx.Color;
 import snap.util.ListUtils;
 import snap.view.ParentView;
@@ -124,6 +128,7 @@ public class FacetrisView extends ParentView {
         _physRunner.setViewToWorldMeters(getHeight() / 5);
         _physRunner.addWallsToWorldView();
         _physRunner.addPhysicsForWorldViewChildren();
+        _physRunner.setContactListener(new ViewContactListener());
         _physRunner.setRunning(true);
     }
 
@@ -191,7 +196,7 @@ public class FacetrisView extends ParentView {
 
         // If mace matches
         String guessName = aName.toLowerCase();
-        boolean match = guessName.length() > 0 && (name.startsWith(guessName) || first.startsWith(guessName));
+        boolean match = !guessName.isEmpty() && (name.startsWith(guessName) || first.startsWith(guessName));
         if (match)
             handleFaceWin(mainFace);
         else handleFaceLose(mainFace);
@@ -221,7 +226,7 @@ public class FacetrisView extends ParentView {
         view.setOpacity(1);
 
         if (_physRunner != null)
-            _physRunner.removePhysForView(view);
+            _physRunner.removePhysicsForView(view);
     }
 
     /**
@@ -247,5 +252,29 @@ public class FacetrisView extends ParentView {
         if (aFace.inPlay())
             handleFaceLose(aFace);
         removeFieldFace(aFace);
+    }
+
+    /**
+     * Contact listener to handle collisions.
+     */
+    private class ViewContactListener implements ContactListener {
+
+        @Override
+        public void beginContact(Contact contact)
+        {
+            View viewA = (View) contact.getFixtureA().getBody().getUserData();
+            View viewB = (View) contact.getFixtureB().getBody().getUserData();
+            if (viewA instanceof FaceView faceView)
+                handleFaceCollide(faceView.getFace());
+            if (viewB instanceof FaceView faceView)
+                handleFaceCollide(faceView.getFace());
+        }
+
+        @Override
+        public void endContact(Contact contact)  { }
+        @Override
+        public void preSolve(Contact contact, Manifold oldManifold)  { }
+        @Override
+        public void postSolve(Contact contact, ContactImpulse impulse)  { }
     }
 }
