@@ -184,7 +184,7 @@ public class PhysicsRunner {
         _worldView.getChildren().forEach(this::updateJboxBodyFromView);
 
         // Update world
-        _world.step(INTERVL_SECS,20,20);
+        _world.step(INTERVL_SECS, 8, 3);
 
         // Update world view children from jbox natives
         _worldView.getChildren().forEach(this::updateViewFromJboxNative);

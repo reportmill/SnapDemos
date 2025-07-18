@@ -45,8 +45,8 @@ public class PhysicsBuilder {
         bodyDef.type = phys.isDynamic() ? BodyType.DYNAMIC : BodyType.KINEMATIC;
         bodyDef.position.set(convertViewXYToJbox(aView.getMidX(), aView.getMidY()));
         bodyDef.angle = (float) Math.toRadians(-aView.getRotate());
-        bodyDef.linearDamping = 10;
-        bodyDef.angularDamping = 10;
+        //bodyDef.linearDamping = 10;
+        //bodyDef.angularDamping = 10;
 
         // Create Body
         Body body = _world.createBody(bodyDef);
@@ -61,7 +61,7 @@ public class PhysicsBuilder {
             fixtureDef.shape = jboxShape;
             fixtureDef.density = (float) phys.getDensity();
             fixtureDef.friction = .3f;
-            fixtureDef.restitution = .5f;
+            fixtureDef.restitution = .6f;
             fixtureDef.filter.groupIndex = phys.getGroupIndex();
             body.createFixture(fixtureDef);
         }
