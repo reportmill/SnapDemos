@@ -10,7 +10,7 @@ import snap.view.ParentView;
 import snap.view.View;
 import snap.view.ViewTimer;
 import snap.view.ViewUtils;
-import snapdemos.jbox2d.PhysicsRunner;
+import snapdemos.jbox2d.JBoxWorld;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -32,8 +32,8 @@ public class FacetrisView extends ParentView {
     // The Timer
     private ViewTimer _newFaceTimer;
 
-    // The PhysicsRunner
-    private PhysicsRunner _physRunner;
+    // The JBox2D World
+    private JBoxWorld _jboxWorld;
 
     // Constants
     private static final int BORDER_SIZE = 2;
@@ -117,20 +117,19 @@ public class FacetrisView extends ParentView {
         _lostFaces.clear();
         _wonFaces.clear();
         removeChildren();
-        if (_physRunner != null)
-            _physRunner.setRunning(false);
+        if (_jboxWorld != null)
+            _jboxWorld.setRunning(false);
 
         // Start timers
         _newFaceTimer.start(0);
 
-        // Reset physics runner
-        ParentView worldView = this;
-        _physRunner = new PhysicsRunner(worldView);
-        _physRunner.setViewToWorldMeters(getHeight() / 5);
-        _physRunner.addWallsToWorldView();
-        _physRunner.addPhysicsForWorldViewChildren();
-        _physRunner.setContactListener(new ViewContactListener());
-        _physRunner.setRunning(true);
+        // Create and configure JBoxWorld for this view
+        _jboxWorld = new JBoxWorld(this);
+        _jboxWorld.setPixelsToMeters(getHeight() / 5);
+        _jboxWorld.addWallsToWorldView();
+        _jboxWorld.addPhysicsForWorldViewChildren();
+        _jboxWorld.setContactListener(new ViewContactListener());
+        _jboxWorld.setRunning(true);
     }
 
     /**
@@ -179,8 +178,8 @@ public class FacetrisView extends ParentView {
         faceView.setXY(faceX, -faceH);
         getOwner().resetLater();
 
-        if (_physRunner != null)
-            _physRunner.addPhysicsForView(faceView);
+        if (_jboxWorld != null)
+            _jboxWorld.addPhysicsForView(faceView);
     }
 
     /**
@@ -226,8 +225,8 @@ public class FacetrisView extends ParentView {
         removeChild(view);
         view.setOpacity(1);
 
-        if (_physRunner != null)
-            _physRunner.removePhysicsForView(view);
+        if (_jboxWorld != null)
+            _jboxWorld.removePhysicsForView(view);
     }
 
     /**

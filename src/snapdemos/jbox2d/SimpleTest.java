@@ -45,12 +45,12 @@ public class SimpleTest extends ViewOwner {
         rectView.getPhysics(true).setDensity(1);
         _worldView.addChild(rectView);
 
-        // Create physics
-        PhysicsRunner physicsRunner = new PhysicsRunner(_worldView);
-        physicsRunner.setViewToWorldMeters(viewH / 20);
-        physicsRunner.addWallsToWorldView();
-        physicsRunner.addPhysicsForWorldViewChildren();
-        physicsRunner.setRunning(true);
+        // Create and configure JBoxWorld for world view
+        JBoxWorld jboxWorld = new JBoxWorld(_worldView);
+        jboxWorld.setPixelsToMeters(viewH / 20);
+        jboxWorld.addWallsToWorldView();
+        jboxWorld.addPhysicsForWorldViewChildren();
+        jboxWorld.setRunning(true);
     }
 
     /**
