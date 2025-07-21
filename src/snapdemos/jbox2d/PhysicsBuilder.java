@@ -161,16 +161,16 @@ public class PhysicsBuilder {
 
         // Create joint def and set body A/B
         RevoluteJointDef jointDef = new RevoluteJointDef();
-        jointDef.bodyA = (Body)viewA.getPhysics().getNative();
-        jointDef.bodyB = (Body)viewB.getPhysics().getNative();
+        jointDef.bodyA = (Body) viewA.getPhysics().getNative();
+        jointDef.bodyB = (Body) viewB.getPhysics().getNative();
         jointDef.collideConnected = false;
 
         // Set anchors
         Point jointPnt = aView.localToParent(aView.getWidth()/2, aView.getHeight()/2);
         Point jointPntA = viewA.parentToLocal(jointPnt.x, jointPnt.y);
         Point jointPntB = viewB.parentToLocal(jointPnt.x, jointPnt.y);
-        jointDef.localAnchorA = convertViewXYToJboxLocal(jointPntA.x, jointPntA.y, viewA);
-        jointDef.localAnchorB = convertViewXYToJboxLocal(jointPntB.x, jointPntB.y, viewB);
+        jointDef.localAnchorA = _runner.convertViewXYToJboxLocal(jointPntA.x, jointPntA.y, viewA);
+        jointDef.localAnchorB = _runner.convertViewXYToJboxLocal(jointPntB.x, jointPntB.y, viewB);
         return (RevoluteJoint) _world.createJoint(jointDef);
     }
 
@@ -196,24 +196,4 @@ public class PhysicsBuilder {
      * Convert View coord to Box2D.
      */
     public Vec2 convertViewXYToJbox(double aX, double aY)  { return _runner.convertViewXYToJbox(aX, aY); }
-
-    /**
-     * Convert Box2D coord to View.
-     */
-    public double convertJboxCoordToView(double aValue)  { return _runner.convertJboxCoordToView(aValue); }
-
-    /**
-     * Convert Box2D coord to View.
-     */
-    public Point convertJboxXYToView(double aX, double aY)  { return _runner.convertJboxXYToView(aX, aY); }
-
-    /**
-     * Returns transform from View coords to Box coords.
-     */
-    public Transform getViewToBoxTransform()  { return _runner.getViewToBoxTransform(); }
-
-    /**
-     * Returns point in view coords.
-     */
-    private Vec2 convertViewXYToJboxLocal(double aX, double aY, View aView)  { return _runner.convertViewXYToJboxLocal(aX, aY, aView); }
 }

@@ -308,41 +308,22 @@ public class PhysicsRunner {
     /**
      * Convert View coord to Box2D.
      */
-    public Vec2 convertViewXYToJbox(double aX, double aY)  { return getVec(getViewToBoxTransform().transformXY(aX, aY)); }
-
-    /**
-     * Convert Box2D coord to View.
-     */
-    public double convertJboxCoordToView(double aValue)  { return aValue * _scale; }
-
-    /**
-     * Convert Box2D coord to View.
-     */
-    public Point convertJboxXYToView(double aX, double aY)  { return getBoxToViewTransform().transformXY(aX, aY); }
-
-    /**
-     * Returns transform from View coords to Box coords.
-     */
-    public Transform getViewToBoxTransform()
+    public Vec2 convertViewXYToJbox(double aX, double aY)
     {
-        // Create transform from WorldView bounds to World bounds
-        Rect r0 = _worldView.getBoundsLocal();
-        Rect r1 = new Rect(0, 0, r0.width / _scale, -r0.height / _scale);
-        double bw = r0.width;
-        double bh = r0.height;
-        double sx = bw != 0 ? r1.width / bw : 0;
-        double sy = bh != 0 ? r1.height / bh : 0;
-        Transform trans = Transform.getScale(sx, sy);
-        trans.translate(r1.x - r0.x, r1.y - r0.y);
-
-        // Return
-        return trans;
+        double jboxX = aX / _scale;
+        double jboxY = -aY / _scale;
+        return getVec2(jboxX, jboxY);
     }
 
     /**
-     * Returns transform from Box coords to View coords.
+     * Convert Box2D coord to View.
      */
-    public Transform getBoxToViewTransform()  { return getViewToBoxTransform().getInverse(); }
+    public Point convertJboxXYToView(double aX, double aY)
+    {
+        double viewX = aX * _scale;
+        double viewY = -aY * _scale;
+        return new Point(viewX, viewY);
+    }
 
     /**
      * Converts from View to box coords.
@@ -357,5 +338,6 @@ public class PhysicsRunner {
     /**
      * Return Vec2 for snap Point.
      */
-    private Vec2 getVec(Point aPnt)  { return new Vec2((float) aPnt.x, (float) aPnt.y); }
+    private static Vec2 getVec2(Point aPnt)  { return new Vec2((float) aPnt.x, (float) aPnt.y); }
+    private static Vec2 getVec2(double aX, double aY)  { return new Vec2((float) aX, (float) aY); }
 }
