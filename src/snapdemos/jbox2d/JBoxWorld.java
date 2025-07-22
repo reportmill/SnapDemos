@@ -21,6 +21,9 @@ public class JBoxWorld {
 
     // The Box2D World
     protected World _world;
+
+    // The gravity in meters per second
+    private double _gravity = -9.8;
     
     // The ratio of screen points to Box2D world meters.
     private double _pixelsToMeters = 720 / 10d;
@@ -28,9 +31,6 @@ public class JBoxWorld {
     // The speed
     public static int INTERVAL_MILLIS = 25;
     public static float INTERVL_SECS = INTERVAL_MILLIS / 1000f;
-
-    // Constant for default gravity in world
-    private static final float DEFAULT_GRAVITY = -9.8f;
 
     /**
      * Constructor for given world view.
@@ -41,13 +41,28 @@ public class JBoxWorld {
         _worldView = worldView;
 
         // Create jbox world
-        _world = new World(new Vec2(0, DEFAULT_GRAVITY));
+        _world = new World(new Vec2(0, (float) _gravity));
     }
 
     /**
      * Returns the JBox world.
      */
     public World getWorld()  { return _world; }
+
+    /**
+     * Returns the gravity in meters per second.
+     */
+    public double getGravity()  { return 0; }
+
+    /**
+     * Sets the gravity in meters per second.
+     */
+    public void setGravity(double aValue)
+    {
+        if (aValue == getGravity()) return;
+        _gravity = aValue;
+        _world.setGravity(getVec2(0, aValue));
+    }
 
     /**
      * Returns the scale of the world in screen points to Box2D world meters.
@@ -62,38 +77,6 @@ public class JBoxWorld {
     {
         if (aValue == getPixelsToMeters()) return;
         _pixelsToMeters = aValue;
-    }
-
-    /**
-     * Adds body to given view.
-     */
-    public void addBodyForView(View aView)
-    {
-        // Create body
-        ViewPhysics<Body> viewPhysics = aView.getPhysics(true);
-        viewPhysics.setDynamic(true);
-        Body body = createJboxBodyForView(aView);
-
-        // Add view <--> body links
-        viewPhysics.setNative(body);
-        body.setUserData(aView);
-
-        // Enable dragging
-        if (viewPhysics.isDraggable())
-            _worldView.enableDraggingForView(aView);
-    }
-
-    /**
-     * Adds body to given view.
-     */
-    public void addJointForView(View aView)
-    {
-        // Create joint and add to view
-        RevoluteJoint joint = createJboxJointForView(aView);
-        aView.getPhysics(true).setNative(joint);
-
-        // Remove view for joint
-        aView.getParent(ChildView.class).removeChild(aView);
     }
 
     /**

@@ -47,6 +47,7 @@ public class FacetrisView extends WorldView {
         setFill(new Color("#F0F8FF"));
         setBorder(Color.BLACK, BORDER_SIZE);
         setClipToBounds(true);
+        setGravity(-.2);
 
         // Create timer
         _newFaceTimer = new ViewTimer(this::addFace, 3500);
@@ -164,22 +165,19 @@ public class FacetrisView extends WorldView {
         FaceEntry face = FaceIndex.getShared().getNextFaceFromQueue();
         addFieldFace(face);
 
+        // Get face view and set random location and rotation
         View faceView = face.getView();
-        addChild(faceView);
-
-        faceView.setRotate(10 - _random.nextInt(20));
-
-        // Set location
         double viewW = getWidth();
         double faceW = faceView.getWidth();
         double faceH = faceView.getHeight();
         int xRange = (int) (viewW - faceW);
         int faceX = 10 + _random.nextInt(xRange - 20);
-        faceView.setXY(faceX, -faceH);
-        getOwner().resetLater();
+        faceView.setXY(faceX, -faceH + 20);
+        faceView.setRotate(10 - _random.nextInt(20));
 
-        JBoxWorld jboxWorld = getJBoxWorld();
-        jboxWorld.addBodyForView(faceView);
+        // Add face view
+        addChildWithPhysics(faceView);
+        getOwner().resetLater();
     }
 
     /**

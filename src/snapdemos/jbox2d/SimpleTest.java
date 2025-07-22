@@ -35,21 +35,21 @@ public class SimpleTest extends ViewOwner {
 
     protected void initShowingImpl()
     {
-        double viewW = getUI().getWidth();
-        double rectSize = 60;
+        // Configure world
+        _worldView.setHeightInMeters(20);
+        _worldView.addGroundAndWalls();
 
         // Create rect view and add
+        double viewW = getUI().getWidth();
+        double rectSize = 60;
         RectView rectView = new RectView(viewW / 2 - rectSize / 2, 0, rectSize, rectSize);
         rectView.setFill(Color.BLUE);
         rectView.getPhysics(true).setDensity(1);
         rectView.getPhysics().setRestitution(.6);
         rectView.getPhysics().setDraggable(true);
-        _worldView.addChild(rectView);
+        _worldView.addChildWithPhysics(rectView);
 
-        // Configure world
-        _worldView.setHeightInMeters(20);
-        _worldView.addGroundAndWalls();
-        _worldView.addJBoxNativesForChildren();
+        // Start running
         _worldView.setRunning(true);
     }
 

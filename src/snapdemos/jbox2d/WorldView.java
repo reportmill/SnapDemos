@@ -5,6 +5,7 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.MouseJoint;
 import org.jbox2d.dynamics.joints.MouseJointDef;
+import org.jbox2d.dynamics.joints.RevoluteJoint;
 import snap.geom.Point;
 import snap.util.ListUtils;
 import snap.view.*;
@@ -43,6 +44,16 @@ public class WorldView extends ChildView {
      * Returns the JBox world.
      */
     public JBoxWorld getJBoxWorld()  { return _jboxWorld; }
+
+    /**
+     * Returns the gravity in meters per second.
+     */
+    public double getGravity()  { return _jboxWorld.getGravity(); }
+
+    /**
+     * Sets the gravity in meters per second.
+     */
+    public void setGravity(double aValue)  { _jboxWorld.setGravity(aValue); }
 
     /**
      * Sets the height in meters.
@@ -104,19 +115,19 @@ public class WorldView extends ChildView {
     }
 
     /**
-     * Adds physics to world view children.
+     * Adds a child with physics.
      */
-    public void addJBoxNativesForChildren()
+    public void addChildWithPhysics(View aView)  { addChildWithPhysics(aView, getChildCount()); }
+
+    /**
+     * Adds a child with physics.
+     */
+    public void addChildWithPhysics(View aView, int anIndex)
     {
-        ViewList children = getChildren();
-
-        // Add body views
-        List<View> bodyChildren = ListUtils.filter(children, child -> !JBoxWorld.isJoint(child));
-        bodyChildren.forEach(_jboxWorld::addBodyForView);
-
-        // Add joint views
-        List<View> jointChildren = ListUtils.filter(children, child -> JBoxWorld.isJoint(child));
-        jointChildren.forEach(_jboxWorld::addJointForView);
+        addChild(aView, anIndex);
+        if (!JBoxWorld.isJoint(aView))
+            addBodyForView(aView);
+        else addJointForView(aView);
     }
 
     /**
@@ -141,6 +152,54 @@ public class WorldView extends ChildView {
 
         // Return
         return removedView;
+    }
+
+    /**
+     * Adds physics to world view children.
+     */
+    public void addJBoxNativesForChildren()
+    {
+        ViewList children = getChildren();
+
+        // Add body views
+        List<View> bodyChildren = ListUtils.filter(children, child -> !JBoxWorld.isJoint(child));
+        bodyChildren.forEach(this::addBodyForView);
+
+        // Add joint views
+        List<View> jointChildren = ListUtils.filter(children, child -> JBoxWorld.isJoint(child));
+        jointChildren.forEach(this::addJointForView);
+    }
+
+    /**
+     * Adds body to given child view.
+     */
+    protected void addBodyForView(View aView)
+    {
+        // Create body
+        ViewPhysics<Body> viewPhysics = aView.getPhysics(true);
+        viewPhysics.setDynamic(true);
+        Body body = _jboxWorld.createJboxBodyForView(aView);
+
+        // Add view <--> body links
+        viewPhysics.setNative(body);
+        body.setUserData(aView);
+
+        // Enable dragging
+        if (viewPhysics.isDraggable())
+            enableDraggingForView(aView);
+    }
+
+    /**
+     * Adds joint to given child view.
+     */
+    protected void addJointForView(View aView)
+    {
+        // Create joint and add to view
+        RevoluteJoint joint = _jboxWorld.createJboxJointForView(aView);
+        aView.getPhysics(true).setNative(joint);
+
+        // Remove view for joint
+        aView.getParent(ChildView.class).removeChild(aView);
     }
 
     /**
