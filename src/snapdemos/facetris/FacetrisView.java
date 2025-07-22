@@ -6,11 +6,11 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.contacts.Contact;
 import snap.gfx.Color;
 import snap.util.ListUtils;
-import snap.view.ParentView;
 import snap.view.View;
 import snap.view.ViewTimer;
 import snap.view.ViewUtils;
 import snapdemos.jbox2d.JBoxWorld;
+import snapdemos.jbox2d.WorldView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * A View subclass to handle the real gameplay.
  */
-public class FacetrisView extends ParentView {
+public class FacetrisView extends WorldView {
 
     // The Faces on the field
     private List<FaceEntry> _fieldFaces = new ArrayList<>();
@@ -123,10 +123,12 @@ public class FacetrisView extends ParentView {
         // Start timers
         _newFaceTimer.start(0);
 
+        // Configure JBox properties
+        setHeightInMeters(5);
+        addWalls();
+
         // Create and configure JBoxWorld for this view
-        _jboxWorld = new JBoxWorld(this);
-        _jboxWorld.setPixelsToMeters(getHeight() / 5);
-        _jboxWorld.addWallsToWorldView();
+        _jboxWorld = getJBoxWorld();
         _jboxWorld.addPhysicsForWorldViewChildren();
         _jboxWorld.setContactListener(new ViewContactListener());
         _jboxWorld.setRunning(true);

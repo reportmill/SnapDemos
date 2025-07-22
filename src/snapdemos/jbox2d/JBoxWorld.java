@@ -33,7 +33,7 @@ public class JBoxWorld {
     private EventListener _viewDraggingEventLsnr;
     
     // Static Body used for dragging
-    private Body _leftWallBody;
+    protected Body _leftWallBody;
     
     // MouseJoint used for dragging
     private MouseJoint _dragJoint;
@@ -43,7 +43,7 @@ public class JBoxWorld {
 
     // The speed
     private int INTERVAL_MILLIS = 25;
-    private float INTERVL_SECS = INTERVAL_MILLIS/1000f;
+    private float INTERVL_SECS = INTERVAL_MILLIS / 1000f;
 
     // Constant for default gravity in world
     private static final float DEFAULT_GRAVITY = -9.8f;
@@ -51,12 +51,12 @@ public class JBoxWorld {
     /**
      * Constructor for given world view.
      */
-    public JBoxWorld(ParentView worldView)
+    public JBoxWorld(WorldView worldView)
     {
         // Set View
         _worldView = worldView;
 
-        // Create world
+        // Create jbox world
         _world = new World(new Vec2(0, DEFAULT_GRAVITY));
     }
 
@@ -70,30 +70,6 @@ public class JBoxWorld {
      * If you want a 720 point tall view to be 10m, set scale to be 720 / 10d (the default).
      */
     public void setPixelsToMeters(double aScale)  { _pixelsToMeters = aScale; }
-
-    /**
-     * Adds walls to world view.
-     */
-    public void addWallsToWorldView()
-    {
-        double viewW = _worldView.getWidth();
-        double viewH = _worldView.getHeight();
-
-        // Create left wall
-        RectView leftWallView = new RectView(-1, -900, 1, viewH + 900);
-        leftWallView.getPhysics(true);
-        _leftWallBody = createJboxBodyForView(leftWallView);
-
-        // Create bottom wall
-        RectView bottomWallView = new RectView(0, viewH+1, viewW, 1);
-        bottomWallView.getPhysics(true);
-        createJboxBodyForView(bottomWallView);
-
-        // Create right wall
-        RectView rightWallView = new RectView(viewW, -900, 1, viewH + 900);
-        rightWallView.getPhysics(true);
-        createJboxBodyForView(rightWallView);
-    }
 
     /**
      * Adds physics to world view children.

@@ -9,7 +9,7 @@ import snap.view.*;
 public class SimpleTest extends ViewOwner {
 
     // The world view
-    private ChildView _worldView;
+    private WorldView _worldView;
 
     /**
      * Constructor.
@@ -22,7 +22,7 @@ public class SimpleTest extends ViewOwner {
     @Override
     protected View createUI()
     {
-        _worldView = new ChildView();
+        _worldView = new WorldView();
         _worldView.setPrefSize(600, 600);
         return _worldView;
     }
@@ -45,10 +45,12 @@ public class SimpleTest extends ViewOwner {
         rectView.getPhysics(true).setDensity(1);
         _worldView.addChild(rectView);
 
+        // Configure world
+        _worldView.setHeightInMeters(20);
+        _worldView.addWalls();
+
         // Create and configure JBoxWorld for world view
-        JBoxWorld jboxWorld = new JBoxWorld(_worldView);
-        jboxWorld.setPixelsToMeters(viewH / 20);
-        jboxWorld.addWallsToWorldView();
+        JBoxWorld jboxWorld = _worldView.getJBoxWorld();
         jboxWorld.addPhysicsForWorldViewChildren();
         jboxWorld.setRunning(true);
     }
