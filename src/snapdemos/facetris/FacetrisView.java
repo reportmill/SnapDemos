@@ -126,10 +126,10 @@ public class FacetrisView extends WorldView {
         // Configure JBox properties
         setHeightInMeters(5);
         addWalls();
+        addJBoxNativesForChildren();
 
         // Create and configure JBoxWorld for this view
         _jboxWorld = getJBoxWorld();
-        _jboxWorld.addPhysicsForWorldViewChildren();
         _jboxWorld.setContactListener(new ViewContactListener());
         _jboxWorld.setRunning(true);
     }
@@ -181,7 +181,7 @@ public class FacetrisView extends WorldView {
         getOwner().resetLater();
 
         if (_jboxWorld != null)
-            _jboxWorld.addPhysicsForView(faceView);
+            _jboxWorld.addBodyForView(faceView);
     }
 
     /**
@@ -228,7 +228,7 @@ public class FacetrisView extends WorldView {
         view.setOpacity(1);
 
         if (_jboxWorld != null)
-            _jboxWorld.removePhysicsForView(view);
+            _jboxWorld.removeJBoxNativeForView(view);
     }
 
     /**

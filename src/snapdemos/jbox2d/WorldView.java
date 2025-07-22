@@ -1,7 +1,12 @@
 package snapdemos.jbox2d;
 import org.jbox2d.dynamics.Body;
+import snap.util.ListUtils;
 import snap.view.ChildView;
 import snap.view.RectView;
+import snap.view.View;
+import snap.view.ViewList;
+
+import java.util.List;
 
 /**
  * This view subclass works with JBox.
@@ -58,6 +63,22 @@ public class WorldView extends ChildView {
         RectView rightWallView = new RectView(viewW, -900, 1, viewH + 900);
         rightWallView.getPhysics(true);
         _jboxWorld.createJboxBodyForView(rightWallView);
+    }
+
+    /**
+     * Adds physics to world view children.
+     */
+    public void addJBoxNativesForChildren()
+    {
+        ViewList children = getChildren();
+
+        // Add body views
+        List<View> bodyChildren = ListUtils.filter(children, child -> !JBoxWorld.isJoint(child));
+        bodyChildren.forEach(_jboxWorld::addBodyForView);
+
+        // Add joint views
+        List<View> jointChildren = ListUtils.filter(children, child -> JBoxWorld.isJoint(child));
+        jointChildren.forEach(_jboxWorld::addJointForView);
     }
 
 }

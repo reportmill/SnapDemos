@@ -38,9 +38,6 @@ public class JBoxWorld {
     // MouseJoint used for dragging
     private MouseJoint _dragJoint;
 
-    // Joints to be created
-    private List<View> _jointViews = new ArrayList<>();
-
     // The speed
     private int INTERVAL_MILLIS = 25;
     private float INTERVL_SECS = INTERVAL_MILLIS / 1000f;
@@ -69,40 +66,47 @@ public class JBoxWorld {
      * Sets the ratio of view screen points to Box2D world meters.
      * If you want a 720 point tall view to be 10m, set scale to be 720 / 10d (the default).
      */
-    public void setPixelsToMeters(double aScale)  { _pixelsToMeters = aScale; }
-
-    /**
-     * Adds physics to world view children.
-     */
-    public void addPhysicsForWorldViewChildren()
+    public void setPixelsToMeters(double aValue)
     {
-        _worldView.getChildren().forEach(this::addPhysicsForView);
-        addJoints();
+        if (aValue == getPixelsToMeters()) return;
+        _pixelsToMeters = aValue;
     }
 
     /**
-     * Adds physics to given view.
+     * Adds body to given view.
      */
-    public void addPhysicsForView(View aView)
+    public void addBodyForView(View aView)
     {
-        ViewPhysics<?> viewPhysics = aView.getPhysics(true);
+        // Create body
+        ViewPhysics<Body> viewPhysics = aView.getPhysics(true);
+        viewPhysics.setDynamic(true);
+        Body body = createJboxBodyForView(aView);
 
-        // Handle Joint: Just add to list of joint views
-        if (viewPhysics.isJoint() || "joint".equals(aView.getName()))
-            _jointViews.add(aView);
+        // Add view <--> body links
+        viewPhysics.setNative(body);
+        body.setUserData(aView);
 
-        // Handle Body: Create and set native jbox body in view physics
-        else {
-            viewPhysics.setDynamic(true);
-            createJboxBodyForView(aView);
-            enableViewDragging(aView);
-        }
+        // Enable dragging
+        enableViewDragging(aView);
     }
 
     /**
-     * Removes physics for view.
+     * Adds body to given view.
      */
-    public void removePhysicsForView(View aView)
+    public void addJointForView(View aView)
+    {
+        // Create joint and add to view
+        RevoluteJoint joint = createJboxJointForView(aView);
+        aView.getPhysics(true).setNative(joint);
+
+        // Remove view for joint
+        aView.getParent(ChildView.class).removeChild(aView);
+    }
+
+    /**
+     * Removes body for view.
+     */
+    public void removeJBoxNativeForView(View aView)
     {
         Body body = (Body) aView.getPhysics().getNative();
         _world.destroyBody(body);
@@ -114,15 +118,6 @@ public class JBoxWorld {
     public void setContactListener(ContactListener contactLsnr)
     {
         _world.setContactListener(contactLsnr);
-    }
-
-    /**
-     * Adds joints.
-     */
-    public void addJoints()
-    {
-        _jointViews.forEach(view -> createJboxJointForViewAndSet(view));
-        _jointViews.clear();
     }
 
     /**
@@ -305,9 +300,7 @@ public class JBoxWorld {
             body.createFixture(fixtureDef);
         }
 
-        // Return body
-        phys.setNative(body);
-        body.setUserData(aView);
+        // Return
         return body;
     }
 
@@ -363,15 +356,18 @@ public class JBoxWorld {
     public org.jbox2d.collision.shapes.Shape createJboxShapeForPolygon(Polygon aPoly)
     {
         // If invalid, just return null
-        if (aPoly.isSelfIntersecting() || !aPoly.isConvex() || aPoly.getPointCount() > 8) return null;
+        if (aPoly.isSelfIntersecting() || !aPoly.isConvex() || aPoly.getPointCount() > 8)
+            return null;
 
-        // Create Box2D PolygonShape and return
+        // Create Box2D PolygonShape
         int pointCount = aPoly.getPointCount();
         Vec2[] vecs = new Vec2[pointCount];
         for (int i = 0; i < pointCount; i++)
             vecs[i] = convertViewXYToJbox(aPoly.getPointX(i), aPoly.getPointY(i));
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.set(vecs, vecs.length);
+
+        // Return
         return polygonShape;
     }
 
@@ -395,6 +391,7 @@ public class JBoxWorld {
             return null;
         }
 
+        // Get joint views
         View viewA = hits.get(0);
         View viewB = hits.get(1);
 
@@ -410,20 +407,9 @@ public class JBoxWorld {
         Point jointPntB = viewB.parentToLocal(jointPnt.x, jointPnt.y);
         jointDef.localAnchorA = convertViewXYToJboxLocal(jointPntA.x, jointPntA.y, viewA);
         jointDef.localAnchorB = convertViewXYToJboxLocal(jointPntB.x, jointPntB.y, viewB);
+
+        // Create joint and return
         return (RevoluteJoint) _world.createJoint(jointDef);
-    }
-
-    /**
-     * Creates a Joint.
-     */
-    public void createJboxJointForViewAndSet(View aView)
-    {
-        // Create joint and add to view
-        RevoluteJoint joint = createJboxJointForView(aView);
-        aView.getPhysics(true).setNative(joint);
-
-        // Remove view for joint
-        aView.getParent(ChildView.class).removeChild(aView);
     }
 
     /**
@@ -459,6 +445,15 @@ public class JBoxWorld {
         float x = convertViewCoordToJbox(aX - aView.getWidth() / 2);
         float y = convertViewCoordToJbox(aView.getHeight() / 2 - aY);
         return new Vec2(x, y);
+    }
+
+    /**
+     * Returns whether given view is joint.
+     */
+    protected static boolean isJoint(View aView)
+    {
+        ViewPhysics<?> viewPhysics = aView.getPhysics(true);
+        return viewPhysics.isJoint() || "joint".equals(aView.getName());
     }
 
     /**
