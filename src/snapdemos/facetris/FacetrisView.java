@@ -32,9 +32,6 @@ public class FacetrisView extends WorldView {
     // The Timer
     private ViewTimer _newFaceTimer;
 
-    // The JBox2D World
-    private JBoxWorld _jboxWorld;
-
     // Constants
     private static final int BORDER_SIZE = 2;
 
@@ -112,26 +109,27 @@ public class FacetrisView extends WorldView {
      */
     public void play()
     {
+        setRunning(false);
+
         // Remove faces/views
         _fieldFaces.clear();
         _lostFaces.clear();
         _wonFaces.clear();
         removeChildren();
-        if (_jboxWorld != null)
-            _jboxWorld.setRunning(false);
 
         // Start timers
         _newFaceTimer.start(0);
 
         // Configure JBox properties
         setHeightInMeters(5);
-        addWalls();
+        addGroundAndWalls();
         addJBoxNativesForChildren();
+        setRunning(true);
 
         // Create and configure JBoxWorld for this view
-        _jboxWorld = getJBoxWorld();
-        _jboxWorld.setContactListener(new ViewContactListener());
-        _jboxWorld.setRunning(true);
+        JBoxWorld jboxWorld = getJBoxWorld();
+        if (jboxWorld.getContactListener() == null)
+            jboxWorld.setContactListener(new ViewContactListener());
     }
 
     /**
@@ -180,8 +178,8 @@ public class FacetrisView extends WorldView {
         faceView.setXY(faceX, -faceH);
         getOwner().resetLater();
 
-        if (_jboxWorld != null)
-            _jboxWorld.addBodyForView(faceView);
+        JBoxWorld jboxWorld = getJBoxWorld();
+        jboxWorld.addBodyForView(faceView);
     }
 
     /**
@@ -226,9 +224,6 @@ public class FacetrisView extends WorldView {
         View view = aFace.getView();
         removeChild(view);
         view.setOpacity(1);
-
-        if (_jboxWorld != null)
-            _jboxWorld.removeJBoxNativeForView(view);
     }
 
     /**

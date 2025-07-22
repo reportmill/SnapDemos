@@ -12,7 +12,7 @@ import snap.util.MathUtils;
 import snap.view.*;
 
 /**
- * This class adds Box2D physics to a WorldView.
+ * This class adds JBox2D physics to a WorldView.
  */
 public class JBoxWorld {
     
@@ -25,12 +25,9 @@ public class JBoxWorld {
     // The ratio of screen points to Box2D world meters.
     private double _pixelsToMeters = 720 / 10d;
     
-    // The Runner
-    private Runnable _runner;
-    
     // The speed
-    private int INTERVAL_MILLIS = 25;
-    private float INTERVL_SECS = INTERVAL_MILLIS / 1000f;
+    public static int INTERVAL_MILLIS = 25;
+    public static float INTERVL_SECS = INTERVAL_MILLIS / 1000f;
 
     // Constant for default gravity in world
     private static final float DEFAULT_GRAVITY = -9.8f;
@@ -100,13 +97,9 @@ public class JBoxWorld {
     }
 
     /**
-     * Removes body for view.
+     * Returns the contact listener.
      */
-    public void removeJBoxNativeForView(View aView)
-    {
-        Body body = (Body) aView.getPhysics().getNative();
-        _world.destroyBody(body);
-    }
+    public ContactListener getContactListener()  { return _world.getContactManager().m_contactListener; }
 
     /**
      * Sets a contact listener.
@@ -117,32 +110,9 @@ public class JBoxWorld {
     }
 
     /**
-     * Returns whether physics is running.
+     * Called to process next world frame (usually by timer).
      */
-    public boolean isRunning()  { return _runner!=null; }
-
-    /**
-     * Sets whether physics is running.
-     */
-    public void setRunning(boolean aValue)
-    {
-        // If already set, just return
-        if(aValue == isRunning()) return;
-
-        // Set timer to call timerFired 25 times a second
-        if(_runner == null)
-            ViewEnv.getEnv().runIntervals(_runner = this::handleTimerFired, INTERVAL_MILLIS);
-
-        else {
-            ViewEnv.getEnv().stopIntervals(_runner);
-            _runner = null;
-        }
-    }
-
-    /**
-     * Called when world timer fires.
-     */
-    private void handleTimerFired()
+    public void stepWorld()
     {
         // Update jbox natives from world view child views (maybe one was dragged or updated externally)
         _worldView.getChildren().forEach(this::updateJboxBodyFromView);

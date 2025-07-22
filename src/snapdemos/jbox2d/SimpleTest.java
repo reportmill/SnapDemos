@@ -48,12 +48,9 @@ public class SimpleTest extends ViewOwner {
 
         // Configure world
         _worldView.setHeightInMeters(20);
-        _worldView.addWalls();
+        _worldView.addGroundAndWalls();
         _worldView.addJBoxNativesForChildren();
-
-        // Create and configure JBoxWorld for world view
-        JBoxWorld jboxWorld = _worldView.getJBoxWorld();
-        jboxWorld.setRunning(true);
+        _worldView.setRunning(true);
     }
 
     /**

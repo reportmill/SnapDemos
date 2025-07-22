@@ -1,6 +1,8 @@
 package snapdemos.jbox2d;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.MouseJoint;
 import org.jbox2d.dynamics.joints.MouseJointDef;
 import snap.geom.Point;
@@ -9,18 +11,21 @@ import snap.view.*;
 import java.util.List;
 
 /**
- * This view subclass works with JBox.
+ * This view subclass facilitates using JBox2D with SnapKit.
  */
 public class WorldView extends ChildView {
 
     // The JBox world
     private JBoxWorld _jboxWorld;
 
-    // Static Body used for dragging
-    private Body _leftWallBody;
+    // The Runner
+    private Runnable _runner;
 
     // MouseJoint used for dragging
     private MouseJoint _dragJoint;
+
+    // Static dummy body used by mouse joint for dragging
+    private Body _dragGroundBody;
 
     // Listener to handle drags
     private EventListener _viewDraggingEventLsnr;
@@ -48,27 +53,54 @@ public class WorldView extends ChildView {
     }
 
     /**
-     * Adds walls to world view.
+     * Adds ground to world view.
      */
-    public void addWalls()
+    public void addGround()
     {
-        double viewW = getWidth();
-        double viewH = getHeight();
-
-        // Create left wall
-        RectView leftWallView = new RectView(-1, -900, 1, viewH + 900);
-        leftWallView.getPhysics(true);
-        _leftWallBody = _jboxWorld.createJboxBodyForView(leftWallView);
-
-        // Create bottom wall
-        RectView bottomWallView = new RectView(0, viewH+1, viewW, 1);
+        RectView bottomWallView = new RectView(0, getHeight() + 1, getWidth(), 1);
         bottomWallView.getPhysics(true);
         _jboxWorld.createJboxBodyForView(bottomWallView);
+    }
 
-        // Create right wall
-        RectView rightWallView = new RectView(viewW, -900, 1, viewH + 900);
+    /**
+     * Adds ground and walls to world view.
+     */
+    public void addGroundAndWalls()
+    {
+        addGround();
+
+        // Add left wall
+        RectView leftWallView = new RectView(-1, -900, 1, getHeight() + 900);
+        leftWallView.getPhysics(true);
+        _jboxWorld.createJboxBodyForView(leftWallView);
+
+        // Add right wall
+        RectView rightWallView = new RectView(getWidth(), -900, 1, getHeight() + 900);
         rightWallView.getPhysics(true);
         _jboxWorld.createJboxBodyForView(rightWallView);
+    }
+
+    /**
+     * Returns whether physics is running.
+     */
+    public boolean isRunning()  { return _runner != null; }
+
+    /**
+     * Sets whether physics is running.
+     */
+    public void setRunning(boolean aValue)
+    {
+        // If already set, just return
+        if(aValue == isRunning()) return;
+
+        // Set timer to call timerFired 25 times a second
+        if(_runner == null)
+            ViewEnv.getEnv().runIntervals(_runner = _jboxWorld::stepWorld, JBoxWorld.INTERVAL_MILLIS);
+
+        else {
+            ViewEnv.getEnv().stopIntervals(_runner);
+            _runner = null;
+        }
     }
 
     /**
@@ -88,6 +120,30 @@ public class WorldView extends ChildView {
     }
 
     /**
+     * Override to remove JBox natives.
+     */
+    @Override
+    public View removeChild(int anIndex)
+    {
+        // Do normal version
+        View removedView = super.removeChild(anIndex);
+
+        // Remove JBox native
+        ViewPhysics<?> viewPhysics = removedView.getPhysics();
+        Object jboxNative = viewPhysics != null ? viewPhysics.getNative() : null;
+        if (jboxNative != null) {
+            if (jboxNative instanceof Body jboxBody)
+                _jboxWorld.getWorld().destroyBody(jboxBody);
+            else if (jboxNative instanceof Joint jboxJoint)
+                _jboxWorld.getWorld().destroyJoint(jboxJoint);
+            viewPhysics.setNative(null);
+        }
+
+        // Return
+        return removedView;
+    }
+
+    /**
      * Enables user mouse dragging of given view.
      */
     public void enableDraggingForView(View aView)
@@ -103,15 +159,14 @@ public class WorldView extends ChildView {
     {
         // Get View, ViewPhysics, Body and Event point in page view
         View dragView = anEvent.getView();
-        ViewPhysics<Body> phys = dragView.getPhysics();
-        Body dragBody = phys.getNative();
+        Body dragBody = (Body) dragView.getPhysics().getNative();
         Point dragPoint = anEvent.getPoint(dragView.getParent());
         anEvent.consume();
 
         // Handle MousePress: Create & install drag MouseJoint
         if (anEvent.isMousePress()) {
             MouseJointDef jdef = new MouseJointDef();
-            jdef.bodyA = _leftWallBody;
+            jdef.bodyA = getDragGroundBody();
             jdef.bodyB = dragBody;
             jdef.collideConnected = true;
             jdef.maxForce = 1000f * dragBody.getMass();
@@ -122,8 +177,8 @@ public class WorldView extends ChildView {
 
         // Handle MouseDrag: Update drag MouseJoint
         else if (anEvent.isMouseDrag()) {
-            Vec2 target = _jboxWorld.convertViewXYToJbox(dragPoint.x, dragPoint.y);
-            _dragJoint.setTarget(target);
+            Vec2 dragPointInJbox = _jboxWorld.convertViewXYToJbox(dragPoint.x, dragPoint.y);
+            _dragJoint.setTarget(dragPointInJbox);
         }
 
         // Handle MouseRelease: Remove drag MouseJoint
@@ -131,5 +186,12 @@ public class WorldView extends ChildView {
             _jboxWorld.getWorld().destroyJoint(_dragJoint);
             _dragJoint = null;
         }
+    }
+
+    /** Returns the static dummy body used by mouse joint for dragging. */
+    private Body getDragGroundBody()
+    {
+        if (_dragGroundBody != null) return _dragGroundBody;
+        return _dragGroundBody = _jboxWorld.getWorld().createBody(new BodyDef());
     }
 }
