@@ -1,11 +1,11 @@
 package snapdemos.jbox2d;
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.joints.MouseJoint;
+import org.jbox2d.dynamics.joints.MouseJointDef;
+import snap.geom.Point;
 import snap.util.ListUtils;
-import snap.view.ChildView;
-import snap.view.RectView;
-import snap.view.View;
-import snap.view.ViewList;
-
+import snap.view.*;
 import java.util.List;
 
 /**
@@ -18,6 +18,12 @@ public class WorldView extends ChildView {
 
     // Static Body used for dragging
     private Body _leftWallBody;
+
+    // MouseJoint used for dragging
+    private MouseJoint _dragJoint;
+
+    // Listener to handle drags
+    private EventListener _viewDraggingEventLsnr;
 
     /**
      * Constructor.
@@ -52,7 +58,7 @@ public class WorldView extends ChildView {
         // Create left wall
         RectView leftWallView = new RectView(-1, -900, 1, viewH + 900);
         leftWallView.getPhysics(true);
-        _jboxWorld._leftWallBody = _jboxWorld.createJboxBodyForView(leftWallView);
+        _leftWallBody = _jboxWorld.createJboxBodyForView(leftWallView);
 
         // Create bottom wall
         RectView bottomWallView = new RectView(0, viewH+1, viewW, 1);
@@ -81,4 +87,49 @@ public class WorldView extends ChildView {
         jointChildren.forEach(_jboxWorld::addJointForView);
     }
 
+    /**
+     * Enables user mouse dragging of given view.
+     */
+    public void enableDraggingForView(View aView)
+    {
+        if (_viewDraggingEventLsnr == null) _viewDraggingEventLsnr = this::handleViewMouseEventForDragging;
+        aView.addEventFilter(_viewDraggingEventLsnr, View.MousePress, View.MouseDrag, View.MouseRelease);
+    }
+
+    /**
+     * Called when View gets drag event.
+     */
+    private void handleViewMouseEventForDragging(ViewEvent anEvent)
+    {
+        // Get View, ViewPhysics, Body and Event point in page view
+        View dragView = anEvent.getView();
+        ViewPhysics<Body> phys = dragView.getPhysics();
+        Body dragBody = phys.getNative();
+        Point dragPoint = anEvent.getPoint(dragView.getParent());
+        anEvent.consume();
+
+        // Handle MousePress: Create & install drag MouseJoint
+        if (anEvent.isMousePress()) {
+            MouseJointDef jdef = new MouseJointDef();
+            jdef.bodyA = _leftWallBody;
+            jdef.bodyB = dragBody;
+            jdef.collideConnected = true;
+            jdef.maxForce = 1000f * dragBody.getMass();
+            jdef.target.set(_jboxWorld.convertViewXYToJbox(dragPoint.x, dragPoint.y));
+            _dragJoint = (MouseJoint) _jboxWorld.getWorld().createJoint(jdef);
+            dragBody.setAwake(true);
+        }
+
+        // Handle MouseDrag: Update drag MouseJoint
+        else if (anEvent.isMouseDrag()) {
+            Vec2 target = _jboxWorld.convertViewXYToJbox(dragPoint.x, dragPoint.y);
+            _dragJoint.setTarget(target);
+        }
+
+        // Handle MouseRelease: Remove drag MouseJoint
+        else if (anEvent.isMouseRelease()) {
+            _jboxWorld.getWorld().destroyJoint(_dragJoint);
+            _dragJoint = null;
+        }
+    }
 }

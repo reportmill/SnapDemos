@@ -36,13 +36,14 @@ public class SimpleTest extends ViewOwner {
     protected void initShowingImpl()
     {
         double viewW = getUI().getWidth();
-        double viewH = getUI().getHeight();
         double rectSize = 60;
 
         // Create rect view and add
         RectView rectView = new RectView(viewW / 2 - rectSize / 2, 0, rectSize, rectSize);
         rectView.setFill(Color.BLUE);
         rectView.getPhysics(true).setDensity(1);
+        rectView.getPhysics().setRestitution(.6);
+        rectView.getPhysics().setDraggable(true);
         _worldView.addChild(rectView);
 
         // Configure world

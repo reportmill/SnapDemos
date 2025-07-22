@@ -10,15 +10,14 @@ import snap.geom.*;
 import snap.util.ListUtils;
 import snap.util.MathUtils;
 import snap.view.*;
-import snap.view.EventListener;
 
 /**
- * A class to run Box2D physics for a view.
+ * This class adds Box2D physics to a WorldView.
  */
 public class JBoxWorld {
     
     // The world view
-    private ParentView _worldView;
+    private WorldView _worldView;
 
     // The Box2D World
     protected World _world;
@@ -29,15 +28,6 @@ public class JBoxWorld {
     // The Runner
     private Runnable _runner;
     
-    // Listener to handle drags
-    private EventListener _viewDraggingEventLsnr;
-    
-    // Static Body used for dragging
-    protected Body _leftWallBody;
-    
-    // MouseJoint used for dragging
-    private MouseJoint _dragJoint;
-
     // The speed
     private int INTERVAL_MILLIS = 25;
     private float INTERVL_SECS = INTERVAL_MILLIS / 1000f;
@@ -56,6 +46,11 @@ public class JBoxWorld {
         // Create jbox world
         _world = new World(new Vec2(0, DEFAULT_GRAVITY));
     }
+
+    /**
+     * Returns the JBox world.
+     */
+    public World getWorld()  { return _world; }
 
     /**
      * Returns the scale of the world in screen points to Box2D world meters.
@@ -87,7 +82,8 @@ public class JBoxWorld {
         body.setUserData(aView);
 
         // Enable dragging
-        enableViewDragging(aView);
+        if (viewPhysics.isDraggable())
+            _worldView.enableDraggingForView(aView);
     }
 
     /**
@@ -223,52 +219,6 @@ public class JBoxWorld {
     }
 
     /**
-     * Enables user mouse dragging of given view.
-     */
-    public void enableViewDragging(View aView)
-    {
-        if (_viewDraggingEventLsnr == null) _viewDraggingEventLsnr = this::handleViewMouseEventForDragging;
-        aView.addEventFilter(_viewDraggingEventLsnr, View.MousePress, View.MouseDrag, View.MouseRelease);
-    }
-
-    /**
-     * Called when View gets drag event.
-     */
-    private void handleViewMouseEventForDragging(ViewEvent anEvent)
-    {
-        // Get View, ViewPhysics, Body and Event point in page view
-        View dragView = anEvent.getView();
-        ViewPhysics<Body> phys = dragView.getPhysics();
-        Body dragBody = phys.getNative();
-        Point dragPoint = anEvent.getPoint(dragView.getParent());
-        anEvent.consume();
-
-        // Handle MousePress: Create & install drag MouseJoint
-        if (anEvent.isMousePress()) {
-            MouseJointDef jdef = new MouseJointDef();
-            jdef.bodyA = _leftWallBody;
-            jdef.bodyB = dragBody;
-            jdef.collideConnected = true;
-            jdef.maxForce = 1000f * dragBody.getMass();
-            jdef.target.set(convertViewXYToJbox(dragPoint.x, dragPoint.y));
-            _dragJoint = (MouseJoint)_world.createJoint(jdef);
-            dragBody.setAwake(true);
-        }
-
-        // Handle MouseDrag: Update drag MouseJoint
-        else if (anEvent.isMouseDrag()) {
-            Vec2 target = convertViewXYToJbox(dragPoint.x, dragPoint.y);
-            _dragJoint.setTarget(target);
-        }
-
-        // Handle MouseRelease: Remove drag MouseJoint
-        else if (anEvent.isMouseRelease()) {
-            _world.destroyJoint(_dragJoint);
-            _dragJoint = null;
-        }
-    }
-
-    /**
      * Returns a body for a view.
      */
     public Body createJboxBodyForView(View aView)
@@ -294,8 +244,8 @@ public class JBoxWorld {
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = jboxShape;
             fixtureDef.density = (float) phys.getDensity();
-            fixtureDef.friction = .3f;
-            fixtureDef.restitution = .6f;
+            fixtureDef.friction = (float) phys.getFriction();
+            fixtureDef.restitution = (float) phys.getRestitution();
             fixtureDef.filter.groupIndex = phys.getGroupIndex();
             body.createFixture(fixtureDef);
         }
@@ -353,17 +303,17 @@ public class JBoxWorld {
     /**
      * Creates a Box2D shape for given snap shape.
      */
-    public org.jbox2d.collision.shapes.Shape createJboxShapeForPolygon(Polygon aPoly)
+    public org.jbox2d.collision.shapes.Shape createJboxShapeForPolygon(Polygon aPolygon)
     {
         // If invalid, just return null
-        if (aPoly.isSelfIntersecting() || !aPoly.isConvex() || aPoly.getPointCount() > 8)
+        if (aPolygon.isSelfIntersecting() || !aPolygon.isConvex() || aPolygon.getPointCount() > 8)
             return null;
 
         // Create Box2D PolygonShape
-        int pointCount = aPoly.getPointCount();
+        int pointCount = aPolygon.getPointCount();
         Vec2[] vecs = new Vec2[pointCount];
         for (int i = 0; i < pointCount; i++)
-            vecs[i] = convertViewXYToJbox(aPoly.getPointX(i), aPoly.getPointY(i));
+            vecs[i] = convertViewXYToJbox(aPolygon.getPointX(i), aPolygon.getPointY(i));
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.set(vecs, vecs.length);
 
