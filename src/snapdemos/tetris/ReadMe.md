@@ -1,5 +1,7 @@
 # Tetris
 
+![](https://reportmill.com/SnapCode/Samples/Tetris/Tetris.png)
+
 This is a simple clone of the Tetris game, written with SnapKit.
 
 ## TetrisPane
