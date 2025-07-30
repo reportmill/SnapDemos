@@ -63,7 +63,7 @@ public class Asteroid extends ActorView
         // If size is different than image, get new image size
         Image image = AsteroidImage;
         if (size != AsteroidImage.getWidth() && AsteroidImage.isLoaded())
-            image = AsteroidImage.cloneForSize(size, size);
+            image = AsteroidImage.copyForSize(size, size);
         setImage(image);
     }
 
