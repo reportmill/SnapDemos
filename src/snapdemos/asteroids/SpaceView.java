@@ -7,7 +7,6 @@ import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.view.Label;
-import snap.view.ViewUtils;
 import java.util.Random;
 
 /**
@@ -17,9 +16,6 @@ public class SpaceView extends GameView
 {
     // Whether the game is running
     private boolean _started;
-
-    // The background space view
-    private Image _backgroundImage;
 
     // Constants
     private static final int GAME_WIDTH = 900;
@@ -40,7 +36,7 @@ public class SpaceView extends GameView
         setClipToBounds(true);
 
         // Create background
-        createBackground();
+        setImage(createBackground());
 
         // Start game
         startGame();
@@ -90,62 +86,47 @@ public class SpaceView extends GameView
 
         // Create 'Game Over' label and animate
         Label label = new Label("Game Over");
-        label.setPropValues(Font_Prop, "Arial Bold 72", Opacity_Prop, 0);
-        label.setTextColor(Color.MAGENTA);
-        label.setSize(label.getPrefSize());
-        label.setScale(.1);
-        addChild(label);
+        label.setPropsString("Font:Arial Bold 72; TextColor: MAGENTA; Opacity:0");
+        label.setSizeToPrefSize();
         label.setManaged(false);
         label.setLean(Pos.CENTER);
+        label.setScale(.1);
+        addChild(label);
         label.getAnim(1000).getAnim(1000 + 1200).setScale(1).setOpacity(1).setRotate(360).play();
         getEnv().runDelayed(this::stop, 2200);
     }
 
     /**
-     * Create background.
+     * Create background image with random stars.
      */
-    private void createBackground()
+    private Image createBackground()
     {
         // Create image for game field
-        _backgroundImage = Image.getImageForSize(GAME_WIDTH, GAME_HEIGHT, false);
+        Image backgroundImage = Image.getImageForSize(GAME_WIDTH, GAME_HEIGHT, false);
 
         // Paint black
-        Painter pntr = _backgroundImage.getPainter();
+        Painter pntr = backgroundImage.getPainter();
         pntr.setColor(Color.BLACK);
         pntr.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         // Add stars
         Random random = new Random();
-        Ellipse oval = new Ellipse(0, 0, 3, 3);
+        Ellipse starShape = new Ellipse(0, 0, 3, 3);
         for(int i = 0; i < BACKGROUND_STAR_COUNT; i++) {
-            int x = random.nextInt(GAME_WIDTH);
-            int y = random.nextInt(GAME_HEIGHT);
-            oval.setXY(x, y);
+            int starX = random.nextInt(GAME_WIDTH);
+            int starY = random.nextInt(GAME_HEIGHT);
+            starShape.setXY(starX, starY);
             int color = 120 - random.nextInt(100);
-            pntr.setColor(new Color(color,color,color));
-            pntr.fill(oval);
+            pntr.setColor(new Color(color, color, color));
+            pntr.fill(starShape);
         }
-    }
 
-    /**
-     * Paint background.
-     */
-    @Override
-    protected void paintBack(Painter aPntr)
-    {
-        aPntr.drawImage(_backgroundImage, 0, 0);
+        // Return
+        return backgroundImage;
     }
 
     /**
      * Standard main implementation.
      */
-    public static void main(String[] args)  { ViewUtils.runLater(SpaceView::mainLater); }
-
-    /**
-     * Standard main implementation.
-     */
-    private static void mainLater()
-    {
-        Game.showGameForClass(SpaceView.class);
-    }
+    public static void main(String[] args)  { Game.showGameForClass(SpaceView.class); }
 }
