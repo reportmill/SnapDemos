@@ -1,5 +1,7 @@
 # Asteroids
 
+![](https://reportmill.com/SnapCode/Samples/Asteroids/Asteroids.png)
+
 This is a simple clone of the Asteroids game, written with SnapKit.
 
 ## SpaceView
