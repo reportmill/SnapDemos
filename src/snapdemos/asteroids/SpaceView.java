@@ -18,7 +18,7 @@ public class SpaceView extends GameView
     private boolean _started;
 
     // Constants
-    private static final int GAME_WIDTH = 900;
+    private static final int GAME_WIDTH = 700;
     private static final int GAME_HEIGHT = 650;
     private static final int INITIAL_ASTEROID_COUNT = 4;
     private static final int BACKGROUND_STAR_COUNT = 300;
