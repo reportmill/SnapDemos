@@ -1,13 +1,12 @@
 package snapdemos.asteroids;
+import snap.games.Game;
+import snap.games.GameView;
 import snap.geom.Ellipse;
 import snap.geom.Pos;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.Painter;
-import snap.util.SnapEnv;
 import snap.view.Label;
-import snap.view.ScaleBox;
-import snap.view.ViewOwner;
 import snap.view.ViewUtils;
 import java.util.Random;
 
@@ -75,10 +74,11 @@ public class SpaceView extends GameView
      * Override to see if game needs restart.
      */
     @Override
-    protected void act()
+    protected void stepGameFrame()
     {
+        super.stepGameFrame();
         if (!_started && (isMouseClicked() || isKeyDown("space")))
-            ViewUtils.runDelayed(() -> startGame(), 100);
+            runDelayed(this::startGame, 100);
     }
 
     /**
@@ -98,7 +98,7 @@ public class SpaceView extends GameView
         label.setManaged(false);
         label.setLean(Pos.CENTER);
         label.getAnim(1000).getAnim(1000 + 1200).setScale(1).setOpacity(1).setRotate(360).play();
-        getEnv().runDelayed(this::stopAnim, 2200);
+        getEnv().runDelayed(this::stop, 2200);
     }
 
     /**
@@ -139,21 +139,13 @@ public class SpaceView extends GameView
     /**
      * Standard main implementation.
      */
-    public static void main(String[] args)
-    {
-        ViewUtils.runLater(() -> mainLater(args));
-    }
+    public static void main(String[] args)  { ViewUtils.runLater(SpaceView::mainLater); }
 
     /**
      * Standard main implementation.
      */
-    private static void mainLater(String[] args)
+    private static void mainLater()
     {
-        SpaceView spaceView = new SpaceView();
-        ScaleBox scaleBox = new ScaleBox(spaceView, true, true);
-        ViewOwner viewOwner = new ViewOwner(scaleBox);
-        viewOwner.setFirstFocus(spaceView);
-        viewOwner.getWindow().setMaximized(SnapEnv.isWebVM);
-        viewOwner.setWindowVisible(true);
+        Game.showGameForClass(SpaceView.class);
     }
 }

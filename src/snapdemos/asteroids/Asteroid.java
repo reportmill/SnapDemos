@@ -1,14 +1,17 @@
 package snapdemos.asteroids;
+import snap.games.Actor;
+import snap.games.GameView;
 import snap.geom.Vector;
 import snap.gfx.Image;
 import snap.gfx.SoundClip;
 import snap.viewx.Explode;
+import java.util.List;
 import java.util.Random;
 
 /**
  * This class models an asteroid.
  */
-public class Asteroid extends ActorView
+public class Asteroid extends Actor
 {
     // The amount of life left
     private int _life;
@@ -33,6 +36,7 @@ public class Asteroid extends ActorView
     public Asteroid(int size)
     {
         super();
+        setWrapAtEdges(true);
         setSize(size);
         setVelocity(Vector.getVectorForAngleAndLength(new Random().nextInt(360), 2));
     }
@@ -47,11 +51,6 @@ public class Asteroid extends ActorView
         setVelocity(speed);
     }
     
-    public void act()
-    {         
-        move();
-    }
-
     /**
      * Set the size of this asteroid.
      */
@@ -90,18 +89,18 @@ public class Asteroid extends ActorView
         new Explode(this, 20, 20).play();
         
         // Remove this asteroid
-        GameView scene = getScene();
-        scene.removeActor(this);
+        GameView gameView = getGameView();
+        gameView.removeActor(this);
 
         // If not minimal size, create and add two half asteroids
         if (getWidth() > 16)
-            subdivide(scene);
+            subdivide(gameView);
 
         // If no other asteroids left, do game over
         else {
-            Asteroid[] asteroids = scene.getActorsForClass(Asteroid.class);
-            if (asteroids.length == 0)
-                ((SpaceView) scene).gameOver();
+            List<Asteroid> asteroids = gameView.getActorsForClass(Asteroid.class);
+            if (asteroids.isEmpty())
+                ((SpaceView) gameView).gameOver();
         }
     }
 
@@ -117,9 +116,9 @@ public class Asteroid extends ActorView
         int size = (int) getWidth();
         Asteroid a1 = new Asteroid(size / 2, speed1);
         Asteroid a2 = new Asteroid(size / 2, speed2);
-        scene.addActorAtXY(a1, getCenterX(), getCenterY());
-        scene.addActorAtXY(a2, getCenterX(), getCenterY());
-        a1.move();
-        a2.move();
+        scene.addActorAtXY(a1, getMidX(), getMidY());
+        scene.addActorAtXY(a2, getMidX(), getMidY());
+        a1.act();
+        a2.act();
     }
 }
