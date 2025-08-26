@@ -134,7 +134,7 @@ public class Rocket extends Actor
         if (_reloadDelayCounter <= 0) {
 
             // Create new bullet
-            Vector bulletVector = getVelocity().clone();
+            Vector bulletVector = getVelocity();
             Bullet bullet = new Bullet(bulletVector, (int) getRotate());
 
             // Get bullet point at tip of rocket
