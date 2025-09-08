@@ -144,7 +144,7 @@ public class PuzzleApp extends ViewOwner {
         _infoView.setManaged(false);
         _infoView.setClipToBounds(true);
         _infoView.setMargin(70, 0, 0, 0);
-        _infoView.setSize(302, 252);
+        _infoView.setPrefSize(302, 252);
         ViewUtils.addChild((ParentView) getUI(), _infoView);
 
         // Animate down
