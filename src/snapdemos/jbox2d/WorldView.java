@@ -140,7 +140,7 @@ public class WorldView extends ChildView {
         View removedView = super.removeChild(anIndex);
 
         // Remove JBox native
-        ViewPhysics<?> viewPhysics = removedView.getPhysics();
+        ViewPhysics viewPhysics = removedView.getPhysics();
         Object jboxNative = viewPhysics != null ? viewPhysics.getNative() : null;
         if (jboxNative != null) {
             if (jboxNative instanceof Body jboxBody)
@@ -176,7 +176,7 @@ public class WorldView extends ChildView {
     protected void addBodyForView(View aView)
     {
         // Create body
-        ViewPhysics<Body> viewPhysics = aView.getPhysics(true);
+        ViewPhysics viewPhysics = aView.getPhysics(true);
         viewPhysics.setDynamic(true);
         Body body = _jboxWorld.createJboxBodyForView(aView);
 

@@ -113,7 +113,7 @@ public class JBoxWorld {
     private void updateViewFromJboxNative(View aView)
     {
         // Get ViewPhysics and body
-        ViewPhysics<?> phys = aView.getPhysics(); if (phys == null) return;
+        ViewPhysics phys = aView.getPhysics(); if (phys == null) return;
         Object jboxNative = phys.getNative();
 
         // Handle Body
@@ -150,10 +150,10 @@ public class JBoxWorld {
     private void updateJboxBodyFromView(View aView)
     {
         // Get ViewPhysics and body
-        ViewPhysics<Body> phys = aView.getPhysics();
+        ViewPhysics phys = aView.getPhysics();
         if (phys == null || phys.isDynamic() || phys.isJoint())
             return;
-        Body body = phys.getNative();
+        Body body = (Body) phys.getNative();
 
         // Get/set position
         Vec2 pos0 = body.getPosition();
@@ -177,7 +177,7 @@ public class JBoxWorld {
     public Body createJboxBodyForView(View aView)
     {
         // Create BodyDef
-        ViewPhysics<Body> phys = aView.getPhysics();
+        ViewPhysics phys = aView.getPhysics();
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = phys.isDynamic() ? BodyType.DYNAMIC : BodyType.KINEMATIC;
         bodyDef.position.set(convertViewXYToJbox(aView.getMidX(), aView.getMidY()));
@@ -355,7 +355,7 @@ public class JBoxWorld {
      */
     protected static boolean isJoint(View aView)
     {
-        ViewPhysics<?> viewPhysics = aView.getPhysics(true);
+        ViewPhysics viewPhysics = aView.getPhysics(true);
         return viewPhysics.isJoint() || "joint".equals(aView.getName());
     }
 
