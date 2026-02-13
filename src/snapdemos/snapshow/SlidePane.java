@@ -52,7 +52,7 @@ public class SlidePane extends ViewOwner {
 
         // Get items (filter out empty items)
         String[] items = text.split("\n");
-        items = ArrayUtils.filter(items, item -> item.trim().length() > 0);
+        items = ArrayUtils.filter(items, item -> !item.trim().isBlank());
         int itemIndex = 0;
 
         // Iterate over items

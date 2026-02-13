@@ -1,10 +1,8 @@
 package snapdemos.snapshow;
-import snap.geom.HPos;
-import snap.geom.Insets;
-import snap.geom.Pos;
-import snap.geom.VPos;
+import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextLineStyle;
+import snap.text.TextStyle;
 import snap.view.*;
 
 /**
@@ -15,20 +13,14 @@ public class SlideView extends ChildView {
     // The SlidePane
     private SlidePane _slidePane;
 
-    // The header view
-    private TextArea _headerText;
+    // The title view
+    private TextArea _titleText;
 
     // The body view
     private BodyView _bodyView;
 
     // The page text
     private StringView _pageText;
-
-    // The fonts
-    private static final Font TITLE_FONT = new Font("Arial Bold", 64);
-    private static final Font BODY_FONT = new Font("Arial", 36);
-    private static final Font BODY_FONT2 = BODY_FONT.copyForSize(30);
-    private static final Font BODY_FONT3 = BODY_FONT.copyForSize(24);
 
     // Constants
     private static final double SLIDE_WIDTH = 792;
@@ -37,37 +29,51 @@ public class SlideView extends ChildView {
     private static final double BODY_WIDTH = SLIDE_WIDTH - BODY_MARGIN.getWidth();
     private static final double BODY_HEIGHT = SLIDE_HEIGHT - BODY_MARGIN.getHeight();
 
+    // Constants for title text view
+    private static final Font TITLE_FONT = new Font("Arial Bold", 64);
+    private static final Color TITLE_TEXT_COLOR = Color.WHITE;
+    private static final TextStyle TITLE_TEXT_STYLE = TextStyle.DEFAULT.copyForStyleValues(TITLE_FONT, TITLE_TEXT_COLOR);
+    private static final Effect TITLE_TEXT_EFFECT = new ShadowEffect(15, Color.BLACK, 2, 2);
+    private static final Insets TITLE_TEXT_PADDING = new Insets(5, 5, 15, 5);
+    private static final Rect TITLE_VIEW_BOUNDS = new Rect(36, 18, SLIDE_WIDTH - 36 * 2, 150);
+
+    // Constants for body text
+    private static final Font BODY_FONT = new Font("Arial", 36);
+    private static final Font BODY_FONT2 = BODY_FONT.copyForSize(30);
+    private static final Font BODY_FONT3 = BODY_FONT.copyForSize(24);
+    private static final TextStyle BODY_TEXT_STYLE = TextStyle.DEFAULT.copyForStyleValues(BODY_FONT);
+    private static final TextStyle BODY_TEXT_STYLE2 = BODY_TEXT_STYLE.copyForStyleValues(BODY_FONT2);
+    private static final TextStyle BODY_TEXT_STYLE3 = BODY_TEXT_STYLE.copyForStyleValues(BODY_FONT3);
+    private static final TextLineStyle BODY_TEXT_LINE_STYLE = TextLineStyle.DEFAULT.copyForPropKeyValue(TextLineStyle.LeftIndent_Prop, 20);
+
     /**
-     * Constructor for given SlidePane.
+     * Constructor.
      */
-    public SlideView(SlidePane aSP, String[] lineItems)
+    public SlideView(SlidePane slidePane, String[] lineItems)
     {
         super();
-        _slidePane = aSP;
+        _slidePane = slidePane;
         setAlignY(VPos.CENTER);
         setPrefSize(SLIDE_WIDTH, SLIDE_HEIGHT);
         setBorder(Color.BLACK, 1);
         enableEvents(MouseRelease);
 
-        // Background for title box
-        Label rectView = new Label();
-        rectView.setFill(Color.LIGHTBLUE);
-        rectView.setBorderRadius(10);
-        rectView.setBounds(36, 18, 720, 150);
-        addChild(rectView);
+        // Background for title text
+        Label titleView = new Label();
+        titleView.setFill(Color.LIGHTBLUE);
+        titleView.setBorderRadius(10);
+        titleView.setBounds(TITLE_VIEW_BOUNDS);
+        addChild(titleView);
 
-        // Create HeaderTextArea
-        _headerText = new TextArea();
-        _headerText.setWrapLines(true);
-        _headerText.setFont(TITLE_FONT); //_headerView.setFill(Color.LIGHTBLUE);
-        _headerText.setTextColor(Color.WHITE);
-        _headerText.setBorderRadius(10);
-        _headerText.setEffect(new ShadowEffect(15, Color.BLACK, 2, 2));
-        _headerText.setAlignY(VPos.CENTER);
-        _headerText.getTextModel().setAlignX(HPos.CENTER);
-        _headerText.setPadding(5, 5, 15, 5);
-        _headerText.setBounds(36, 18, 720, 150);
-        addChild(_headerText);
+        // Create title text area
+        _titleText = new TextArea(true);
+        _titleText.setWrapLines(true);
+        _titleText.setEffect(TITLE_TEXT_EFFECT);
+        _titleText.setAlignY(VPos.CENTER);
+        _titleText.getTextModel().setAlignX(HPos.CENTER);
+        _titleText.setPadding(TITLE_TEXT_PADDING);
+        _titleText.setBounds(TITLE_VIEW_BOUNDS);
+        addChild(_titleText);
 
         // Create BodyView
         _bodyView = new BodyView();
@@ -81,7 +87,7 @@ public class SlideView extends ChildView {
         addChild(_pageText);
 
         // Add badge image to slide
-        Image badgeImage = aSP._image;
+        Image badgeImage = slidePane._image;
         if (badgeImage.isLoaded())
             addBadgeImageToSlide();
         else badgeImage.addLoadListener(() -> addBadgeImageToSlide());
@@ -99,12 +105,12 @@ public class SlideView extends ChildView {
     }
 
     /**
-     * Sets the HeaderText.
+     * Sets the TitleText.
      */
-    public void setHeaderText(String aValue)
+    public void setTitleText(String aValue)
     {
-        _headerText.addChars(aValue);
-        _headerText.scaleTextToFit();
+        _titleText.addCharsWithStyle(aValue, TITLE_TEXT_STYLE);
+        _titleText.scaleTextToFit();
     }
 
     /**
@@ -112,9 +118,9 @@ public class SlideView extends ChildView {
      */
     public void setItems(String[] theItems)
     {
-        // Set HeaderText
+        // Set TitleText
         if (theItems.length > 0)
-            setHeaderText(theItems[0]);
+            setTitleText(theItems[0]);
 
         // Add Body items
         for (int i = 1; i < theItems.length; i++) {
@@ -174,10 +180,10 @@ public class SlideView extends ChildView {
     /**
      * The view for the body.
      */
-    public class BodyView extends ColView {
+    private static class BodyView extends ColView {
 
         /**
-         * Creates a new BodyView.
+         * Constructor.
          */
         public BodyView()
         {
@@ -191,25 +197,27 @@ public class SlideView extends ChildView {
          */
         public void addItem(String anItem)
         {
+            // Get string
+            String string = "\u2022 " + anItem.trim();
+
             // Get indent level
             int indentLevel = 0;
             while (indentLevel < anItem.length() && anItem.charAt(indentLevel) == '\t')
                 indentLevel++;
 
-            // Get string
-            String string = "\u2022 " + anItem.trim();
-
-            // Get font
-            Font itemFont = indentLevel == 0 ? BODY_FONT : indentLevel == 1 ? BODY_FONT2 : BODY_FONT3;
-            double leftMargin = indentLevel * 30;
+            // Get body text style for indent level
+            TextStyle itemTextStyle = switch (indentLevel) {
+                case 0 -> BODY_TEXT_STYLE;
+                case 1 -> BODY_TEXT_STYLE2;
+                default -> BODY_TEXT_STYLE3;
+            };
 
             // Create TextView
-            TextArea textArea = new TextArea();
+            TextArea textArea = new TextArea(true);
             textArea.setWrapLines(true);
-            textArea.setFont(itemFont);
-            textArea.setMargin(0, 0, 0, leftMargin);
-            textArea.setDefaultLineStyle(textArea.getDefaultLineStyle().copyForPropKeyValue(TextLineStyle.LeftIndent_Prop, 20));
-            textArea.addChars(string);
+            textArea.setMargin(0, 0, 0, indentLevel * 30);
+            textArea.setDefaultLineStyle(BODY_TEXT_LINE_STYLE);
+            textArea.addCharsWithStyle(string, itemTextStyle);
             addChild(textArea);
         }
     }
