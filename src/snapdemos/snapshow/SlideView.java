@@ -3,9 +3,9 @@ import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextLineStyle;
 import snap.text.TextStyle;
-import snap.util.MDNode;
+import snap.util.MarkdownNode;
 import snap.view.*;
-import snap.viewx.MarkDownView;
+import snap.viewx.MarkdownView;
 
 import java.util.List;
 
@@ -103,24 +103,24 @@ public class SlideView extends ChildView {
     /**
      * Constructor.
      */
-    public SlideView(SlidePane slidePane, String markDown)
+    public SlideView(SlidePane slidePane, String markdownStr)
     {
         this(slidePane, new String[0]);
 
-        MarkDownView markDownView = new MarkDownView();
-        markDownView.setMarkDown(markDown);
-        List<MDNode> markDownNodes = markDownView.getMarkdownNodes();
-        if (!markDownNodes.isEmpty()) {
-            MDNode firstMarkdownNode = markDownNodes.get(0);
-            if (firstMarkdownNode.getNodeType() == MDNode.NodeType.Header2 || firstMarkdownNode.getNodeType() == MDNode.NodeType.Header1) {
+        MarkdownView markdownView = new MarkdownView();
+        markdownView.setMarkdown(markdownStr);
+        List<MarkdownNode> markdownNodes = markdownView.getMarkdownNodes();
+        if (!markdownNodes.isEmpty()) {
+            MarkdownNode firstMarkdownNode = markdownNodes.get(0);
+            if (firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header2 || firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header1) {
                 setTitleText(firstMarkdownNode.getText());
-                markDownView.getRootMarkdownNode().removeChildNode(0);
-                ViewUtils.removeChild(markDownView, 0);
-                ViewUtils.removeChild(markDownView, 0);
+                markdownView.getRootMarkdownNode().removeChildNode(0);
+                ViewUtils.removeChild(markdownView, 0);
+                ViewUtils.removeChild(markdownView, 0);
                 _bodyView.setPadding(Insets.EMPTY);
             }
         }
-        _bodyView.addChild(markDownView);
+        _bodyView.addChild(markdownView);
     }
 
     /**
