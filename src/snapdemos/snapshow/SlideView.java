@@ -3,7 +3,11 @@ import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextLineStyle;
 import snap.text.TextStyle;
+import snap.util.MDNode;
 import snap.view.*;
+import snap.viewx.MarkDownView;
+
+import java.util.List;
 
 /**
  * A view to show a slide.
@@ -94,6 +98,29 @@ public class SlideView extends ChildView {
 
         // Set line items
         setItems(lineItems);
+    }
+
+    /**
+     * Constructor.
+     */
+    public SlideView(SlidePane slidePane, String markDown)
+    {
+        this(slidePane, new String[0]);
+
+        MarkDownView markDownView = new MarkDownView();
+        markDownView.setMarkDown(markDown);
+        List<MDNode> markDownNodes = markDownView.getMarkdownNodes();
+        if (!markDownNodes.isEmpty()) {
+            MDNode firstMarkdownNode = markDownNodes.get(0);
+            if (firstMarkdownNode.getNodeType() == MDNode.NodeType.Header2 || firstMarkdownNode.getNodeType() == MDNode.NodeType.Header1) {
+                setTitleText(firstMarkdownNode.getText());
+                markDownView.getRootMarkdownNode().removeChildNode(0);
+                ViewUtils.removeChild(markDownView, 0);
+                ViewUtils.removeChild(markDownView, 0);
+                _bodyView.setPadding(Insets.EMPTY);
+            }
+        }
+        _bodyView.addChild(markDownView);
     }
 
     /**

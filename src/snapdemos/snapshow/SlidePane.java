@@ -1,4 +1,5 @@
 package snapdemos.snapshow;
+import java.net.URL;
 import java.util.*;
 import snap.gfx.Color;
 import snap.gfx.Image;
@@ -27,7 +28,7 @@ public class SlidePane extends ViewOwner {
 
     // Embedded presentations
     private static final String SHOW1 = "Show1.txt";
-    private static final String SNAPCODE_PRES = "SnapCodePres.txt";
+    private static final String SNAPCODE_PRES = "SnapCodePres.md";
 
     /**
      * Constructor.
@@ -35,18 +36,19 @@ public class SlidePane extends ViewOwner {
     public SlidePane(String presentationName)
     {
         super();
-        Object source = SlidePane.class.getResource(presentationName);
-        if (source != null)
-            setSource(source);
+        URL sourceUrl = SlidePane.class.getResource(presentationName); assert sourceUrl != null;
+        String sourceText = SnapUtils.getText(sourceUrl); assert sourceText != null;
+        if (sourceUrl.getPath().endsWith(".md"))
+            addSlidesForMarkdownString(sourceText);
+        else addSlidesForPlainText(sourceText);
     }
 
     /**
-     * Sets the slides from source.
+     * Adds slides for given plain text string.
      */
-    public void setSource(Object aSource)
+    public void addSlidesForPlainText(String text)
     {
         // Get text without
-        String text = SnapUtils.getText(aSource); assert (text != null);
         while (text.contains("\n\n")) text = text.replace("\n\n", "\n");
         text = text.replace("    ", "\t");
 
@@ -74,6 +76,28 @@ public class SlidePane extends ViewOwner {
     }
 
     /**
+     * Adds slides for given markdown string.
+     */
+    public void addSlidesForMarkdownString(String markdownString)
+    {
+        // Get items (filter out empty items)
+        String[] slideBlocks = markdownString.split("\\s*---\\s*");
+        slideBlocks = ArrayUtils.filter(slideBlocks, item -> !item.trim().isBlank());
+        int itemIndex = 0;
+
+        // Iterate over items
+        for (String slideBlock : slideBlocks) {
+
+            // Skip empty block
+            if (slideBlock.trim().isEmpty()) continue;
+
+            // Get slide items and create/add slide
+            SlideView slideView = new SlideView(this, slideBlock);
+            _slides.add(slideView);
+        }
+    }
+
+    /**
      * Returns the number of slides.
      */
     public int getSlideCount()  { return _slides.size(); }
@@ -95,8 +119,8 @@ public class SlidePane extends ViewOwner {
     {
         if (anIndex < 0 || anIndex >= getSlideCount()) return;
         _slideIndex = anIndex;
-        SlideView sview = getSlide(anIndex);
-        setSlideView(sview);
+        SlideView slideView = getSlide(anIndex);
+        setSlideView(slideView);
     }
 
     /**
@@ -133,6 +157,7 @@ public class SlidePane extends ViewOwner {
     {
         _mainBox = new TransitionPane();
         _mainBox.setFill(Color.WHITE);
+        _mainBox.addEventFilter(this::handleMainBoxKeyPressEvent, KeyPress);
 
         // Wrap main box in scale box
         ScaleBox scaleBox = new ScaleBox(_mainBox, true, true);
@@ -149,7 +174,19 @@ public class SlidePane extends ViewOwner {
     @Override
     protected void initUI()
     {
+        setFirstFocus(_mainBox);
         setSlideIndex(0);
+    }
+
+    /**
+     * Called when main box gets key press event.
+     */
+    private void handleMainBoxKeyPressEvent(ViewEvent anEvent)
+    {
+        switch (anEvent.getKeyCode()) {
+            case KeyCode.LEFT -> prevSlide();
+            case KeyCode.RIGHT -> nextSlide();
+        }
     }
 
     /**
