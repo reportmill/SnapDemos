@@ -114,7 +114,7 @@ public class SlideView extends ChildView {
             MarkdownNode firstMarkdownNode = markdownNodes.get(0);
             if (firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header2 || firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header1) {
                 setTitleText(firstMarkdownNode.getText());
-                markdownView.getRootMarkdownNode().removeChildNode(0);
+                markdownView.getDocumentNode().removeChildNode(0);
                 ViewUtils.removeChild(markdownView, 0);
                 ViewUtils.removeChild(markdownView, 0);
                 _bodyView.setPadding(Insets.EMPTY);
