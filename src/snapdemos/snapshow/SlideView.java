@@ -112,7 +112,7 @@ public class SlideView extends ChildView {
         List<MarkdownNode> markdownNodes = markdownView.getMarkdownNodes();
         if (!markdownNodes.isEmpty()) {
             MarkdownNode firstMarkdownNode = markdownNodes.get(0);
-            if (firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header2 || firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header1) {
+            if (firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header) {
                 setTitleText(firstMarkdownNode.getText());
                 markdownView.getDocumentNode().removeChildNode(0);
                 ViewUtils.removeChild(markdownView, 0);
