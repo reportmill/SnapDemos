@@ -1,18 +1,23 @@
 package snapdemos.snapshow;
-import java.net.URL;
 import java.util.*;
+import snap.geom.Insets;
 import snap.gfx.Color;
 import snap.gfx.Image;
+import snap.gfx.ShadowEffect;
 import snap.util.ArrayUtils;
 import snap.util.SnapEnv;
 import snap.util.SnapUtils;
 import snap.view.*;
 import snap.viewx.TransitionPane;
+import snap.web.WebURL;
 
 /**
  * A class to display and manage a list of slides.
  */
 public class SlidePane extends ViewOwner {
+
+    // The selected URL
+    private WebURL _slideShowUrl;
 
     // The list of slides
     protected List<SlideView> _slides = new ArrayList<>();
@@ -36,11 +41,54 @@ public class SlidePane extends ViewOwner {
     public SlidePane(String presentationName)
     {
         super();
-        URL sourceUrl = SlidePane.class.getResource(presentationName); assert sourceUrl != null;
-        String sourceText = SnapUtils.getText(sourceUrl); assert sourceText != null;
-        if (sourceUrl.getPath().endsWith(".md"))
+
+        WebURL sourceUrl = WebURL.getResourceUrl(SlidePane.class, presentationName);
+        setSlideShowUrl(sourceUrl);
+    }
+
+    /**
+     * Returns the current slide show URL.
+     */
+    public WebURL getSlideShowUrl()  { return _slideShowUrl; }
+
+    /**
+     * Sets the current slide show URL.
+     */
+    public void setSlideShowUrl(WebURL slideShowUrl)
+    {
+        if (Objects.equals(_slideShowUrl, slideShowUrl)) return;
+        _slideShowUrl = slideShowUrl;
+
+        String sourceText = SnapUtils.getText(slideShowUrl); assert sourceText != null;
+        if (slideShowUrl.getPath().endsWith(".md"))
             addSlidesForMarkdownString(sourceText);
         else addSlidesForPlainText(sourceText);
+
+        // Install show text
+        TextView textView = getView("TextView", TextView.class);
+        textView.setBorder(ViewTheme.get().getContentBorder());
+        textView.setPadding(new Insets(8));
+        textView.setText(sourceText);
+        setSlideIndex(0);
+    }
+
+    /**
+     * Returns whether controls are showing.
+     */
+    public boolean isSlideShowMode()
+    {
+        SplitView splitView = getUI(SplitView.class);
+        return !splitView.getItem(0).isVisible();
+    }
+
+    /**
+     * Sets whether controls are showing.
+     */
+    public void setSlideShowMode(boolean aValue)
+    {
+        if (aValue == isSlideShowMode()) return;
+        SplitView splitView = getUI(SplitView.class);
+        splitView.setItemVisibleWithAnim(splitView.getItem(0), !aValue);
     }
 
     /**
@@ -150,32 +198,46 @@ public class SlidePane extends ViewOwner {
     }
 
     /**
-     * Creates the UI.
-     */
-    @Override
-    protected View createUI()
-    {
-        _mainBox = new TransitionPane();
-        _mainBox.setFill(Color.WHITE);
-        _mainBox.addEventFilter(this::handleMainBoxKeyPressEvent, KeyPress);
-
-        // Wrap main box in scale box
-        ScaleBox scaleBox = new ScaleBox(_mainBox, true, true);
-        scaleBox.setPadding(5, 5, 5, 5);
-        scaleBox.setGrowWidth(true);
-
-        // Return
-        return scaleBox;
-    }
-
-    /**
      * Initialize UI.
      */
     @Override
     protected void initUI()
     {
+        getView("TitleText").setTextColor(new Color(.96));
+        getView("TitleText").setEffect(new ShadowEffect(16, Color.BLACK, 2, 2));
+
+        // Create transition box
+        _mainBox = new TransitionPane();
+        _mainBox.setFill(Color.WHITE);
+        _mainBox.addEventFilter(this::handleMainBoxKeyPressEvent, KeyPress);
         setFirstFocus(_mainBox);
-        setSlideIndex(0);
+
+        // Wrap main box in scale box
+        ScaleBox scaleBox = getView("ScaleBox", ScaleBox.class);
+        scaleBox.setContent(_mainBox);
+
+        addKeyActionFilter("EscapeAction", "ESCAPE");
+    }
+
+    /**
+     * Reset UI.
+     */
+    @Override
+    protected void resetUI()
+    {
+        setViewValue("ShowUrlText", getSlideShowUrl().getString());
+    }
+
+    /**
+     * Respond UI.
+     */
+    @Override
+    protected void respondUI(ViewEvent anEvent)
+    {
+        switch (anEvent.getName()) {
+            case "PlayButton" -> setSlideShowMode(true);
+            case "EscapeAction" -> setSlideShowMode(false);
+        }
     }
 
     /**

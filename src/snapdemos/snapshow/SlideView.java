@@ -216,7 +216,6 @@ public class SlideView extends ChildView {
         {
             setSpacing(12);
             setFillWidth(true);
-            setPickable(false);
         }
 
         /**

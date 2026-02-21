@@ -1,0 +1,14 @@
+<SplitView Vertical="true" Font="Arial 14">
+  <ColView GrowHeight="true">
+      <RowView Margin="12,12,12,12" GrowWidth="true" Fill="#F0" Border="#E0" BorderRadius="5">
+        <Label Name="TitleText" Margin="5,5,5,20" Font="Arial Bold 54" Text="SlideShow" />
+        <Button Name="PlayButton" Margin="5,12,5,5" Padding="10" LeanX="RIGHT" Text="Play Slide Show" />
+      </RowView>
+      <RowView Margin="12" GrowWidth="true" Spacing="5">
+          <Label Text="Show URL:" />
+          <TextField Name="ShowUrlText" GrowWidth="true" />
+      </RowView>
+      <TextView Name="TextView" Margin="12" BorderRadius="5" PrefHeight="300" GrowWidth="true" GrowHeight="true" />
+  </ColView>
+  <ScaleBox Name="ScaleBox" Padding="8" PrefHeight="400" GrowWidth="true" FillWidth="true" FillHeight="true" />
+</SplitView>
