@@ -246,6 +246,18 @@ public class SlidePane extends ViewOwner {
     }
 
     /**
+     * Initialize window.
+     */
+    @Override
+    protected void initWindow(WindowView aWindow)
+    {
+        if (SnapEnv.isWebVM) {
+            aWindow.setType(WindowView.Type.PLAIN);
+            aWindow.setMaximized(true);
+        }
+    }
+
+    /**
      * Reset UI.
      */
     @Override
@@ -290,7 +302,6 @@ public class SlidePane extends ViewOwner {
     public static void runApp(String[] args)
     {
         SlidePane slidePane = new SlidePane();
-        slidePane.getWindow().setMaximized(SnapEnv.isWebVM);
         slidePane.setWindowVisible(true);
 
         if (args.length > 0) {

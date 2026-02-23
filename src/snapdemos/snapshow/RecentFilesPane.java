@@ -19,8 +19,8 @@ public class RecentFilesPane extends ViewOwner {
     private ColView _recentFilesListView;
 
     // The default recent file url
-    private static final WebURL DEFAULT_URL1 = WebURL.createUrl("https://reportmill.com/jeff/SamplePres.md");
-    private static final WebURL DEFAULT_URL2 = WebURL.createUrl("https://reportmill.com/jeff/JavaOne.md");
+    private static final WebURL DEFAULT_URL1 = WebURL.createUrl("https://reportmill.com/SlideShow/samples/SamplePres.md");
+    private static final WebURL DEFAULT_URL2 = WebURL.createUrl("https://reportmill.com/SlideShow/samples/JavaOne.md");
 
     // Constants
     private static final Color BUTTON_BACKGROUND_COLOR = Color.get("#F8F8FC");

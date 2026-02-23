@@ -64,5 +64,5 @@ task copyCJ(type: Copy) {
     dependsOn buildFullJar
 
     // Declare that this task depends on the 'jar' task of WebAPI, SnapCJ
-    dependsOn(":WebAPI:jar", ":SnapCJ:jar")
+    //dependsOn(":WebAPI:jar", ":SnapCJ:jar")
 }
