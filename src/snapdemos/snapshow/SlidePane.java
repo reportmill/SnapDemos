@@ -4,11 +4,10 @@ import snap.geom.Insets;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.ShadowEffect;
-import snap.util.ArrayUtils;
-import snap.util.SnapEnv;
-import snap.util.SnapUtils;
+import snap.util.*;
 import snap.view.*;
 import snap.viewx.TransitionPane;
+import snap.web.RecentFiles;
 import snap.web.WebURL;
 
 /**
@@ -28,22 +27,22 @@ public class SlidePane extends ViewOwner {
     // The Slide box
     private TransitionPane _mainBox;
 
+    // The recent files pane
+    private RecentFilesPane _recentFilesPane;
+
     // The image
     protected Image _image = getImage("badge.png");
 
-    // Embedded presentations
-    private static final String SHOW1 = "Show1.txt";
-    private static final String SNAPCODE_PRES = "SnapCodePres.md";
+    // Constants for properties
+    public static final String SlideShowUrl_Prop = "SlideShowUrl";
 
     /**
      * Constructor.
      */
-    public SlidePane(String presentationName)
+    public SlidePane()
     {
         super();
-
-        WebURL sourceUrl = WebURL.getResourceUrl(SlidePane.class, presentationName);
-        setSlideShowUrl(sourceUrl);
+        _recentFilesPane = new RecentFilesPane(this);
     }
 
     /**
@@ -57,9 +56,16 @@ public class SlidePane extends ViewOwner {
     public void setSlideShowUrl(WebURL slideShowUrl)
     {
         if (Objects.equals(_slideShowUrl, slideShowUrl)) return;
-        _slideShowUrl = slideShowUrl;
+        batchPropChange(SlideShowUrl_Prop, _slideShowUrl, _slideShowUrl = slideShowUrl);
+        _slides.clear();
+        setSlideView(null);
 
-        String sourceText = SnapUtils.getText(slideShowUrl); assert sourceText != null;
+        // Get text
+        String sourceText = SnapUtils.getText(slideShowUrl);
+        if (sourceText == null)
+            sourceText = "File not found for " + slideShowUrl.getString();
+
+        // Add slides
         if (slideShowUrl.getPath().endsWith(".md"))
             addSlidesForMarkdownString(sourceText);
         else addSlidesForPlainText(sourceText);
@@ -70,6 +76,11 @@ public class SlidePane extends ViewOwner {
         textView.setPadding(new Insets(8));
         textView.setText(sourceText);
         setSlideIndex(0);
+
+        // Set window title
+        getWindow().setTitle("SlideShow - " + slideShowUrl.getFilename());
+        RecentFiles.addURL(slideShowUrl);
+        fireBatchPropChanges();
     }
 
     /**
@@ -176,6 +187,7 @@ public class SlidePane extends ViewOwner {
      */
     public void setSlideView(SlideView aSV)
     {
+        if (_mainBox == null) return;
         _mainBox.setContent(aSV);
     }
 
@@ -206,6 +218,9 @@ public class SlidePane extends ViewOwner {
         getView("TitleText").setTextColor(new Color(.96));
         getView("TitleText").setEffect(new ShadowEffect(16, Color.BLACK, 2, 2));
 
+        View recentFilesView = getView("RecentFilesView");
+        ViewUtils.replaceView(recentFilesView, _recentFilesPane.getUI());
+
         // Create transition box
         _mainBox = new TransitionPane();
         _mainBox.setFill(Color.WHITE);
@@ -225,7 +240,8 @@ public class SlidePane extends ViewOwner {
     @Override
     protected void resetUI()
     {
-        setViewValue("ShowUrlText", getSlideShowUrl().getString());
+        WebURL slideShowUrl = getSlideShowUrl();
+        setViewValue("ShowUrlText", slideShowUrl != null ? slideShowUrl.getString() : null);
     }
 
     /**
@@ -235,6 +251,7 @@ public class SlidePane extends ViewOwner {
     protected void respondUI(ViewEvent anEvent)
     {
         switch (anEvent.getName()) {
+            case "ShowUrlText" -> setSlideShowUrl(WebURL.getUrl(anEvent.getStringValue()));
             case "PlayButton" -> setSlideShowMode(true);
             case "EscapeAction" -> setSlideShowMode(false);
         }
@@ -256,7 +273,7 @@ public class SlidePane extends ViewOwner {
      */
     public static void main(String[] args)
     {
-        SlidePane slidePane = new SlidePane(SNAPCODE_PRES);
+        SlidePane slidePane = new SlidePane();
         slidePane.getWindow().setMaximized(SnapEnv.isWebVM);
         slidePane.setWindowVisible(true);
     }
