@@ -142,7 +142,6 @@ public class SlidePane extends ViewOwner {
         // Get items (filter out empty items)
         String[] slideBlocks = markdownString.split("\\s*---\\s*");
         slideBlocks = ArrayUtils.filter(slideBlocks, item -> !item.trim().isBlank());
-        int itemIndex = 0;
 
         // Iterate over items
         for (String slideBlock : slideBlocks) {
@@ -185,10 +184,12 @@ public class SlidePane extends ViewOwner {
     /**
      * Sets the current slide view.
      */
-    public void setSlideView(SlideView aSV)
+    public void setSlideView(SlideView slideView)
     {
         if (_mainBox == null) return;
-        _mainBox.setContent(aSV);
+        _mainBox.setContent(slideView);
+        if (slideView != null)
+            slideView.resetSlide();
     }
 
     /**
@@ -196,6 +197,13 @@ public class SlidePane extends ViewOwner {
      */
     public void nextSlide()
     {
+        // If fragments, go through them instead
+        SlideView slideView = getSlide(getSlideIndex());
+        if (slideView.hasFragments()) {
+            slideView.nextFragment();
+            return;
+        }
+
         _mainBox.setTransition(TransitionPane.MoveRight);
         setSlideIndex(getSlideIndex() + 1);
     }
@@ -207,6 +215,9 @@ public class SlidePane extends ViewOwner {
     {
         _mainBox.setTransition(TransitionPane.MoveLeft);
         setSlideIndex(getSlideIndex() - 1);
+        SlideView slideView = getSlide(getSlideIndex());
+        while (slideView.hasFragments())
+            slideView.nextFragment();
     }
 
     /**
@@ -271,10 +282,21 @@ public class SlidePane extends ViewOwner {
     /**
      * Standard main method.
      */
-    public static void main(String[] args)
+    public static void main(String[] args)  { ViewUtils.runLater(() -> runApp(args)); }
+
+    /**
+     * Runs the app.
+     */
+    public static void runApp(String[] args)
     {
         SlidePane slidePane = new SlidePane();
         slidePane.getWindow().setMaximized(SnapEnv.isWebVM);
         slidePane.setWindowVisible(true);
+
+        if (args.length > 0) {
+            String arg = args[0];
+            if (arg.startsWith("https"))
+                slidePane.setSlideShowUrl(WebURL.getUrl(arg));
+        }
     }
 }

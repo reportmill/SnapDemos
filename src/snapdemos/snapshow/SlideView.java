@@ -26,6 +26,12 @@ public class SlideView extends ChildView {
     // The page text
     private StringView _pageText;
 
+    // Returns the fragment count
+    private int _fragmentCount;
+
+    // Returns the fragment index
+    private int _fragmentIndex;
+
     // Constants
     private static final double SLIDE_WIDTH = 792;
     private static final double SLIDE_HEIGHT = 612;
@@ -91,10 +97,7 @@ public class SlideView extends ChildView {
         addChild(_pageText);
 
         // Add badge image to slide
-        Image badgeImage = slidePane._image;
-        if (badgeImage.isLoaded())
-            addBadgeImageToSlide();
-        else badgeImage.addLoadListener(() -> addBadgeImageToSlide());
+        addBadgeImageToSlide();
 
         // Set line items
         setItems(lineItems);
@@ -118,9 +121,31 @@ public class SlideView extends ChildView {
                 ViewUtils.removeChild(markdownView, 0);
                 ViewUtils.removeChild(markdownView, 0);
                 _bodyView.setPadding(Insets.EMPTY);
+
+                // Configure fragments
+                resetSlide();
             }
         }
         _bodyView.addChild(markdownView);
+
+        // Add badge image to slide
+        addBadgeImageToSlide();
+    }
+
+    /**
+     * Resets the slide.
+     */
+    public void resetSlide()
+    {
+        if (_bodyView.getChildCount() == 0)
+            return;
+        ParentView markdownView = (ParentView) _bodyView.getChild(0);
+        _fragmentIndex = 1;
+        _fragmentCount = markdownView.getChildCount();
+        if (_fragmentCount > _fragmentIndex) {
+            List<View> fragmentViews = markdownView.getChildren().subList(_fragmentIndex, _fragmentCount);
+            fragmentViews.forEach(view -> view.setVisible(false));
+        }
     }
 
     /**
@@ -198,10 +223,42 @@ public class SlideView extends ChildView {
     private void addBadgeImageToSlide()
     {
         ImageView imageView = new ImageView(_slidePane._image);
-        imageView.setSize(imageView.getPrefSize());
-        imageView.setXY(getWidth() - imageView.getWidth() - 10, getHeight() - imageView.getHeight() - 10);
-        imageView.setEffect(new ShadowEffect(6, Color.BLACK, 1, 1));
+        imageView.setMargin(new Insets(10, 20, 12, 20));
+        imageView.setManaged(false);
+        imageView.setLean(Pos.BOTTOM_RIGHT);
+        //imageView.setEffect(new ShadowEffect(6, Color.BLACK, 1, 1));
         addChild(imageView);
+    }
+
+    /**
+     * Returns the fragment count.
+     */
+    public int getFragmentCount()  { return _fragmentCount; }
+
+    /**
+     * Returns the fragment index.
+     */
+    public int getFragmentIndex()  { return _fragmentIndex; }
+
+    /**
+     * Returns whether there are more fragments.
+     */
+    public boolean hasFragments()  { return _fragmentIndex + 1 < _fragmentCount; }
+
+    /**
+     * Plays the next fragment.
+     */
+    public void nextFragment()
+    {
+        _fragmentIndex++;
+
+        ParentView markdownView = (ParentView) _bodyView.getChildren().get(0);
+        List<View> children = markdownView.getChildren();
+
+        if (_fragmentIndex < children.size()) {
+            View child = children.get(_fragmentIndex);
+            ViewAnimUtils.setVisible(child, true, false, false);
+        }
     }
 
     /**
