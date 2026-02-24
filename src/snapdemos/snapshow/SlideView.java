@@ -140,10 +140,10 @@ public class SlideView extends ChildView {
         if (_bodyView.getChildCount() == 0)
             return;
         ParentView markdownView = (ParentView) _bodyView.getChild(0);
-        _fragmentIndex = 1;
+        _fragmentIndex = 0;
         _fragmentCount = markdownView.getChildCount();
-        if (_fragmentCount > _fragmentIndex) {
-            List<View> fragmentViews = markdownView.getChildren().subList(_fragmentIndex, _fragmentCount);
+        if (_fragmentCount > 1) {
+            List<View> fragmentViews = markdownView.getChildren().subList(1, _fragmentCount);
             fragmentViews.forEach(view -> view.setVisible(false));
         }
     }
