@@ -251,7 +251,7 @@ public class SlidePane extends ViewOwner {
     @Override
     protected void initWindow(WindowView aWindow)
     {
-        if (SnapEnv.isWebVM) {
+        if (SnapEnv.isWebVM || SnapEnv.isTeaVM) {
             aWindow.setType(WindowView.Type.PLAIN);
             aWindow.setMaximized(true);
         }
