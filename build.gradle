@@ -27,8 +27,9 @@ dependencies {
     implementation group: 'org.jbox2d', name: 'jbox2d-library', version: '2.2.1.1'
 }
 
-// Define the main class for the application
-mainClassName = 'snapdemos.arcade.ArcadeApp'
+application {
+    mainClass = 'snapdemos.arcade.ArcadeApp'
+}
 
 jar {
     manifest {
