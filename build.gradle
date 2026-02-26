@@ -4,8 +4,8 @@ plugins {
     id 'application'
 }
 
-group 'com.reportmill'
-version new SimpleDateFormat("yyyy.MM").format(new Date())
+group = 'com.reportmill'
+version = new SimpleDateFormat("yyyy.MM").format(new Date())
 
 sourceSets.main.java.srcDirs = ['src']
 sourceSets.main.resources.srcDirs = ['src']
@@ -15,15 +15,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
-
-    // SnapKit project
     implementation project(':SnapKit')
-
     implementation 'org.jbox2d:jbox2d-library:2.2.1.1'
 }
 
@@ -40,7 +35,7 @@ jar {
 /**
  * Custom task to build jar that includes all dependencies.
  */
-task buildFullJar(type: Jar) {
+tasks.register('buildFullJar', Jar) {
     archiveBaseName = 'SnapDemosAll'
     manifest {
         attributes(
@@ -56,14 +51,11 @@ task buildFullJar(type: Jar) {
     dependsOn build
 }
 
-task copyCJ(type: Copy) {
-    from (
+tasks.register('copyCJ', Copy) {
+    from(
             "../SnapKit/cjdom.js",
             "../SnapKit/build/libs/SnapKit-" + new SimpleDateFormat("yyyy.MM").format(new Date()) + ".jar",
     )
     into "build/libs"
     dependsOn buildFullJar
-
-    // Declare that this task depends on the 'jar' task of WebAPI, SnapCJ
-    //dependsOn(":WebAPI:jar", ":SnapCJ:jar")
 }
