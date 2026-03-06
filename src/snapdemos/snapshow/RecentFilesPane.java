@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * A UI panel to show recent files.
  */
-public class RecentFilesPane extends ViewOwner {
+public class RecentFilesPane extends ViewController {
 
     // The slide pane
     private SlidePane _slidePane;

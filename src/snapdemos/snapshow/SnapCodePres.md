@@ -133,7 +133,7 @@
 - Provides a rich View class
     - Layouts, serialization, painting, transforms, effects, animation, events
     - Serialize to/from 'snp' file easily separates view declaration from code
-- Provides a ViewOwner class
+- Provides a ViewController class
     - Easily createUI(), initUI(), resetUI(), respondUI()
     - Supports "Universal accessors" to get/set values from any view
 - Provides a "universal" ViewEvent class to simplify event handling

@@ -1,8 +1,8 @@
 package snapdemos.arcade;
 import snap.gfx.Color;
 import snap.view.Label;
+import snap.view.ViewController;
 import snap.view.ViewEvent;
-import snap.view.ViewOwner;
 import snap.view.ViewUtils;
 import snapdemos.asteroids.SpaceView;
 import snapdemos.jewels.JewelsApp;
@@ -12,7 +12,7 @@ import snapdemos.tetris.TetrisPane;
 /**
  * This app class is a launcher for several of the demos.
  */
-public class ArcadeApp extends ViewOwner {
+public class ArcadeApp extends ViewController {
 
     /**
      * Initialize UI.

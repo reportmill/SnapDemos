@@ -76,7 +76,7 @@ public class Hero extends View {
             if (child == this) continue;
             if (child.getBounds().intersectsRect(getBounds())) {
                 ViewUtils.removeChild(getParent(), child);
-                DungeonPane dungeonPane = getParent().getOwner(DungeonPane.class);
+                DungeonPane dungeonPane = getParent().getController(DungeonPane.class);
                 child.setPrefSize(child.getSize());
                 dungeonPane._inventoryView.addChild(child);
                 return;

@@ -140,7 +140,7 @@ public class FacetrisView extends WorldView {
     {
         _newFaceTimer.stop();
 
-        FacetrisApp facetrisApp = getOwner(FacetrisApp.class);
+        FacetrisApp facetrisApp = getController(FacetrisApp.class);
         facetrisApp.gameOver();
     }
 
@@ -177,7 +177,7 @@ public class FacetrisView extends WorldView {
 
         // Add face view
         addChildWithPhysics(faceView);
-        getOwner().resetLater();
+        getController().resetLater();
     }
 
     /**
@@ -209,7 +209,7 @@ public class FacetrisView extends WorldView {
 
         View view = aFace.getView();
         view.getAnim(500).setOpacity(0).setOnFinish(() -> handleFaceWinAnimDone(aFace)).play();
-        getOwner().resetLater();
+        getController().resetLater();
     }
 
     /**
@@ -230,7 +230,7 @@ public class FacetrisView extends WorldView {
     private void handleFaceLose(FaceEntry aFace)
     {
         addLostFace(aFace);
-        getOwner().resetLater();
+        getController().resetLater();
 
         Body body = (Body) aFace.getView().getPhysics().getNative();
         body.setGravityScale(2.5f);

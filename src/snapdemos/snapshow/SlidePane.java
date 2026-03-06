@@ -13,7 +13,7 @@ import snap.web.WebURL;
 /**
  * A class to display and manage a list of slides.
  */
-public class SlidePane extends ViewOwner {
+public class SlidePane extends ViewController {
 
     // The selected URL
     private WebURL _slideShowUrl;

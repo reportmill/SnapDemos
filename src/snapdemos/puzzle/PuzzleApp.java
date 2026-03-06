@@ -10,7 +10,7 @@ import snap.view.*;
 /**
  * This class holds the PuzzleView.
  */
-public class PuzzleApp extends ViewOwner {
+public class PuzzleApp extends ViewController {
 
     // The Puzzle View
     private PuzzleView  _puzzleView;

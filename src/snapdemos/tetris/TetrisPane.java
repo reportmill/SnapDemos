@@ -5,7 +5,7 @@ import snap.view.*;
 /**
  * The main UI controller for the game.
  */
-public class TetrisPane extends ViewOwner {
+public class TetrisPane extends ViewController {
     
     // The PlayView
     private PlayView _playView;

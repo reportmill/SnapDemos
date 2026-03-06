@@ -162,7 +162,7 @@ SnapKit: Modern Java UI Kit (3)
 
             Serialize to/from 'snp' file easily separates view declaration from code
 
-        Provides a ViewOwner class
+        Provides a ViewController class
 
             Easily createUI(), initUI(), resetUI(), respondUI()
 

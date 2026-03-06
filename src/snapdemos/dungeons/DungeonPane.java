@@ -7,7 +7,7 @@ import snap.view.*;
 /**
  * This class is the main UI controller for the game.
  */
-public class DungeonPane extends ViewOwner {
+public class DungeonPane extends ViewController {
 
     // The DungeonView
     private DungeonView _dungeonView;

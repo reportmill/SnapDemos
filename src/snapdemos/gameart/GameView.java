@@ -88,6 +88,6 @@ public class GameView extends View {
     public static void main(String[] args)
     {
         GameView gameView = new GameView();
-        new ViewOwner(gameView).setWindowVisible(true);
+        new ViewController(gameView).setWindowVisible(true);
     }
 }

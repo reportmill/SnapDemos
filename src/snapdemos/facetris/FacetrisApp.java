@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * The main UI controller for Facetris.
  */
-public class FacetrisApp extends ViewOwner {
+public class FacetrisApp extends ViewController {
 
     // The PlayView
     protected FacetrisView _facetrisView;

@@ -5,7 +5,7 @@ import snap.view.*;
 /**
  * The class that manages top level UI for app.
  */
-public class JewelsApp extends ViewOwner {
+public class JewelsApp extends ViewController {
 
     // The PlayView
     private PlayView _playView;

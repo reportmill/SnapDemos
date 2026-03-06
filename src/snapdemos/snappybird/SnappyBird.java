@@ -9,7 +9,7 @@ import snap.viewx.Explode;
 /**
  * A Flappy-Bird app.
  */
-public class SnappyBird extends ViewOwner {
+public class SnappyBird extends ViewController {
 
     // The main view
     private ChildView _mainView;

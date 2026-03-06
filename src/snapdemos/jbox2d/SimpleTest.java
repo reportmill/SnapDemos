@@ -6,7 +6,7 @@ import snap.view.*;
 /**
  * This class is a simple test of JBox2D.
  */
-public class SimpleTest extends ViewOwner {
+public class SimpleTest extends ViewController {
 
     // The world view
     private WorldView _worldView;
