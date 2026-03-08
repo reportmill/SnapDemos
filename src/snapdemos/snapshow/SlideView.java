@@ -106,13 +106,12 @@ public class SlideView extends ChildView {
     /**
      * Constructor.
      */
-    public SlideView(SlidePane slidePane, String markdownStr)
+    public SlideView(SlidePane slidePane, List<MarkdownNode> markdownNodes)
     {
         this(slidePane, new String[0]);
 
         MarkdownView markdownView = new MarkdownView();
-        markdownView.setMarkdown(markdownStr);
-        List<MarkdownNode> markdownNodes = markdownView.getMarkdownNodes();
+        markdownView.setMarkdownNodes(markdownNodes);
         if (!markdownNodes.isEmpty()) {
             MarkdownNode firstMarkdownNode = markdownNodes.get(0);
             if (firstMarkdownNode.getNodeType() == MarkdownNode.NodeType.Header) {

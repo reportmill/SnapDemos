@@ -60,15 +60,24 @@ public class SlidePane extends ViewController {
         _slides.clear();
         setSlideView(null);
 
+        // Get text URL
+        WebURL textUrl = _slideShowUrl;
+        if (textUrl.getFileType().isEmpty() && textUrl.getScheme().startsWith("http"))
+            textUrl = textUrl.getChildUrlForPath("index.html");
+
         // Get text
+        String fileType = textUrl.getFileType();
         String sourceText = SnapUtils.getText(slideShowUrl);
         if (sourceText == null)
             sourceText = "File not found for " + slideShowUrl.getString();
 
         // Add slides
-        if (slideShowUrl.getPath().endsWith(".md"))
-            addSlidesForMarkdownString(sourceText);
-        else addSlidesForPlainText(sourceText);
+        switch (fileType) {
+            case "md" -> addSlidesForMarkdownString(sourceText);
+            case "txt" -> addSlidesForPlainText(sourceText);
+            case "html" -> addSlidesForHtmlString(sourceText);
+            default -> addSlidesForPlainText(sourceText);
+        }
 
         // Install show text
         TextView textView = getView("TextView", TextView.class);
@@ -139,20 +148,47 @@ public class SlidePane extends ViewController {
      */
     public void addSlidesForMarkdownString(String markdownString)
     {
-        // Get items (filter out empty items)
-        String[] slideBlocks = markdownString.split("\\s*---\\s*");
-        slideBlocks = ArrayUtils.filter(slideBlocks, item -> !item.trim().isBlank());
+        List<MarkdownNode> markdownNodes = new MarkdownParser().parseMarkdownChars(markdownString).getChildNodes();
+        addSlidesForMarkdownNodes(markdownNodes);
+    }
 
-        // Iterate over items
-        for (String slideBlock : slideBlocks) {
+    /**
+     * Adds slides for given markdown nodes.
+     */
+    public void addSlidesForMarkdownNodes(List<MarkdownNode> markdownNodes)
+    {
+        List<MarkdownNode> slideNodes = new ArrayList<>();
 
-            // Skip empty block
-            if (slideBlock.trim().isEmpty()) continue;
+        // Iterate over markdown nodes and add slide for prior nodes when separator is encountered
+        for (MarkdownNode markdownNode : markdownNodes) {
 
-            // Get slide items and create/add slide
-            SlideView slideView = new SlideView(this, slideBlock);
+            // If separator, add new slide
+            if (markdownNode.getNodeType() == MarkdownNode.NodeType.Separator) {
+                SlideView slideView = new SlideView(this, slideNodes);
+                _slides.add(slideView);
+                slideNodes.clear();
+            }
+
+            // Otherwise add node
+            else slideNodes.add(markdownNode);
+        }
+
+        // Create last slide
+        if (!slideNodes.isEmpty()) {
+            SlideView slideView = new SlideView(this, slideNodes);
             _slides.add(slideView);
         }
+    }
+
+    /**
+     * Adds slides for given HTML string.
+     */
+    public void addSlidesForHtmlString(String markdownString)
+    {
+        HtmlParser htmlParser = new HtmlParser();
+        htmlParser.parseHtmlString(markdownString);
+        List<MarkdownNode> markdownNodes = htmlParser.getMarkdownNodesForHtml();
+        addSlidesForMarkdownNodes(markdownNodes);
     }
 
     /**
