@@ -3,10 +3,10 @@ import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextLineStyle;
 import snap.text.TextStyle;
+import snap.util.ListUtils;
 import snap.util.MarkdownNode;
 import snap.view.*;
 import snap.viewx.MarkdownView;
-
 import java.util.List;
 
 /**
@@ -26,11 +26,14 @@ public class SlideView extends ChildView {
     // The page text
     private StringView _pageText;
 
-    // Returns the fragment count
+    // The number of fragments in slide (top level list items)
     private int _fragmentCount;
 
-    // Returns the fragment index
+    // The current selected fragment index
     private int _fragmentIndex;
+
+    // The fragment views
+    private List<View> _fragmentViews;
 
     // Constants
     private static final double SLIDE_WIDTH = 792;
@@ -127,6 +130,10 @@ public class SlideView extends ChildView {
         }
         _bodyView.addChild(markdownView);
 
+        _fragmentViews = ListUtils.filter(markdownView.getChildren(), child -> isTopLevelListItemView(child));
+        _fragmentCount = _fragmentViews.size();
+        resetSlide();
+
         // Add badge image to slide
         addBadgeImageToSlide();
     }
@@ -136,15 +143,8 @@ public class SlideView extends ChildView {
      */
     public void resetSlide()
     {
-        if (_bodyView.getChildCount() == 0)
-            return;
-        ParentView markdownView = (ParentView) _bodyView.getChild(0);
-        _fragmentIndex = 0;
-        _fragmentCount = markdownView.getChildCount();
-        if (_fragmentCount > 1) {
-            List<View> fragmentViews = markdownView.getChildren().subList(1, _fragmentCount);
-            fragmentViews.forEach(view -> view.setVisible(false));
-        }
+        if (getFragmentCount() > 0)
+            setFragmentIndex(-1);
     }
 
     /**
@@ -240,24 +240,54 @@ public class SlideView extends ChildView {
     public int getFragmentIndex()  { return _fragmentIndex; }
 
     /**
+     * Sets the fragment index.
+     */
+    private void setFragmentIndex(int index)
+    {
+        if (index == getFragmentIndex()) return;
+        _fragmentIndex = index;
+
+        // Get
+        ParentView markdownView = (ParentView) _bodyView.getChildren().get(0);
+        List<View> childViews = markdownView.getChildren();
+        View fragmentView = index >= 0 ? _fragmentViews.get(index) : null;
+        int fragmentViewChildIndex = fragmentView != null ? childViews.indexOf(fragmentView) : -1;
+        View nextFragmentView = index + 1 < _fragmentCount ? _fragmentViews.get(index + 1) : null;
+        int nextFragmentViewChildIndex = nextFragmentView != null ? childViews.indexOf(nextFragmentView) : childViews.size();
+
+        // Reset children
+        for (int i = 0; i < childViews.size(); i++) {
+            View childView = childViews.get(i);
+            if (i < fragmentViewChildIndex)
+                childView.setVisible(true);
+            else if (i >= nextFragmentViewChildIndex)
+                childView.setVisible(false);
+            else ViewAnimUtils.setVisible(childView, true, false, false);
+        }
+    }
+
+    /**
      * Returns whether there are more fragments.
      */
     public boolean hasFragments()  { return _fragmentIndex + 1 < _fragmentCount; }
 
     /**
-     * Plays the next fragment.
+     * Sets the next fragment.
      */
-    public void nextFragment()
+    public void nextFragment()  { setFragmentIndex(_fragmentIndex + 1); }
+
+    /**
+     * Sets the previous fragment.
+     */
+    public void prevFragment()  { setFragmentIndex(Math.max(_fragmentIndex - 1, 0)); }
+
+    /**
+     * Returns whether given view represents a top level list item node.
+     */
+    private static boolean isTopLevelListItemView(View aView)
     {
-        _fragmentIndex++;
-
-        ParentView markdownView = (ParentView) _bodyView.getChildren().get(0);
-        List<View> children = markdownView.getChildren();
-
-        if (_fragmentIndex < children.size()) {
-            View child = children.get(_fragmentIndex);
-            ViewAnimUtils.setVisible(child, true, false, false);
-        }
+        MarkdownNode markdownNode = MarkdownView.getMarkdownNodeForView(aView);
+        return markdownNode != null && markdownNode.getNodeType() == MarkdownNode.NodeType.ListItem && markdownNode.getIndentLevel() == 0;
     }
 
     /**
