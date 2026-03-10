@@ -74,7 +74,6 @@ public class SlidePane extends ViewController {
         // Add slides
         switch (fileType) {
             case "md" -> addSlidesForMarkdownString(sourceText);
-            case "txt" -> addSlidesForPlainText(sourceText);
             case "html" -> addSlidesForHtmlString(sourceText);
             default -> addSlidesForPlainText(sourceText);
         }
@@ -186,6 +185,7 @@ public class SlidePane extends ViewController {
     public void addSlidesForHtmlString(String markdownString)
     {
         HtmlParser htmlParser = new HtmlParser();
+        htmlParser.setHtmlSourceUrl(_slideShowUrl);
         htmlParser.parseHtmlString(markdownString);
         List<MarkdownNode> markdownNodes = htmlParser.getMarkdownNodesForHtml();
         addSlidesForMarkdownNodes(markdownNodes);
