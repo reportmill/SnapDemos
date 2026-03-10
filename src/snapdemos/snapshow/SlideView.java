@@ -69,6 +69,8 @@ public class SlideView extends ChildView {
         setAlignY(VPos.CENTER);
         setPrefSize(SLIDE_WIDTH, SLIDE_HEIGHT);
         setBorder(Color.BLACK, 1);
+        setFocusable(true);
+        setFocusWhenPressed(true);
         enableEvents(MouseRelease);
 
         // Background for title text
@@ -200,8 +202,8 @@ public class SlideView extends ChildView {
         // Handle mouse click
         if (anEvent.isMouseClick()) {
             if (anEvent.getX() > getWidth() / 3)
-                _slidePane.nextSlide();
-            else _slidePane.prevSlide();
+                _slidePane.nextFragment();
+            else _slidePane.prevFragment();
         }
     }
 
@@ -242,7 +244,7 @@ public class SlideView extends ChildView {
     /**
      * Sets the fragment index.
      */
-    private void setFragmentIndex(int index)
+    public void setFragmentIndex(int index)
     {
         if (index == getFragmentIndex()) return;
         _fragmentIndex = index;

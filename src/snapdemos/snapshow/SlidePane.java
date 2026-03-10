@@ -224,8 +224,32 @@ public class SlidePane extends ViewController {
     {
         if (_mainBox == null) return;
         _mainBox.setContent(slideView);
-        if (slideView != null)
+        if (slideView != null) {
             slideView.resetSlide();
+            slideView.requestFocus();
+        }
+    }
+
+    /**
+     * Sets the next fragment or slide.
+     */
+    public void nextFragment()
+    {
+        SlideView slideView = getSlide(getSlideIndex());
+        if (slideView.hasFragments())
+            slideView.nextFragment();
+        else nextSlide();
+    }
+
+    /**
+     * Sets the previous fragment or slide.
+     */
+    public void prevFragment()
+    {
+        SlideView slideView = getSlide(getSlideIndex());
+        if (slideView.getFragmentIndex() > 0)
+            slideView.prevFragment();
+        else prevSlide();
     }
 
     /**
@@ -233,13 +257,6 @@ public class SlidePane extends ViewController {
      */
     public void nextSlide()
     {
-        // If fragments, go through them instead
-        SlideView slideView = getSlide(getSlideIndex());
-        if (slideView.hasFragments()) {
-            slideView.nextFragment();
-            return;
-        }
-
         _mainBox.setTransition(TransitionPane.MoveRight);
         setSlideIndex(getSlideIndex() + 1);
     }
@@ -252,8 +269,8 @@ public class SlidePane extends ViewController {
         _mainBox.setTransition(TransitionPane.MoveLeft);
         setSlideIndex(getSlideIndex() - 1);
         SlideView slideView = getSlide(getSlideIndex());
-        while (slideView.hasFragments())
-            slideView.nextFragment();
+        if (slideView.getFragmentCount() > 0)
+            slideView.setFragmentIndex(slideView.getFragmentCount() - 1);
     }
 
     /**
@@ -322,8 +339,10 @@ public class SlidePane extends ViewController {
     private void handleMainBoxKeyPressEvent(ViewEvent anEvent)
     {
         switch (anEvent.getKeyCode()) {
-            case KeyCode.LEFT -> prevSlide();
-            case KeyCode.RIGHT -> nextSlide();
+            case KeyCode.LEFT -> prevFragment();
+            case KeyCode.RIGHT, KeyCode.SPACE -> nextFragment();
+            case KeyCode.PAGE_UP -> prevSlide();
+            case KeyCode.PAGE_DOWN -> nextSlide();
         }
     }
 
