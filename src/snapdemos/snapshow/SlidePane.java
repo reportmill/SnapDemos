@@ -58,7 +58,7 @@ public class SlidePane extends ViewController {
         if (Objects.equals(_slideShowUrl, slideShowUrl)) return;
         batchPropChange(SlideShowUrl_Prop, _slideShowUrl, _slideShowUrl = slideShowUrl);
         _slides.clear();
-        setSlideView(null);
+        setSelSlideView(null);
 
         // Get text URL
         WebURL textUrl = _slideShowUrl;
@@ -214,13 +214,23 @@ public class SlidePane extends ViewController {
         if (anIndex < 0 || anIndex >= getSlideCount()) return;
         _slideIndex = anIndex;
         SlideView slideView = getSlide(anIndex);
-        setSlideView(slideView);
+        setSelSlideView(slideView);
     }
+
+    /**
+     * Returns whether a slide is set.
+     */
+    public boolean isSlideSet()  { return getSelSlideView() != null; }
+
+    /**
+     * Returns the selected slide.
+     */
+    public SlideView getSelSlideView()  { return (SlideView) _mainBox.getContent(); }
 
     /**
      * Sets the current slide view.
      */
-    public void setSlideView(SlideView slideView)
+    public void setSelSlideView(SlideView slideView)
     {
         if (_mainBox == null) return;
         _mainBox.setContent(slideView);
@@ -235,7 +245,7 @@ public class SlidePane extends ViewController {
      */
     public void nextFragment()
     {
-        SlideView slideView = getSlide(getSlideIndex());
+        SlideView slideView = getSelSlideView();
         if (slideView.hasFragments())
             slideView.nextFragment();
         else nextSlide();
@@ -246,7 +256,7 @@ public class SlidePane extends ViewController {
      */
     public void prevFragment()
     {
-        SlideView slideView = getSlide(getSlideIndex());
+        SlideView slideView = getSelSlideView();
         if (slideView.getFragmentIndex() > 0)
             slideView.prevFragment();
         else prevSlide();
@@ -268,7 +278,7 @@ public class SlidePane extends ViewController {
     {
         _mainBox.setTransition(TransitionPane.MoveLeft);
         setSlideIndex(getSlideIndex() - 1);
-        SlideView slideView = getSlide(getSlideIndex());
+        SlideView slideView = getSelSlideView();
         if (slideView.getFragmentCount() > 0)
             slideView.setFragmentIndex(slideView.getFragmentCount() - 1);
     }
@@ -338,11 +348,23 @@ public class SlidePane extends ViewController {
      */
     private void handleMainBoxKeyPressEvent(ViewEvent anEvent)
     {
+        if (!isSlideSet()) return;
+
         switch (anEvent.getKeyCode()) {
             case KeyCode.LEFT -> prevFragment();
             case KeyCode.RIGHT, KeyCode.SPACE -> nextFragment();
             case KeyCode.PAGE_UP -> prevSlide();
             case KeyCode.PAGE_DOWN -> nextSlide();
+            case KeyCode.HOME -> {
+                if (getSelSlideView().getFragmentIndex() > 0)
+                    getSelSlideView().resetSlide();
+                else prevSlide();
+            }
+            case KeyCode.END -> {
+                if (getSelSlideView().getFragmentIndex() == getSelSlideView().getFragmentCount() - 1)
+                    nextSlide();
+                else getSelSlideView().showAllFragments();
+            }
         }
     }
 

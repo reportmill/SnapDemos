@@ -284,6 +284,11 @@ public class SlideView extends ChildView {
     public void prevFragment()  { setFragmentIndex(Math.max(_fragmentIndex - 1, 0)); }
 
     /**
+     * Shows all fragments.
+     */
+    public void showAllFragments()  { setFragmentIndex(_fragmentCount - 1); }
+
+    /**
      * Returns whether given view represents a top level list item node.
      */
     private static boolean isTopLevelListItemView(View aView)
