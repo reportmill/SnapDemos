@@ -15,6 +15,9 @@ import snap.web.WebURL;
  */
 public class SlidePane extends ViewController {
 
+    // Whether to display slides as conventional slide box
+    private boolean _slideMode = true;
+
     // The selected URL
     private WebURL _slideShowUrl;
 
@@ -284,6 +287,48 @@ public class SlidePane extends ViewController {
     }
 
     /**
+     * Returns whether show is in slide mode (vs scroll mode).
+     */
+    public boolean isSlideMode()  { return _slideMode; }
+
+    /**
+     * Sets whether show is in slide mode (vs scroll mode).
+     */
+    public void setSlideMode(boolean aValue)
+    {
+        if (aValue == isSlideMode()) return;
+        _slideMode = aValue;
+
+        SplitView splitView = getUI(SplitView.class);
+
+        // Handle SlideMode
+        if (aValue) {
+            ScrollView scrollView = (ScrollView) splitView.getItem(1);
+            ScaleBox scaleBox = new ScaleBox(_mainBox, true, true);
+            scaleBox.setPadding(8, 8, 8, 8);
+            scaleBox.setGrowWidth(true);
+            scaleBox.setPrefWidth(scrollView.getPrefWidth());
+            splitView.removeItem(scrollView);
+            splitView.addItem(scaleBox);
+            _mainBox.setGrowHeight(false);
+        }
+
+        // Handle page mode
+        else {
+            ScaleBox scaleBox = (ScaleBox) splitView.getItem(1);
+            ScrollView scrollView = new ScrollView(_mainBox);
+            scrollView.setGrowWidth(true);
+            scrollView.setPrefWidth(scaleBox.getPrefWidth());
+            splitView.removeItem(scaleBox);
+            splitView.addItem(scrollView);
+            _mainBox.setScale(1);
+            _mainBox.setGrowHeight(true);
+        }
+
+        _mainBox.requestFocus();
+    }
+
+    /**
      * Initialize UI.
      */
     @Override
@@ -304,6 +349,8 @@ public class SlidePane extends ViewController {
         // Wrap main box in scale box
         ScaleBox scaleBox = getView("ScaleBox", ScaleBox.class);
         scaleBox.setContent(_mainBox);
+
+        setViewVisible("SlideModeCheckBox", false);
 
         addKeyActionFilter("EscapeAction", "ESCAPE");
     }
@@ -328,6 +375,7 @@ public class SlidePane extends ViewController {
     {
         WebURL slideShowUrl = getSlideShowUrl();
         setViewValue("ShowUrlText", slideShowUrl != null ? slideShowUrl.getString() : null);
+        setViewValue("SlideModeCheckBox", isSlideMode());
     }
 
     /**
@@ -339,6 +387,7 @@ public class SlidePane extends ViewController {
         switch (anEvent.getName()) {
             case "ShowUrlText" -> setSlideShowUrl(WebURL.getUrl(anEvent.getStringValue()));
             case "PlayButton" -> setSlideShowMode(true);
+            case "SlideModeCheckBox" -> setSlideMode(anEvent.getBoolValue());
             case "EscapeAction" -> setSlideShowMode(false);
         }
     }

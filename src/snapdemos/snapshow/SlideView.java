@@ -3,6 +3,7 @@ import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextLineStyle;
 import snap.text.TextStyle;
+import snap.util.Interpolator;
 import snap.util.ListUtils;
 import snap.util.MarkdownNode;
 import snap.view.*;
@@ -38,7 +39,7 @@ public class SlideView extends ChildView {
     // Constants
     private static final double SLIDE_WIDTH = 792;
     private static final double SLIDE_HEIGHT = 612;
-    private static final Insets BODY_MARGIN = new Insets(182, 36, 50, 50);
+    private static final Insets BODY_MARGIN = new Insets(18, 36, 40, 50);
     private static final double BODY_WIDTH = SLIDE_WIDTH - BODY_MARGIN.getWidth();
     private static final double BODY_HEIGHT = SLIDE_HEIGHT - BODY_MARGIN.getHeight();
 
@@ -48,7 +49,7 @@ public class SlideView extends ChildView {
     private static final TextStyle TITLE_TEXT_STYLE = TextStyle.DEFAULT.copyForStyleValues(TITLE_FONT, TITLE_TEXT_COLOR);
     private static final Effect TITLE_TEXT_EFFECT = new ShadowEffect(15, Color.BLACK, 2, 2);
     private static final Insets TITLE_TEXT_PADDING = new Insets(5, 5, 15, 5);
-    private static final Rect TITLE_VIEW_BOUNDS = new Rect(36, 18, SLIDE_WIDTH - 36 * 2, 150);
+    private static final Size TITLE_TEXT_SIZE = new Size(SLIDE_WIDTH - 36 * 2, 150);
 
     // Constants for body text
     private static final Font BODY_FONT = new Font("Arial", 36);
@@ -66,19 +67,11 @@ public class SlideView extends ChildView {
     {
         super();
         _slidePane = slidePane;
-        setAlignY(VPos.CENTER);
-        setPrefSize(SLIDE_WIDTH, SLIDE_HEIGHT);
+        setPrefSize(SLIDE_WIDTH, SLIDE_HEIGHT); // Should be setMinSize()
         setBorder(Color.BLACK, 1);
         setFocusable(true);
         setFocusWhenPressed(true);
         enableEvents(MouseRelease);
-
-        // Background for title text
-        Label titleView = new Label();
-        titleView.setFill(Color.LIGHTBLUE);
-        titleView.setBorderRadius(10);
-        titleView.setBounds(TITLE_VIEW_BOUNDS);
-        addChild(titleView);
 
         // Create title text area
         _titleText = new TextArea(true);
@@ -87,18 +80,25 @@ public class SlideView extends ChildView {
         _titleText.setAlignY(VPos.CENTER);
         _titleText.getTextModel().setAlignX(HPos.CENTER);
         _titleText.setPadding(TITLE_TEXT_PADDING);
-        _titleText.setBounds(TITLE_VIEW_BOUNDS);
-        addChild(_titleText);
+        _titleText.setPrefSize(TITLE_TEXT_SIZE);
+        _titleText.setSize(TITLE_TEXT_SIZE);
+
+        // Background for title text
+        BoxView titleBox = new BoxView(_titleText, true, true);
+        titleBox.setFill(Color.LIGHTBLUE);
+        titleBox.setBorderRadius(10);
+        titleBox.setMargin(new Insets(18, 36, 18, 36));
+        addChild(titleBox);
 
         // Create BodyView
         _bodyView = new BodyView();
-        _bodyView.setBounds(BODY_MARGIN.left, BODY_MARGIN.top, BODY_WIDTH, BODY_HEIGHT);
+        _bodyView.setMargin(BODY_MARGIN);
         addChild(_bodyView);
 
         // Create PageText
         _pageText = new StringView();
-        _pageText.setAlign(Pos.CENTER);
-        _pageText.setBounds(350, 580, 92, 20);
+        _pageText.setMargin(8, 8, 12, 8);
+        _pageText.setLean(Pos.BOTTOM_CENTER);
         addChild(_pageText);
 
         // Add badge image to slide
@@ -259,12 +259,16 @@ public class SlideView extends ChildView {
 
         // Reset children
         for (int i = 0; i < childViews.size(); i++) {
+
+            // Get view and make sure anim not playing
             View childView = childViews.get(i);
+            childView.getAnim(0).finish().clear();
+
             if (i < fragmentViewChildIndex)
-                childView.setVisible(true);
+                childView.setOpacity(1);
             else if (i >= nextFragmentViewChildIndex)
-                childView.setVisible(false);
-            else ViewAnimUtils.setVisible(childView, true, false, false);
+                childView.setOpacity(0);
+            else childView.getAnim(500).setInterpolator(Interpolator.EASE_OUT).setOpacity(1).play();
         }
     }
 
@@ -296,6 +300,12 @@ public class SlideView extends ChildView {
         MarkdownNode markdownNode = MarkdownView.getMarkdownNodeForView(aView);
         return markdownNode != null && markdownNode.getNodeType() == MarkdownNode.NodeType.ListItem && markdownNode.getIndentLevel() == 0;
     }
+
+    /**
+     * Override to return column layout.
+     */
+    @Override
+    protected ViewLayout getViewLayoutImpl()  { return new ColViewLayout(this); }
 
     /**
      * The view for the body.

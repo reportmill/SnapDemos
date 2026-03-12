@@ -1,8 +1,11 @@
 <SplitView PrefHeight="800" Font="Arial 14">
-  <ColView PrefWidth="550" GrowWidth="true" GrowHeight="true">
+  <ColView PrefWidth="550">
       <RowView Margin="12,12,12,12" GrowWidth="true" Fill="#F0" Border="#E0" BorderRadius="5">
         <Label Name="TitleText" Margin="5,5,5,20" Font="Arial Bold 54" Text="SlideShow" />
-        <Button Name="PlayButton" Margin="5,12,5,5" Padding="10" LeanX="RIGHT" Text="Play Slide Show" />
+        <ColView Margin="5,12,5,5" Spacing="5" LeanX="RIGHT" Align="CENTER">
+          <Button Name="PlayButton" Padding="10" Text="Play Slide Show" />
+          <CheckBox Name="SlideModeCheckBox" Text="Slide Mode" Font="Arial 11" />
+        </ColView>
       </RowView>
       <Label Name="RecentFilesView" />
       <RowView Margin="12" GrowWidth="true" Spacing="5">
