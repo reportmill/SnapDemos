@@ -398,23 +398,28 @@ public class SlidePane extends ViewController {
     private void handleMainBoxKeyPressEvent(ViewEvent anEvent)
     {
         if (!isSlideSet()) return;
+        boolean eventHandled = true;
+        SlideView slideView = getSelSlideView();
 
         switch (anEvent.getKeyCode()) {
-            case KeyCode.LEFT -> prevFragment();
-            case KeyCode.RIGHT, KeyCode.SPACE -> nextFragment();
+            case KeyCode.LEFT, KeyCode.UP -> prevFragment();
+            case KeyCode.RIGHT, KeyCode.DOWN, KeyCode.SPACE -> nextFragment();
+            case KeyCode.HOME -> setSlideIndex(0);
+            case KeyCode.END ->  {
+                setSlideIndex(getSlideCount() - 1);
+                getSelSlideView().showAllFragments();
+            }
             case KeyCode.PAGE_UP -> prevSlide();
-            case KeyCode.PAGE_DOWN -> nextSlide();
-            case KeyCode.HOME -> {
-                if (getSelSlideView().getFragmentIndex() > 0)
-                    getSelSlideView().resetSlide();
-                else prevSlide();
-            }
-            case KeyCode.END -> {
-                if (getSelSlideView().getFragmentIndex() == getSelSlideView().getFragmentCount() - 1)
+            case KeyCode.PAGE_DOWN -> {
+                if (slideView.getFragmentCount() == 0 || slideView.getFragmentIndex() == slideView.getFragmentCount() - 1)
                     nextSlide();
-                else getSelSlideView().showAllFragments();
+                else slideView.showAllFragments();
             }
+            default -> eventHandled = false;
         }
+
+        if (eventHandled)
+            anEvent.consume();
     }
 
     /**
