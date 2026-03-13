@@ -270,7 +270,7 @@ public class SlideView extends ChildView {
             }
             else if (i >= nextFragmentViewChildIndex) {
                 childView.setOpacity(0);
-                setPickable(false);
+                childView.setPickable(false);
             }
             else {
                 childView.getAnim(500).setInterpolator(Interpolator.EASE_OUT).setOpacity(1).play();
