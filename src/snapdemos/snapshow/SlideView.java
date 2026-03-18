@@ -67,7 +67,7 @@ public class SlideView extends ChildView {
     {
         super();
         _slidePane = slidePane;
-        setPrefSize(SLIDE_WIDTH, SLIDE_HEIGHT); // Should be setMinSize()
+        setMinSize(SLIDE_WIDTH, SLIDE_HEIGHT); // Should be setMinSize()
         setBorder(Color.BLACK, 1);
         setFocusable(true);
         setFocusWhenPressed(true);
@@ -267,14 +267,17 @@ public class SlideView extends ChildView {
             if (i < fragmentViewChildIndex) {
                 childView.setOpacity(1);
                 childView.setPickable(true);
+                childView.setPaintable(true);
             }
             else if (i >= nextFragmentViewChildIndex) {
                 childView.setOpacity(0);
                 childView.setPickable(false);
+                childView.setPaintable(false);
             }
             else {
                 childView.getAnim(500).setInterpolator(Interpolator.EASE_OUT).setOpacity(1).play();
                 childView.setPickable(true);
+                childView.setPaintable(true);
             }
         }
     }

@@ -402,15 +402,15 @@ public class SlidePane extends ViewController {
         SlideView slideView = getSelSlideView();
 
         switch (anEvent.getKeyCode()) {
-            case KeyCode.LEFT, KeyCode.UP -> prevFragment();
-            case KeyCode.RIGHT, KeyCode.DOWN, KeyCode.SPACE -> nextFragment();
+            case KeyCode.LEFT -> prevFragment();
+            case KeyCode.RIGHT, KeyCode.SPACE -> nextFragment();
             case KeyCode.HOME -> setSlideIndex(0);
             case KeyCode.END ->  {
                 setSlideIndex(getSlideCount() - 1);
                 getSelSlideView().showAllFragments();
             }
-            case KeyCode.PAGE_UP -> prevSlide();
-            case KeyCode.PAGE_DOWN -> {
+            case KeyCode.PAGE_UP, KeyCode.UP -> prevSlide();
+            case KeyCode.PAGE_DOWN, KeyCode.DOWN -> {
                 if (slideView.getFragmentCount() == 0 || slideView.getFragmentIndex() == slideView.getFragmentCount() - 1)
                     nextSlide();
                 else slideView.showAllFragments();
