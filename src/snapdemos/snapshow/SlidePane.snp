@@ -1,4 +1,4 @@
-<SplitView PrefHeight="800" Font="Arial 14">
+<SplitView PrefHeight="800" Font="Arial 14" DividerSpan="1">
   <ColView PrefWidth="550">
       <RowView Margin="12,12,12,12" GrowWidth="true" Fill="#F0" Border="#E0" BorderRadius="5">
         <Label Name="TitleText" Margin="5,5,5,20" Font="Arial Bold 54" Text="SlideShow" />

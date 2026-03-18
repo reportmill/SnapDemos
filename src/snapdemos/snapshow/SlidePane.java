@@ -376,6 +376,7 @@ public class SlidePane extends ViewController {
         WebURL slideShowUrl = getSlideShowUrl();
         setViewValue("ShowUrlText", slideShowUrl != null ? slideShowUrl.getString() : null);
         setViewValue("SlideModeCheckBox", isSlideMode());
+        setViewEnabled("PlayButton", slideShowUrl != null);
     }
 
     /**
