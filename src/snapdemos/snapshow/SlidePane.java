@@ -350,8 +350,6 @@ public class SlidePane extends ViewController {
         ScaleBox scaleBox = getView("ScaleBox", ScaleBox.class);
         scaleBox.setContent(_mainBox);
 
-        setViewVisible("SlideModeCheckBox", false);
-
         addKeyActionFilter("EscapeAction", "ESCAPE");
     }
 
