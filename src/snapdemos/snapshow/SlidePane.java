@@ -299,33 +299,16 @@ public class SlidePane extends ViewController {
         if (aValue == isSlideMode()) return;
         _slideMode = aValue;
 
-        SplitView splitView = getUI(SplitView.class);
+        // Configure ScaleBox
+        ScaleBox scaleBox = getView("ScaleBox", ScaleBox.class);
+        scaleBox.setFillWidth(aValue);
+        scaleBox.setFillHeight(aValue);
+        scaleBox.setPadding(aValue ? new Insets(8) : Insets.EMPTY);
 
-        // Handle SlideMode
-        if (aValue) {
-            ScrollView scrollView = (ScrollView) splitView.getItem(1);
-            ScaleBox scaleBox = new ScaleBox(_mainBox, true, true);
-            scaleBox.setPadding(8, 8, 8, 8);
-            scaleBox.setGrowWidth(true);
-            scaleBox.setPrefWidth(scrollView.getPrefWidth());
-            splitView.removeItem(scrollView);
-            splitView.addItem(scaleBox);
-            _mainBox.setGrowHeight(false);
-        }
-
-        // Handle page mode
-        else {
-            ScaleBox scaleBox = (ScaleBox) splitView.getItem(1);
-            ScrollView scrollView = new ScrollView(_mainBox);
-            scrollView.setGrowWidth(true);
-            scrollView.setPrefWidth(scaleBox.getPrefWidth());
-            splitView.removeItem(scaleBox);
-            splitView.addItem(scrollView);
-            _mainBox.setScale(1);
-            _mainBox.setGrowHeight(true);
-        }
-
-        _mainBox.requestFocus();
+        // Configure main box (transition view)
+        _mainBox.setGrowWidth(!aValue);
+        _mainBox.setGrowHeight(!aValue);
+        _mainBox.setAnimateSizeChange(aValue);
     }
 
     /**
@@ -343,11 +326,13 @@ public class SlidePane extends ViewController {
         // Create transition box
         _mainBox = new TransitionPane();
         _mainBox.setFill(Color.WHITE);
+        _mainBox.setAnimateSizeChange(true);
         _mainBox.addEventFilter(this::handleMainBoxKeyPressEvent, KeyPress);
         setFirstFocus(_mainBox);
 
         // Wrap main box in scale box
         ScaleBox scaleBox = getView("ScaleBox", ScaleBox.class);
+        scaleBox.setKeepAspect(true);
         scaleBox.setContent(_mainBox);
 
         addKeyActionFilter("EscapeAction", "ESCAPE");
