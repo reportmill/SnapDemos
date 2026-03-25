@@ -308,7 +308,6 @@ public class SlidePane extends ViewController {
         // Configure main box (transition view)
         _mainBox.setGrowWidth(!aValue);
         _mainBox.setGrowHeight(!aValue);
-        _mainBox.setAnimateSizeChange(aValue);
     }
 
     /**
@@ -326,7 +325,6 @@ public class SlidePane extends ViewController {
         // Create transition box
         _mainBox = new TransitionPane();
         _mainBox.setFill(Color.WHITE);
-        _mainBox.setAnimateSizeChange(true);
         _mainBox.addEventFilter(this::handleMainBoxKeyPressEvent, KeyPress);
         setFirstFocus(_mainBox);
 
