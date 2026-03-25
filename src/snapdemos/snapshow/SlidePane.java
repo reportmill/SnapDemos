@@ -337,6 +337,20 @@ public class SlidePane extends ViewController {
     }
 
     /**
+     * Override to open most recent file.
+     */
+    @Override
+    protected void initShowing()
+    {
+        runLater(() -> {
+            List<WebURL> recentFiles = _recentFilesPane.getRecentFilesUrls();
+            WebURL recentFile = recentFiles.isEmpty() ? null : recentFiles.get(0);
+            if (recentFile != null)
+                setSlideShowUrl(recentFile);
+        });
+    }
+
+    /**
      * Initialize window.
      */
     @Override
