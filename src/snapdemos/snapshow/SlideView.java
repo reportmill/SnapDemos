@@ -41,7 +41,6 @@ public class SlideView extends ChildView {
     private static final double SLIDE_HEIGHT = 612;
     private static final Insets BODY_MARGIN = new Insets(18, 36, 40, 50);
     private static final double BODY_WIDTH = SLIDE_WIDTH - BODY_MARGIN.getWidth();
-    private static final double BODY_HEIGHT = SLIDE_HEIGHT - BODY_MARGIN.getHeight();
 
     // Constants for title text view
     private static final Font TITLE_FONT = new Font("Arial Bold", 64);
@@ -67,7 +66,8 @@ public class SlideView extends ChildView {
     {
         super();
         _slidePane = slidePane;
-        setMinSize(SLIDE_WIDTH, SLIDE_HEIGHT); // Should be setMinSize()
+        setMinSize(SLIDE_WIDTH, SLIDE_HEIGHT);
+        setMaxWidth(SLIDE_WIDTH + 100);
         setBorder(Color.BLACK, 1);
         setFocusable(true);
         setFocusWhenPressed(true);
