@@ -92,6 +92,7 @@ public class SlidePane extends ViewController {
         getWindow().setTitle("SlideShow - " + slideShowUrl.getFilename());
         RecentFiles.addURL(slideShowUrl);
         fireBatchPropChanges();
+        resetLater();
     }
 
     /**
