@@ -46,7 +46,8 @@ public class RecentFilesPane extends ViewController {
             recentFileUrls = recentFileUrls.subList(0, 8);
         if (recentFileUrls.isEmpty()) {
             recentFileUrls = List.of(DEFAULT_URL1, DEFAULT_URL2);
-            recentFileUrls.forEach(RecentFiles::addURL);
+            RecentFiles.addURL(DEFAULT_URL2);
+            RecentFiles.addURL(DEFAULT_URL1);
         }
         return recentFileUrls;
     }
