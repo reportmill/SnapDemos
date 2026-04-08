@@ -83,7 +83,6 @@ public class SlidePane extends ViewController {
 
         // Install show text
         TextView textView = getView("TextView", TextView.class);
-        textView.setBorder(ViewTheme.get().getContentBorder());
         textView.setPadding(new Insets(8));
         textView.setText(sourceText);
         setSlideIndex(0);
