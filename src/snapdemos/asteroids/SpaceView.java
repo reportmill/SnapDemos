@@ -86,7 +86,7 @@ public class SpaceView extends GameView
 
         // Create 'Game Over' label and animate
         Label label = new Label("Game Over");
-        label.setPropsString("Font:Arial Bold 72; TextColor: MAGENTA; Opacity:0");
+        label.setStyleString("Font:Arial Bold 72; TextColor: MAGENTA; Opacity:0");
         label.setSizeToPrefSize();
         label.setManaged(false);
         label.setLean(Pos.CENTER);

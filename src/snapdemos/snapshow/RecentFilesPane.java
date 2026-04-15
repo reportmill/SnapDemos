@@ -107,7 +107,7 @@ public class RecentFilesPane extends ViewController {
         // If no files, add label
         if (recentFileUrls.isEmpty()) {
             Label noRecentFilesLabel = new Label("(No recent files)");
-            noRecentFilesLabel.setPropsString("Font:Arial Italic 16; Margin:5");
+            noRecentFilesLabel.setStyleString("Font:Arial Italic 16; Margin:5");
             noRecentFilesLabel.setTextColor(Color.GRAY);
             _recentFilesListView.addChild(noRecentFilesLabel);
         }
@@ -120,7 +120,7 @@ public class RecentFilesPane extends ViewController {
     {
         // Create label for name
         Label nameLabel = new Label(recentFileUrl.getFilenameSimple());
-        nameLabel.setPropsString("Font:Arial 13; MinWidth: 120");
+        nameLabel.setStyleString("Font:Arial 13; MinWidth: 120");
 
         // Create separator
         Separator separator = new Separator();
@@ -130,7 +130,7 @@ public class RecentFilesPane extends ViewController {
         // Create label for address
         String projectSourceAddress = recentFileUrl.getParent().getString();
         Label addressLabel = new Label(projectSourceAddress);
-        addressLabel.setPropsString("Font:Arial 11");
+        addressLabel.setStyleString("Font:Arial 11");
         addressLabel.setGrowWidth(true);
         addressLabel.setClipToBounds(true);
 
@@ -144,7 +144,7 @@ public class RecentFilesPane extends ViewController {
         // Create recent file view and add children
         RowView recentFileView = new RowView();
         recentFileView.setFill(BUTTON_BACKGROUND_COLOR);
-        recentFileView.setPropsString("Fill:#F0; BorderRadius:5; Margin:5; Padding:5;");
+        recentFileView.setStyleString("Fill:#F0; BorderRadius:5; Margin:5; Padding:5;");
         recentFileView.setCursor(Cursor.HAND);
         recentFileView.setGrowWidth(true);
         recentFileView.setChildren(nameLabel, separator, addressLabel, closeBox);
