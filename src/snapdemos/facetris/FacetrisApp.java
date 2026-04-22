@@ -247,7 +247,7 @@ public class FacetrisApp extends ViewController {
         // If first time, do some init
         boolean firstTime = _startPane.getOpacity() == 1;
         if (firstTime) {
-            _startPane.setFill(ViewUtils.getBackFill());
+            _startPane.setFill(ViewThemeUtils.getBackFill());
             _startPane.setManaged(false);
             _startPane.setSizeToPrefSize();
             Button playButton = (Button) _startPane.getChildForName("PlayButton");
