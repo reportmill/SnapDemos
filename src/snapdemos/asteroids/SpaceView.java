@@ -1,6 +1,6 @@
 package snapdemos.asteroids;
 import snap.games.Game;
-import snap.games.GameView;
+import snap.games.StageView;
 import snap.geom.Ellipse;
 import snap.geom.Pos;
 import snap.gfx.Color;
@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * This class holds the main game view.
  */
-public class SpaceView extends GameView
+public class SpaceView extends StageView
 {
     // Whether the game is running
     private boolean _started;

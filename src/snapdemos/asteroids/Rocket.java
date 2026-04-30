@@ -1,6 +1,6 @@
 package snapdemos.asteroids;
-import snap.games.Actor;
-import snap.games.GameView;
+import snap.games.SkilledActor;
+import snap.games.StageView;
 import snap.geom.Point;
 import snap.geom.Vector;
 import snap.gfx.Image;
@@ -10,7 +10,7 @@ import snap.viewx.Explode;
 /**
  * This class models the asteroids rocket.
  */
-public class Rocket extends Actor
+public class Rocket extends SkilledActor
 {
     // Whether exploding
     private boolean _exploding;
@@ -44,7 +44,7 @@ public class Rocket extends Actor
         // If on, set image and add velocity
         if (aValue) {
             setImage(rocketWithThrust);
-            addVelocityVector(Vector.getVectorForAngleAndLength(getRotate(), 0.3));
+            addVelocity(0.3);
         }
 
         // If off, set image
@@ -73,18 +73,18 @@ public class Rocket extends Actor
     private void handleKeys()
     {
         // Handle thrust key (up)
-        GameView gameView = getGameView();
-        boolean isThrusting = gameView.isKeyDown("up");
+        StageView stageView = getStageView();
+        boolean isThrusting = stageView.isKeyDown("up");
         setThrusting(isThrusting);
 
         // Handle rotate left/right
-        if (gameView.isKeyDown("left"))
+        if (stageView.isKeyDown("left"))
             setRotate(getRotate() - 5);
-        if (gameView.isKeyDown("right"))
+        if (stageView.isKeyDown("right"))
             setRotate(getRotate() + 5);
 
         // Handle fire
-        if (gameView.isKeyDown("space"))
+        if (stageView.isKeyDown("space"))
             fire();
     }
     
@@ -100,7 +100,7 @@ public class Rocket extends Actor
         Asteroid hitAsteroid = getIntersectingActor(Asteroid.class);
         if (hitAsteroid != null) {
             _exploding = true;
-            new Explode(this, 30, 30, () -> explosionFinished()).setRunTime(4000).play();
+            new Explode(getActorView(), 30, 30, () -> explosionFinished()).setRunTime(4000).play();
             ViewUtils.runDelayed(this::explodeRocket, 100);
             hitAsteroid.hit(100);
         }
@@ -111,7 +111,7 @@ public class Rocket extends Actor
      */
     public void explodeRocket()
     {
-        Explode explode = new Explode(this, 30, 30);
+        Explode explode = new Explode(getActorView(), 30, 30);
         explode.setRunTime(2000);
         explode.play();
     }
@@ -121,7 +121,7 @@ public class Rocket extends Actor
      */
     private void explosionFinished()
     {
-        SpaceView spaceView = getGameView(SpaceView.class);
+        SpaceView spaceView = getStageView(SpaceView.class);
         spaceView.removeActor(this);
         spaceView.gameOver();
     }
@@ -138,10 +138,10 @@ public class Rocket extends Actor
             Bullet bullet = new Bullet(bulletVector, (int) getRotate());
 
             // Get bullet point at tip of rocket
-            Point bulletPoint = localToParent(getWidth(), getHeight() / 2);
+            Point bulletPoint = getActorView().localToParent(getWidth(), getHeight() / 2);
 
             // Add bullet to scene, move a bit and play sound
-            GameView scene = getGameView();
+            StageView scene = getStageView();
             scene.addActorAtXY(bullet, bulletPoint.x, bulletPoint.y);
             bullet.act();
             bullet.playSound();

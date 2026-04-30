@@ -1,6 +1,6 @@
 package snapdemos.asteroids;
-import snap.games.Actor;
-import snap.games.GameView;
+import snap.games.SkilledActor;
+import snap.games.StageView;
 import snap.geom.Vector;
 import snap.gfx.Image;
 import snap.gfx.SoundClip;
@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * This class models an asteroid.
  */
-public class Asteroid extends Actor
+public class Asteroid extends SkilledActor
 {
     // The amount of life left
     private int _life;
@@ -38,7 +38,8 @@ public class Asteroid extends Actor
         super();
         setWrapAtEdges(true);
         setSize(size);
-        setVelocity(Vector.getVectorForAngleAndLength(new Random().nextInt(360), 2));
+        setRotate(new Random().nextInt(360));
+        addVelocity(2);
     }
 
     /**
@@ -86,28 +87,28 @@ public class Asteroid extends Actor
         EXPLOSION_SOUND.play();
 
         // Explode
-        new Explode(this, 20, 20).play();
+        new Explode(getActorView(), 20, 20).play();
         
         // Remove this asteroid
-        GameView gameView = getGameView();
-        gameView.removeActor(this);
+        StageView stageView = getStageView();
+        stageView.removeActor(this);
 
         // If not minimal size, create and add two half asteroids
         if (getWidth() > 16)
-            subdivide(gameView);
+            subdivide(stageView);
 
         // If no other asteroids left, do game over
         else {
-            List<Asteroid> asteroids = gameView.getActorsForClass(Asteroid.class);
+            List<Asteroid> asteroids = stageView.getActorsForClass(Asteroid.class);
             if (asteroids.isEmpty())
-                ((SpaceView) gameView).gameOver();
+                ((SpaceView) stageView).gameOver();
         }
     }
 
     /**
      * Breaks asteroid into two smaller asteroids.
      */
-    private void subdivide(GameView scene)
+    private void subdivide(StageView scene)
     {
         double angle = getVelocity().getAngle() + new Random().nextInt(45);
         double length = getVelocity().getLength();

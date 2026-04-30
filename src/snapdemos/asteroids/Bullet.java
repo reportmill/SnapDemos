@@ -1,5 +1,5 @@
 package snapdemos.asteroids;
-import snap.games.Actor;
+import snap.games.SkilledActor;
 import snap.geom.Vector;
 import snap.gfx.Color;
 import snap.gfx.SoundClip;
@@ -7,7 +7,7 @@ import snap.gfx.SoundClip;
 /**
  * This class models a bullet.
  */
-public class Bullet extends Actor
+public class Bullet extends SkilledActor
 {
     // The amount of life left in a bullet (disappears at zero)
     private int _life = 50;
@@ -31,7 +31,7 @@ public class Bullet extends Actor
         // Init rotation and velocity
         setRotate(rotation);
         setVelocity(speed);
-        addVelocityVector(Vector.getVectorForAngleAndLength(rotation, 15));
+        addVelocity(15);
     }
 
     /**
@@ -46,7 +46,7 @@ public class Bullet extends Actor
     {
         // If bullet out of time, remove and return
         if(_life <= 0) {
-            getGameView().removeActor(this);
+            getStageView().removeActor(this);
             return;
         }
 
@@ -63,7 +63,7 @@ public class Bullet extends Actor
     {
         Asteroid asteroid = getIntersectingActor(Asteroid.class);
         if (asteroid != null){
-            getGameView().removeActor(this);
+            getStageView().removeActor(this);
             asteroid.hit(BULLET_DAMAGE);
         }
     }
