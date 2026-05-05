@@ -1,6 +1,6 @@
 package snapdemos.asteroids;
 import snap.games.SkilledActor;
-import snap.games.StageView;
+import snap.games.Stage;
 import snap.geom.Point;
 import snap.geom.Vector;
 import snap.gfx.Image;
@@ -73,18 +73,18 @@ public class Rocket extends SkilledActor
     private void handleKeys()
     {
         // Handle thrust key (up)
-        StageView stageView = getStageView();
-        boolean isThrusting = stageView.isKeyDown("up");
+        Stage stage = getStage();
+        boolean isThrusting = stage.isKeyDown("up");
         setThrusting(isThrusting);
 
         // Handle rotate left/right
-        if (stageView.isKeyDown("left"))
+        if (stage.isKeyDown("left"))
             setRotate(getRotate() - 5);
-        if (stageView.isKeyDown("right"))
+        if (stage.isKeyDown("right"))
             setRotate(getRotate() + 5);
 
         // Handle fire
-        if (stageView.isKeyDown("space"))
+        if (stage.isKeyDown("space"))
             fire();
     }
     
@@ -121,7 +121,7 @@ public class Rocket extends SkilledActor
      */
     private void explosionFinished()
     {
-        SpaceView spaceView = getStageView(SpaceView.class);
+        SpaceView spaceView = getStage(SpaceView.class);
         spaceView.removeActor(this);
         spaceView.gameOver();
     }
@@ -140,9 +140,9 @@ public class Rocket extends SkilledActor
             // Get bullet point at tip of rocket
             Point bulletPoint = getActorView().localToParent(getWidth(), getHeight() / 2);
 
-            // Add bullet to scene, move a bit and play sound
-            StageView scene = getStageView();
-            scene.addActorAtXY(bullet, bulletPoint.x, bulletPoint.y);
+            // Add bullet to stage, move a bit and play sound
+            Stage stage = getStage();
+            stage.addActorAtXY(bullet, bulletPoint.x, bulletPoint.y);
             bullet.act();
             bullet.playSound();
             _reloadDelayCounter = 5;

@@ -46,7 +46,7 @@ public class Bullet extends SkilledActor
     {
         // If bullet out of time, remove and return
         if(_life <= 0) {
-            getStageView().removeActor(this);
+            getStage().removeActor(this);
             return;
         }
 
@@ -63,7 +63,7 @@ public class Bullet extends SkilledActor
     {
         Asteroid asteroid = getIntersectingActor(Asteroid.class);
         if (asteroid != null){
-            getStageView().removeActor(this);
+            getStage().removeActor(this);
             asteroid.hit(BULLET_DAMAGE);
         }
     }

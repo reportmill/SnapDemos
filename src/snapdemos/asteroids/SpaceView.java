@@ -1,18 +1,19 @@
 package snapdemos.asteroids;
 import snap.games.Game;
-import snap.games.StageView;
+import snap.games.Stage;
 import snap.geom.Ellipse;
 import snap.geom.Pos;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.view.Label;
+import snap.view.ViewUtils;
 import java.util.Random;
 
 /**
  * This class holds the main game view.
  */
-public class SpaceView extends StageView
+public class SpaceView extends Stage
 {
     // Whether the game is running
     private boolean _started;
@@ -32,8 +33,6 @@ public class SpaceView extends StageView
 
         // Set size
         setSize(GAME_WIDTH, GAME_HEIGHT);
-        setPrefSize(getSize());
-        setClipToBounds(true);
 
         // Create background
         setImage(createBackground());
@@ -48,7 +47,7 @@ public class SpaceView extends StageView
     public void startGame()
     {
         // Remove all children
-        removeChildren();
+        removeActors();
 
         // Create and add rocket
         Rocket rocket = new Rocket();
@@ -74,7 +73,7 @@ public class SpaceView extends StageView
     {
         super.stepGameFrame();
         if (!_started && (isMouseClicked() || isKeyDown("space")))
-            runDelayed(this::startGame, 100);
+            ViewUtils.runDelayed(this::startGame, 100);
     }
 
     /**
@@ -91,9 +90,9 @@ public class SpaceView extends StageView
         label.setManaged(false);
         label.setLean(Pos.CENTER);
         label.setScale(.1);
-        addChild(label);
+        getStageView().addChild(label);
         label.getAnim(1000).getAnim(1000 + 1200).setScale(1).setOpacity(1).setRotate(360).play();
-        getEnv().runDelayed(this::stop, 2200);
+        ViewUtils.runDelayed(this::stop, 2200);
     }
 
     /**

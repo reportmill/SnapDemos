@@ -1,6 +1,6 @@
 package snapdemos.asteroids;
 import snap.games.SkilledActor;
-import snap.games.StageView;
+import snap.games.Stage;
 import snap.geom.Vector;
 import snap.gfx.Image;
 import snap.gfx.SoundClip;
@@ -90,25 +90,25 @@ public class Asteroid extends SkilledActor
         new Explode(getActorView(), 20, 20).play();
         
         // Remove this asteroid
-        StageView stageView = getStageView();
-        stageView.removeActor(this);
+        Stage stage = getStage();
+        stage.removeActor(this);
 
         // If not minimal size, create and add two half asteroids
         if (getWidth() > 16)
-            subdivide(stageView);
+            subdivide(stage);
 
         // If no other asteroids left, do game over
         else {
-            List<Asteroid> asteroids = stageView.getActorsForClass(Asteroid.class);
+            List<Asteroid> asteroids = stage.getActorsForClass(Asteroid.class);
             if (asteroids.isEmpty())
-                ((SpaceView) stageView).gameOver();
+                ((SpaceView) stage).gameOver();
         }
     }
 
     /**
      * Breaks asteroid into two smaller asteroids.
      */
-    private void subdivide(StageView scene)
+    private void subdivide(Stage stage)
     {
         double angle = getVelocity().getAngle() + new Random().nextInt(45);
         double length = getVelocity().getLength();
@@ -117,8 +117,8 @@ public class Asteroid extends SkilledActor
         int size = (int) getWidth();
         Asteroid a1 = new Asteroid(size / 2, speed1);
         Asteroid a2 = new Asteroid(size / 2, speed2);
-        scene.addActorAtXY(a1, getMidX(), getMidY());
-        scene.addActorAtXY(a2, getMidX(), getMidY());
+        stage.addActorAtXY(a1, getMidX(), getMidY());
+        stage.addActorAtXY(a2, getMidX(), getMidY());
         a1.act();
         a2.act();
     }
