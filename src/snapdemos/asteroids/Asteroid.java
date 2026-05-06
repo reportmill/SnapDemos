@@ -1,5 +1,5 @@
 package snapdemos.asteroids;
-import snap.games.SkilledActor;
+import snap.games.ActorX;
 import snap.games.Stage;
 import snap.geom.Vector;
 import snap.gfx.Image;
@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * This class models an asteroid.
  */
-public class Asteroid extends SkilledActor
+public class Asteroid extends ActorX
 {
     // The amount of life left
     private int _life;

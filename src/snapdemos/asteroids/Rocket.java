@@ -1,5 +1,5 @@
 package snapdemos.asteroids;
-import snap.games.SkilledActor;
+import snap.games.ActorX;
 import snap.games.Stage;
 import snap.geom.Point;
 import snap.geom.Vector;
@@ -10,7 +10,7 @@ import snap.viewx.Explode;
 /**
  * This class models the asteroids rocket.
  */
-public class Rocket extends SkilledActor
+public class Rocket extends ActorX
 {
     // Whether exploding
     private boolean _exploding;

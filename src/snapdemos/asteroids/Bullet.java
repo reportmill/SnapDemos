@@ -1,5 +1,5 @@
 package snapdemos.asteroids;
-import snap.games.SkilledActor;
+import snap.games.ActorX;
 import snap.geom.Vector;
 import snap.gfx.Color;
 import snap.gfx.SoundClip;
@@ -7,7 +7,7 @@ import snap.gfx.SoundClip;
 /**
  * This class models a bullet.
  */
-public class Bullet extends SkilledActor
+public class Bullet extends ActorX
 {
     // The amount of life left in a bullet (disappears at zero)
     private int _life = 50;
