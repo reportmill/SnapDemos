@@ -24,9 +24,9 @@ public class DungeonView extends ParentView {
     // Tile images
     private static final Image StoneTile1 = Image.getImageForClassResource(DungeonView.class, "pkg.images/StoneTile1.png");
     private static final Image WallCornerFrontLeft = Image.getImageForClassResource(DungeonView.class, "pkg.images/WallCornerFront.png");
-    private static final Image WallCornerFrontRight = WallCornerFrontLeft.copyflippedX();
+    private static final Image WallCornerFrontRight = WallCornerFrontLeft.copyFlippedX();
     private static final Image WallCornerBackLeft = Image.getImageForClassResource(DungeonView.class, "pkg.images/WallCornerBack.png");
-    private static final Image WallCornerBackRight = WallCornerBackLeft.copyflippedX();
+    private static final Image WallCornerBackRight = WallCornerBackLeft.copyFlippedX();
     private static final Image PlateTile1 = Image.getImageForClassResource(DungeonView.class, "pkg.images/PlateTile1.png");
 
     /**

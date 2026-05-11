@@ -19,7 +19,7 @@ public class Elon extends View {
     private double _tileX, _tileY;
 
     private static final Image ElonRight = Image.getImageForClassResource(DungeonView.class, "pkg.images/Elon.png");
-    private static final Image ElonLeft = ElonRight.copyflippedX();
+    private static final Image ElonLeft = ElonRight.copyFlippedX();
 
     /**
      * Constructor.

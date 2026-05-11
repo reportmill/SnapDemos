@@ -19,7 +19,7 @@ public class Monster extends View {
     private double _tileX, _tileY;
 
     private static final Image MonsterRight = Image.getImageForClassResource(DungeonView.class, "pkg.images/Monster.png");
-    private static final Image MonsterLeft = MonsterRight.copyflippedX();
+    private static final Image MonsterLeft = MonsterRight.copyFlippedX();
 
     /**
      * Constructor.

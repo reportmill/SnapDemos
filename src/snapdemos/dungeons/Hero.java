@@ -17,7 +17,7 @@ public class Hero extends View {
     private double _tileX, _tileY;
 
     private static final Image HeroRight = Image.getImageForClassResource(DungeonView.class, "pkg.images/Hero.png");
-    private static final Image HeroLeft = HeroRight.copyflippedX();
+    private static final Image HeroLeft = HeroRight.copyFlippedX();
     private static final Image HeroUp = Image.getImageForClassResource(DungeonView.class, "pkg.images/HeroUp.png");
     private static final Image HeroDown = Image.getImageForClassResource(DungeonView.class, "pkg.images/HeroDown.png");
 
