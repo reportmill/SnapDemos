@@ -246,7 +246,7 @@ public class JBoxWorld {
 
         // Get shape centered around shape midpoint
         Rect shapeBounds = aShape.getBounds();
-        Shape shape = aShape.copyFor(new Transform(-shapeBounds.width / 2, -shapeBounds.height / 2));
+        Shape shape = aShape.copyForTransform(new Transform(-shapeBounds.width / 2, -shapeBounds.height / 2));
 
         // Get convex Polygons for shape
         List<Polygon> convexPolys = Polygon.getConvexPolygonsWithMaxSideCount(shape, 8);
