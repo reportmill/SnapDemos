@@ -97,7 +97,7 @@ public class Rocket extends ActorX
         if (_exploding) return;
 
         // If asteroid is hit, trigger explosion
-        Asteroid hitAsteroid = getIntersectingActor(Asteroid.class);
+        Asteroid hitAsteroid = getHitActorForClass(Asteroid.class);
         if (hitAsteroid != null) {
             _exploding = true;
             new Explode(getActorView(), 30, 30, () -> explosionFinished()).setRunTime(4000).play();

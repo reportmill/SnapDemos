@@ -61,7 +61,7 @@ public class Bullet extends ActorX
      */
     private void checkAsteroidHit()
     {
-        Asteroid asteroid = getIntersectingActor(Asteroid.class);
+        Asteroid asteroid = getHitActorForClass(Asteroid.class);
         if (asteroid != null){
             getStage().removeActor(this);
             asteroid.hit(BULLET_DAMAGE);
