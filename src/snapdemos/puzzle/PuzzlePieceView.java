@@ -230,7 +230,7 @@ public class PuzzlePieceView extends BoxView {
      * Override to add props.
      */
     @Override
-    public String toStringProps()
+    protected String toStringProps()
     {
         String superProps = super.toStringProps();
         return superProps + ", Number=" + _puzzlePiece.getNumber();
