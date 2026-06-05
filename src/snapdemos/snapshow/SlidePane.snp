@@ -1,18 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <SplitView PrefHeight="800" Font="Arial 14" DividerSpan="1">
   <ColView PrefWidth="550">
-      <RowView Margin="12,12,12,12" GrowWidth="true" Fill="#F0" Border="#E0" BorderRadius="5">
-        <Label Name="TitleText" Margin="5,5,5,20" Font="Arial Bold 54" Text="SlideShow" />
-        <ColView Margin="5,12,5,5" Spacing="5" LeanX="RIGHT" Align="CENTER">
-          <Button Name="PlayButton" Padding="10" Text="Play Slide Show" />
-          <CheckBox Name="SlideModeCheckBox" Text="Slide Mode" Font="Arial 11" />
-        </ColView>
-      </RowView>
-      <Label Name="RecentFilesView" />
-      <RowView Margin="12" GrowWidth="true" Spacing="5">
-          <Label Text="Show URL:" />
-          <TextField Name="ShowUrlText" GrowWidth="true" />
-      </RowView>
-      <TextView Name="TextView" Margin="12" BorderRadius="5" PrefHeight="300" GrowWidth="true" GrowHeight="true" />
+    <RowView Margin="12" Fill="#F0" Border="#E0" BorderRadius="5" GrowWidth="true">
+      <Label Name="TitleText" Margin="5,5,5,20" Font="Arial Bold 54" Text="SlideShow" />
+      <ColView Align="CENTER" Margin="5,12,5,5" Spacing="5" LeanX="RIGHT">
+        <Button Name="PlayButton" Padding="10" Text="Play Slide Show" />
+        <CheckBox Name="SlideModeCheckBox" Font="Arial 11" Text="Slide Mode" />
+      </ColView>
+    </RowView>
+    <Label Name="RecentFilesView" />
+    <RowView Margin="12" Spacing="5" GrowWidth="true">
+      <Label Text="Show URL:" />
+      <TextField Name="ShowUrlText" GrowWidth="true" />
+    </RowView>
+    <TextView Name="TextView" PrefHeight="300" Margin="12" BorderRadius="5" GrowWidth="true" GrowHeight="true" />
   </ColView>
-  <ScaleBox Name="ScaleBox" Padding="8" PrefWidth="550" GrowWidth="true" FillWidth="true" FillHeight="true" />
+  <ScaleBox Name="ScaleBox" PrefWidth="550" Padding="8" GrowWidth="true" FillWidth="true" FillHeight="true" />
 </SplitView>
