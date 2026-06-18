@@ -3,7 +3,7 @@
   <RowView Padding="0,4,0,4" Spacing="4">
     <Label Text="Goal  " />
     <Label Name="GoalText" Font="Arial 24" Text="10" />
-    <Button Name="InfoButton" PrefWidth="36" PrefHeight="36" Padding="2" LeanX="RIGHT" ToolTip="Information" ImageName="Info.png" ShowArea="false" />
+    <Button Name="InfoButton" PrefWidth="36" PrefHeight="36" Padding="2" LeanX="RIGHT" ToolTip="Information" ImageName="Info.png" Plain="true" />
   </RowView>
   <RowView Padding="0,80,0,30" Spacing="4">
     <Label Text="Score  " />
