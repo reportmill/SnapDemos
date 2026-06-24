@@ -52,7 +52,7 @@ public class JBoxWorld {
     /**
      * Returns the gravity in meters per second.
      */
-    public double getGravity()  { return 0; }
+    public double getGravity()  { return _gravity; }
 
     /**
      * Sets the gravity in meters per second.
