@@ -29,8 +29,8 @@ public class JBoxWorld {
     private double _pixelsToMeters = 720 / 10d;
     
     // The speed
-    public static int INTERVAL_MILLIS = 25;
-    public static float INTERVAL_SECS = INTERVAL_MILLIS / 1000f;
+    public static final int INTERVAL_MILLIS = 25;
+    public static final float INTERVAL_SECS = INTERVAL_MILLIS / 1000f;
 
     /**
      * Constructor for given world view.
@@ -165,10 +165,11 @@ public class JBoxWorld {
         // Get/set rotation
         double rot0 = body.getAngle();
         double rot1 = Math.toRadians(-aView.getRotate());
-        double anglularVelocity = rot1 - rot0;
-        if(anglularVelocity > Math.PI || anglularVelocity < -Math.PI)
-            anglularVelocity = MathUtils.mod(anglularVelocity + Math.PI, Math.PI * 2) - Math.PI;
-        body.setAngularVelocity((float) anglularVelocity / INTERVAL_SECS);
+        double angleChange = rot1 - rot0;
+        if(angleChange > Math.PI || angleChange < -Math.PI)
+            angleChange = MathUtils.mod(angleChange + Math.PI, Math.PI * 2) - Math.PI;
+        double angularVelocity = angleChange / INTERVAL_SECS;
+        body.setAngularVelocity((float) angularVelocity);
     }
 
     /**
@@ -238,18 +239,19 @@ public class JBoxWorld {
         }
 
         // Handle Polygon if Simple, Convex and less than 8 points
-        if (aShape instanceof Polygon poly) {
-            org.jbox2d.collision.shapes.Shape pshape = createJboxShapeForPolygon(poly);
+        if (aShape instanceof Polygon polygon) {
+            Polygon polygonCentered = polygon.copyForTransform(new Transform(-polygon.getWidth() / 2, -polygon.getHeight() / 2));
+            org.jbox2d.collision.shapes.Shape pshape = createJboxShapeForPolygon(polygonCentered);
             if(pshape != null)
                 return List.of(pshape);
         }
 
         // Get shape centered around shape midpoint
         Rect shapeBounds = aShape.getBounds();
-        Shape shape = aShape.copyForTransform(new Transform(-shapeBounds.width / 2, -shapeBounds.height / 2));
+        Shape shapeCentered = aShape.copyForTransform(new Transform(-shapeBounds.width / 2, -shapeBounds.height / 2));
 
         // Get convex Polygons for shape
-        List<Polygon> convexPolys = Polygon.getConvexPolygonsWithMaxSideCount(shape, 8);
+        List<Polygon> convexPolys = Polygon.getConvexPolygonsWithMaxSideCount(shapeCentered, 8);
         return ListUtils.mapNonNull(convexPolys, this::createJboxShapeForPolygon);
     }
 
@@ -283,9 +285,9 @@ public class JBoxWorld {
         ParentView editor = aView.getParent();
         Rect viewBoundsInParent = aView.getBoundsInParent();
         List<View> hits = new ArrayList<>();
-        for (View v : editor.getChildren()) {
-            if(v != aView && v.getBoundsLocal().intersectsShape(v.parentToLocal(viewBoundsInParent)))
-                hits.add(v);
+        for (View childView : editor.getChildren()) {
+            if(childView != aView && childView.getBoundsLocal().intersectsShape(childView.parentToLocal(viewBoundsInParent)))
+                hits.add(childView);
         }
 
         // if less than two, bail
