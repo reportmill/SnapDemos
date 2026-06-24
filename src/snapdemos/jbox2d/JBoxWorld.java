@@ -113,12 +113,12 @@ public class JBoxWorld {
     private void updateViewFromJboxNative(View aView)
     {
         // Get ViewPhysics and body
-        ViewPhysics phys = aView.getPhysics(); if (phys == null) return;
-        Object jboxNative = phys.getNative();
+        ViewPhysics viewPhysics = aView.getPhysics(); if (viewPhysics == null) return;
+        Object jboxNative = viewPhysics.getNative();
 
         // Handle Body
         if (jboxNative instanceof Body body) {
-            if (!phys.isDynamic())
+            if (!viewPhysics.isDynamic())
                 return;
 
             // Get/set position
@@ -150,10 +150,10 @@ public class JBoxWorld {
     private void updateJboxBodyFromView(View aView)
     {
         // Get ViewPhysics and body
-        ViewPhysics phys = aView.getPhysics();
-        if (phys == null || phys.isDynamic() || phys.isJoint())
+        ViewPhysics viewPhysics = aView.getPhysics();
+        if (viewPhysics == null || viewPhysics.isDynamic() || viewPhysics.isJoint())
             return;
-        Body body = (Body) phys.getNative();
+        Body body = (Body) viewPhysics.getNative();
 
         // Get/set position
         Vec2 pos0 = body.getPosition();
@@ -216,9 +216,9 @@ public class JBoxWorld {
         // Handle Rect (simple case)
         if (aShape instanceof Rect rect) {
             PolygonShape polygonShape = new PolygonShape();
-            float pw = convertViewCoordToJbox(rect.width / 2);
-            float ph = convertViewCoordToJbox(rect.height / 2);
-            polygonShape.setAsBox(pw, ph);
+            float polygonW = convertViewCoordToJbox(rect.width / 2);
+            float polygonH = convertViewCoordToJbox(rect.height / 2);
+            polygonShape.setAsBox(polygonW, polygonH);
             return List.of(polygonShape);
         }
 
@@ -232,9 +232,9 @@ public class JBoxWorld {
         // Handle Arc
         if (aShape instanceof Arc arc && aShape.getWidth() == aShape.getHeight()) {
             if (arc.getSweepAngle() == 360) {
-                CircleShape cshape = new CircleShape();
-                cshape.setRadius(convertViewCoordToJbox(arc.getWidth()/2));
-                return List.of(cshape);
+                CircleShape circleShape = new CircleShape();
+                circleShape.setRadius(convertViewCoordToJbox(arc.getWidth() / 2));
+                return List.of(circleShape);
             }
         }
 
@@ -292,7 +292,7 @@ public class JBoxWorld {
 
         // if less than two, bail
         if (hits.size() < 2) {
-            System.out.println("PhysicsRunner.createJoint: 2 Bodies not found for joint: " + aView.getName());
+            System.out.println("JBoxWorld.createJboxJointForView: 2 Bodies not found for joint: " + aView.getName());
             return null;
         }
 
@@ -307,7 +307,7 @@ public class JBoxWorld {
         jointDef.collideConnected = false;
 
         // Set anchors
-        Point jointPnt = aView.localToParent(aView.getWidth()/2, aView.getHeight()/2);
+        Point jointPnt = aView.localToParent(aView.getWidth() / 2, aView.getHeight() / 2);
         Point jointPntA = viewA.parentToLocal(jointPnt.x, jointPnt.y);
         Point jointPntB = viewB.parentToLocal(jointPnt.x, jointPnt.y);
         jointDef.localAnchorA = convertViewXYToJboxLocal(jointPntA.x, jointPntA.y, viewA);
