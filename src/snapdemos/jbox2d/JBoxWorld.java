@@ -281,7 +281,7 @@ public class JBoxWorld {
     {
         // Get shapes interesting joint view
         ParentView editor = aView.getParent();
-        Rect viewBoundsInParent = aView.getBoundsParent();
+        Rect viewBoundsInParent = aView.getBoundsInParent();
         List<View> hits = new ArrayList<>();
         for (View v : editor.getChildren()) {
             if(v != aView && v.getBoundsLocal().intersectsShape(v.parentToLocal(viewBoundsInParent)))
@@ -360,8 +360,7 @@ public class JBoxWorld {
     }
 
     /**
-     * Return Vec2 for snap Point.
+     * Return Vec2 for X/Y.
      */
-    private static Vec2 getVec2(Point aPnt)  { return new Vec2((float) aPnt.x, (float) aPnt.y); }
     private static Vec2 getVec2(double aX, double aY)  { return new Vec2((float) aX, (float) aY); }
 }
