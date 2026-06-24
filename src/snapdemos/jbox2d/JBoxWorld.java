@@ -30,7 +30,7 @@ public class JBoxWorld {
     
     // The speed
     public static int INTERVAL_MILLIS = 25;
-    public static float INTERVL_SECS = INTERVAL_MILLIS / 1000f;
+    public static float INTERVAL_SECS = INTERVAL_MILLIS / 1000f;
 
     /**
      * Constructor for given world view.
@@ -101,7 +101,7 @@ public class JBoxWorld {
         _worldView.getChildren().forEach(this::updateJboxBodyFromView);
 
         // Update world
-        _world.step(INTERVL_SECS, 8, 3);
+        _world.step(INTERVAL_SECS, 8, 3);
 
         // Update world view children from jbox natives
         _worldView.getChildren().forEach(this::updateViewFromJboxNative);
@@ -158,17 +158,17 @@ public class JBoxWorld {
         // Get/set position
         Vec2 pos0 = body.getPosition();
         Vec2 pos1 = convertViewXYToJbox(aView.getMidX(), aView.getMidY());
-        double vx = (pos1.x - pos0.x)*25;
-        double vy = (pos1.y - pos0.y)*25;
-        body.setLinearVelocity(new Vec2((float)vx, (float)vy));
+        double velocityX = (pos1.x - pos0.x) / INTERVAL_SECS;
+        double velocityY = (pos1.y - pos0.y) / INTERVAL_SECS;
+        body.setLinearVelocity(new Vec2((float) velocityX, (float) velocityY));
 
         // Get/set rotation
         double rot0 = body.getAngle();
         double rot1 = Math.toRadians(-aView.getRotate());
-        double dr = rot1 - rot0;
-        if(dr > Math.PI || dr < -Math.PI)
-            dr = MathUtils.mod(dr + Math.PI, Math.PI * 2) - Math.PI;
-        body.setAngularVelocity((float) dr * 25);
+        double anglularVelocity = rot1 - rot0;
+        if(anglularVelocity > Math.PI || anglularVelocity < -Math.PI)
+            anglularVelocity = MathUtils.mod(anglularVelocity + Math.PI, Math.PI * 2) - Math.PI;
+        body.setAngularVelocity((float) anglularVelocity / INTERVAL_SECS);
     }
 
     /**
