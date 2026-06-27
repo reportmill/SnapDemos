@@ -57,7 +57,7 @@ public class PuzzlePieceView extends BoxView {
         setGrowHeight(true);
         setAlign(Pos.CENTER);
 
-        enableEvents(MouseEvents);
+        addEventHandler(this::handleMouseEvent, MouseEvents);
 
         // Set PuzzleView, PuzzlePiece
         _puzzleView = puzzleView;
@@ -145,9 +145,9 @@ public class PuzzlePieceView extends BoxView {
     }
 
     /**
-     * Handle events.
+     * Handle mouse events.
      */
-    protected void processEvent(ViewEvent anEvent)
+    private void handleMouseEvent(ViewEvent anEvent)
     {
         // Handle MousePress
         if (anEvent.isMousePress()) {

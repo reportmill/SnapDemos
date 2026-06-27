@@ -62,7 +62,7 @@ public class DungeonView extends ParentView {
         elon.setXY(100, 400);
         addChild(elon);
 
-        enableEvents(KeyPress);
+        addEventHandler(this::handleKeyPressEvent, KeyPress);
         setFocusable(true);
         setFocusWhenPressed(true);
     }
@@ -114,8 +114,7 @@ public class DungeonView extends ParentView {
     @Override
     protected double computePrefHeight(double aW)  { return _tileHeight * _tileSize; }
 
-    @Override
-    protected void processEvent(ViewEvent anEvent)
+    private void handleKeyPressEvent(ViewEvent anEvent)
     {
         if (anEvent.isRightArrow())
             _hero.moveRight();

@@ -71,7 +71,7 @@ public class SlideView extends ChildView {
         setBorder(Color.BLACK, 1);
         setFocusable(true);
         setFocusWhenPressed(true);
-        enableEvents(MouseRelease);
+        addEventHandler(this::handleMouseReleaseEvent, MouseRelease);
 
         // Create title text area
         _titleText = new TextArea(true);
@@ -195,9 +195,9 @@ public class SlideView extends ChildView {
     }
 
     /**
-     * Handle events.
+     * Handle mouse release event.
      */
-    protected void processEvent(ViewEvent anEvent)
+    private void handleMouseReleaseEvent(ViewEvent anEvent)
     {
         // Handle mouse click
         if (anEvent.isMouseClick()) {

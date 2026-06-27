@@ -45,9 +45,6 @@ public class PuzzleView extends RowView {
         setFillHeight(true);
         setPrefSize(500, 500);
 
-        // Get events
-        enableEvents(MouseEvents);
-
         // Reset Puzzle
         resetPuzzle();
     }

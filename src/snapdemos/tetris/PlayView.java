@@ -50,8 +50,8 @@ public class PlayView extends ParentView {
     {
         super();
         setFill(Color.WHITE);
-        enableEvents(KeyPress);
         setFocusable(true);
+        addEventHandler(this::handleKeyPressEvent, KeyPress);
 
         // Set size
         double viewW = GRID_WIDTH * TILE_SIZE;
@@ -350,9 +350,9 @@ public class PlayView extends ParentView {
     }
 
     /**
-     * Handles event.
+     * Handles keypress event.
      */
-    protected void processEvent(ViewEvent anEvent)
+    private void handleKeyPressEvent(ViewEvent anEvent)
     {
         switch (anEvent.getKeyCode()) {
             case KeyCode.LEFT -> moveLeft();

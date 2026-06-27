@@ -36,7 +36,7 @@ public class PlayView extends ParentView {
         setBorder(Color.BLACK, 2);
         setPrefSize(GRID_WIDTH * TILE_SIZE + BORDER_SIZE * 2, GRID_HEIGHT * TILE_SIZE + BORDER_SIZE * 2);
         setClipToBounds(true);
-        enableEvents(MousePress, MouseDrag, MouseRelease);
+        addEventHandler(this::handleMouseEvent, MousePress, MouseDrag, MouseRelease);
     }
 
     /**
@@ -214,7 +214,7 @@ public class PlayView extends ParentView {
     /**
      * Handle events.
      */
-    protected void processEvent(ViewEvent anEvent)
+    private void handleMouseEvent(ViewEvent anEvent)
     {
         // Handle MouseDown
         if (anEvent.isMousePress())
@@ -222,7 +222,7 @@ public class PlayView extends ParentView {
 
         // Handle alt events
         else if (anEvent.isAltDown())
-            processEventAlt(anEvent);
+            handleMouseEventAlt(anEvent);
 
         // Handle MouseDrag
         else if (_pressGem != null && anEvent.isMouseDrag()) {
@@ -247,7 +247,7 @@ public class PlayView extends ParentView {
     /**
      * Testing method - just explodes selected gem range on MouseRelease.
      */
-    private void processEventAlt(ViewEvent anEvent)
+    private void handleMouseEventAlt(ViewEvent anEvent)
     {
         // Handle MouseRelease
         if (anEvent.isMouseRelease() && _pressGem != null) {
