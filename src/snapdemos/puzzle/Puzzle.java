@@ -68,10 +68,9 @@ public class Puzzle {
             for (int j = 0; j < rowCount; j++) {
 
                 // Create piece for col/row
-                PuzzlePiece piece = new PuzzlePiece(this, i, j);
                 int randomNumberIndex = random.nextInt(numbers.size());
                 int randomNumber = numbers.remove(randomNumberIndex);
-                piece.setNumber(randomNumber);
+                PuzzlePiece piece = new PuzzlePiece(i, j, randomNumber);
 
                 // Add to arrays
                 pieces[i * colCount + j] = piece;
@@ -92,4 +91,9 @@ public class Puzzle {
         PuzzlePiece[][] pieces = getPieceColumns();
         return pieces[colIndex][rowIndex];
     }
+
+    /**
+     * This class represents a puzzle piece.
+     */
+    public record PuzzlePiece(int colIndex, int rowIndex, int number)  { }
 }

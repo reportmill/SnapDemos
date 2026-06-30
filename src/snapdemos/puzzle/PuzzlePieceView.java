@@ -8,11 +8,8 @@ import snap.view.*;
  */
 public class PuzzlePieceView extends BoxView {
 
-    // The PuzzleView
-    private PuzzleView _puzzleView;
-
     // The PuzzlePiece
-    private PuzzlePiece _puzzlePiece;
+    private Puzzle.PuzzlePiece _puzzlePiece;
 
     // The label
     private Label _label;
@@ -38,15 +35,15 @@ public class PuzzlePieceView extends BoxView {
     private static Effect DEFAULT_EFFECT = new ShadowEffect(12, Color.GRAY, 5, 5);
 
     // Images
-    public static final Image UP_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "UpArrow.png");
-    public static final Image DOWN_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "DownArrow.png");
-    public static final Image LEFT_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "LeftArrow.png");
-    public static final Image RIGHT_ARROW = Image.getImageForClassResource(PuzzlePiece.class, "RightArrow.png");
+    public static final Image UP_ARROW = Image.getImageForClassResource(Puzzle.PuzzlePiece.class, "UpArrow.png");
+    public static final Image DOWN_ARROW = Image.getImageForClassResource(Puzzle.PuzzlePiece.class, "DownArrow.png");
+    public static final Image LEFT_ARROW = Image.getImageForClassResource(Puzzle.PuzzlePiece.class, "LeftArrow.png");
+    public static final Image RIGHT_ARROW = Image.getImageForClassResource(Puzzle.PuzzlePiece.class, "RightArrow.png");
 
     /**
      * Constructor.
      */
-    public PuzzlePieceView(PuzzleView puzzleView, PuzzlePiece puzzlePiece)
+    public PuzzlePieceView(Puzzle.PuzzlePiece puzzlePiece)
     {
         super();
         setFill(BACK_FILL);
@@ -60,11 +57,10 @@ public class PuzzlePieceView extends BoxView {
         addEventHandler(this::handleMouseEvent, MouseEvents);
 
         // Set PuzzleView, PuzzlePiece
-        _puzzleView = puzzleView;
         _puzzlePiece = puzzlePiece;
 
         // Create label
-        String labelText = String.valueOf(puzzlePiece.getNumber());
+        String labelText = String.valueOf(puzzlePiece.number());
         _label = new Label(labelText);
         _label.setAlign(Pos.CENTER);
         setContent(_label);
@@ -101,12 +97,12 @@ public class PuzzlePieceView extends BoxView {
     }
 
     /**
-     * Returns whether piece is pressed (visibly).
+     * Returns whether this piece is pressed (visibly).
      */
     public boolean isPressed()  { return _pressed; }
 
     /**
-     * Sets whether piece is pressed (visibly).
+     * Sets whether this piece is pressed (visibly).
      */
     protected void setPressed(boolean aValue)
     {
@@ -131,12 +127,12 @@ public class PuzzlePieceView extends BoxView {
     }
 
     /**
-     * Returns whether piece is under mouse.
+     * Returns whether this piece is under mouse.
      */
     public boolean isTargeted()  { return _targeted; }
 
     /**
-     * Sets whether piece is under mouse.
+     * Sets whether this piece is under mouse.
      */
     protected void setTargeted(boolean aValue)
     {
@@ -189,8 +185,8 @@ public class PuzzlePieceView extends BoxView {
      */
     public boolean isSolved()
     {
-        boolean colMatches = getParent().indexInParent() == _puzzlePiece.getColIndex();
-        return colMatches && indexInParent() == _puzzlePiece.getRowIndex();
+        boolean colMatches = getParent().indexInParent() == _puzzlePiece.colIndex();
+        return colMatches && indexInParent() == _puzzlePiece.rowIndex();
     }
 
     /**
@@ -199,8 +195,8 @@ public class PuzzlePieceView extends BoxView {
     @Override
     protected void paintFront(Painter aPntr)
     {
-        boolean colMatches = getParent().indexInParent() == _puzzlePiece.getColIndex();
-        boolean rowMatches = indexInParent() == _puzzlePiece.getRowIndex();
+        boolean colMatches = getParent().indexInParent() == _puzzlePiece.colIndex();
+        boolean rowMatches = indexInParent() == _puzzlePiece.rowIndex();
         if (colMatches && rowMatches) {
             aPntr.fillWithPaint(getBoundsLocal(), Color.LIGHTBLUE);
             return;
@@ -233,6 +229,6 @@ public class PuzzlePieceView extends BoxView {
     protected String toStringProps()
     {
         String superProps = super.toStringProps();
-        return superProps + ", Number=" + _puzzlePiece.getNumber();
+        return superProps + ", Number=" + _puzzlePiece.number();
     }
 }

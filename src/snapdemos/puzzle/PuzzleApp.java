@@ -81,7 +81,7 @@ public class PuzzleApp extends ViewController {
         getUI().addEventFilter(e -> { if (_infoView != null) hideInfoPanel(); }, ViewEvent.Type.MousePress);
 
         // If TeaVM, maximize window
-        if (SnapEnv.isTeaVM) {
+        if (SnapEnv.isTeaVM || SnapEnv.isWebVM) {
             getWindow().setMaximized(true);
             _puzzleView.setMargin(4, 100, 20, 100);
         }
@@ -175,7 +175,6 @@ public class PuzzleApp extends ViewController {
     public static void showPuzzleApp()
     {
         PuzzleApp puzzleApp = new PuzzleApp();
-        puzzleApp.getWindow().setMaximized(true);
         puzzleApp.setWindowVisible(true);
     }
 

@@ -79,8 +79,8 @@ public class PuzzleView extends RowView {
         _pieceViews = new PuzzlePieceView[colCount][rowCount];
 
         // Get pieces
-        PuzzlePiece[] allPieces = _puzzle.getPieces();
-        List<PuzzlePiece> shuffledPieces = new ArrayList<>();
+        Puzzle.PuzzlePiece[] allPieces = _puzzle.getPieces();
+        List<Puzzle.PuzzlePiece> shuffledPieces = new ArrayList<>();
         Collections.addAll(shuffledPieces, allPieces);
         Collections.shuffle(shuffledPieces);
         Random random = new Random(1000);
@@ -98,15 +98,15 @@ public class PuzzleView extends RowView {
 
                 // Get random puzzle piece
                 int puzzlePieceIndex = random.nextInt(shuffledPieces.size());
-                PuzzlePiece puzzlePiece = shuffledPieces.get(puzzlePieceIndex);
-                while (i == puzzlePiece.getColIndex() && j == puzzlePiece.getRowIndex() && shuffledPieces.size() > 1) {
+                Puzzle.PuzzlePiece puzzlePiece = shuffledPieces.get(puzzlePieceIndex);
+                while (i == puzzlePiece.colIndex() && j == puzzlePiece.rowIndex() && shuffledPieces.size() > 1) {
                     puzzlePieceIndex = random.nextInt(shuffledPieces.size());
                     puzzlePiece = shuffledPieces.get(puzzlePieceIndex);
                 }
                 shuffledPieces.remove(puzzlePiece);
 
                 // Create View
-                PuzzlePieceView puzzlePieceView = new PuzzlePieceView(this, puzzlePiece);
+                PuzzlePieceView puzzlePieceView = new PuzzlePieceView(puzzlePiece);
                 _pieceViews[i][j] = puzzlePieceView;
                 puzzleCol.addChild(puzzlePieceView);
                 puzzlePieceView.addPropChangeListener(pc -> puzzlePieceViewSelectedChanged(puzzlePieceView), PuzzlePieceView.Selected_Prop);
@@ -171,7 +171,7 @@ public class PuzzleView extends RowView {
         super.paintChildren(aPntr);
 
         // Repaint selected
-        if (_selPieceViews.size() > 0) {
+        if (!_selPieceViews.isEmpty()) {
             PuzzlePieceView selPieceView = _selPieceViews.get(0);
             ViewUtils.paintViewInView(selPieceView, this, aPntr);
         }
