@@ -78,7 +78,7 @@ public class PuzzleApp extends ViewController {
         getUI().setFill(gradientPaint);
 
         // Watch
-        getUI().addEventFilter(e -> { if (_infoView != null) hideInfoPanel(); }, ViewEvent.Type.MousePress);
+        getUI().addEventFilter(e -> { if (_infoView != null) hideInfoPanel(); }, MousePress);
 
         // If TeaVM, maximize window
         if (SnapEnv.isTeaVM || SnapEnv.isWebVM) {
